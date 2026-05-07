@@ -143,11 +143,80 @@ These ship after v1.0 in additive minor releases.
 
 ## Traceability
 
-<!-- Filled in by roadmap creation: maps each requirement to a phase. -->
+Every v1 requirement maps to exactly one phase. v1.x and Out-of-Scope items are intentionally unmapped.
 
 | REQ-ID | Phase |
 |--------|-------|
-| (filled by roadmap) | — |
+| BUILD-01 | Phase 5 |
+| BUILD-02 | Phase 5 |
+| BUILD-03 | Phase 2 |
+| BUILD-04 | Phase 1 |
+| BUILD-05 | Phase 1 |
+| BUILD-06 | Phase 5 |
+| BUILD-07 | Phase 5 |
+| BUILD-08 | Phase 5 |
+| BUILD-09 | Phase 5 |
+| ROUTE-01 | Phase 1 |
+| ROUTE-02 | Phase 1 |
+| ROUTE-03 | Phase 1 |
+| ROUTE-04 | Phase 2 |
+| ROUTE-05 | Phase 2 |
+| INPUT-01 | Phase 2 |
+| INPUT-02 | Phase 2 |
+| INPUT-03 | Phase 2 |
+| INPUT-04 | Phase 4 |
+| INPUT-05 | Phase 4 |
+| RES-01 | Phase 1 |
+| RES-02 | Phase 1 |
+| RES-03 | Phase 1 |
+| RES-04 | Phase 4 |
+| RES-05 | Phase 4 |
+| RES-06 | Phase 4 |
+| RES-07 | Phase 1 |
+| RES-08 | Phase 2 |
+| ERR-01 | Phase 1 |
+| ERR-02 | Phase 1 |
+| ERR-03 | Phase 2 |
+| ERR-04 | Phase 3 |
+| ERR-05 | Phase 2 |
+| MW-01 | Phase 3 |
+| MW-02 | Phase 3 |
+| MW-03 | Phase 3 |
+| MW-04 | Phase 3 |
+| AUTH-01 | Phase 3 |
+| AUTH-02 | Phase 3 |
+| AUTH-03 | Phase 3 |
+| UTIL-01 | Phase 4 |
+| UTIL-02 | Phase 4 |
+| UTIL-03 | Phase 4 |
+| UTIL-04 | Phase 4 |
+| DI-01 | Phase 1 |
+| DI-02 | Phase 1 |
+| DI-03 | Phase 5 |
+| API-01 | Phase 2 |
+| API-02 | Phase 2 |
+| API-03 | Phase 2 |
+| API-04 | Phase 4 |
+| NEW-01 | Phase 4 |
+| NEW-02 | Phase 4 |
+| VAL-01 | Phase 1 |
+| VAL-02 | Phase 5 |
+| DOCS-01 | Phase 5 |
+| DOCS-02 | Phase 5 |
+| DOCS-03 | Phase 5 |
+| DOCS-04 | Phase 5 |
+
+**Coverage:** 58 / 58 v1 requirements mapped (100%). 0 orphans, 0 duplicates.
+
+### Phase distribution
+
+| Phase | Count | Categories represented |
+|-------|-------|------------------------|
+| Phase 1 | 14 | BUILD, ROUTE, RES, ERR, VAL, DI |
+| Phase 2 | 12 | BUILD, ROUTE, INPUT, ERR, RES, API |
+| Phase 3 | 8 | MW, AUTH, ERR |
+| Phase 4 | 12 | INPUT, RES, UTIL, API, NEW |
+| Phase 5 | 12 | BUILD, DI, VAL, DOCS |
 
 ---
 
