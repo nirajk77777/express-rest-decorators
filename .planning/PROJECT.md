@@ -20,9 +20,11 @@ An open-source TypeScript library for building structured, decorator-based REST 
 - [ ] Drop all Koa support — remove Koa adapter, Koa types, Koa-specific code paths
 - [ ] Express v5 as the supported runtime (peer dep), leveraging native async error propagation
 - [ ] TC39 Stage 3 decorators (TypeScript 5+ native), no `experimentalDecorators`
-- [ ] Pluggable validation/transformation adapters (zod, valibot, class-validator) instead of hard-coded class-validator
-- [ ] Pluggable DI via `useContainer()`-style adapter (pending research outcome — see Open Questions)
-- [ ] Dual ESM + CJS distribution
+- [ ] Standard-Schema-based validation surface (Zod, Valibot, ArkType work natively); no hard-coded validator
+- [ ] Optional `useContainer(IocAdapter)` DI hook with default WeakMap fallback (~50 LOC); no built-in container
+- [ ] Method-level input declaration API: `@Get('/:id', { params, query, body })` with destructured handler args (forced by Stage 3 — no parameter decorators)
+- [ ] Dual ESM + CJS distribution (no-global-state architecture neutralizes the dual-package hazard)
+- [ ] Node ≥20 (Symbol.metadata polyfill on 20, native on 22)
 - [ ] Vitest test suite written from scratch covering all public APIs
 - [ ] Migration guide doc for users coming from `routing-controllers`
 - [ ] Modest set of "new features on top" of original (specific list to be defined during requirements phase)
@@ -32,10 +34,12 @@ An open-source TypeScript library for building structured, decorator-based REST 
 
 - Koa support — explicit non-goal; user wants Express-only to keep the package focused
 - Express v4 support — moving forward, not maintaining the past
-- Hard dependency on a specific validator (class-validator) — replaced by pluggable adapters
-- Drop-in API compatibility with routing-controllers — we're willing to break things where it helps
+- Hard dependency on a specific validator (class-validator) — replaced by Standard Schema surface
+- class-validator support — incompatible with Stage 3 decorators (requires `experimentalDecorators` + `reflect-metadata`); migration users must swap validator at the same time they swap library
+- Parameter decorators (`@Param`, `@Body`, `@QueryParam` as parameter decorators) — Stage 3 doesn't support them; replaced by method-level input declaration
+- Drop-in API compatibility with routing-controllers — forced break on input binding, plus we'll break other things where it helps
 - Codemod tool for migration — migration guide doc only for v1
-- Built-in DI container — at most a pluggable hook (subject to research outcome)
+- Built-in DI container — only an optional `useContainer()` hook
 - Aiming to "replace" routing-controllers as THE successor — modest adoption is fine; no need for ecosystem dominance
 
 ## Context
@@ -65,20 +69,32 @@ An open-source TypeScript library for building structured, decorator-based REST 
 | Express v5 only, drop Koa | User wants focused, modern package; Koa adds adapter/typing burden with little benefit for target audience | — Pending |
 | TC39 Stage 3 decorators | Future-proof, native to TS 5; legacy decorators on the way out | — Pending |
 | Pluggable validation adapters (zod/valibot/class-validator) | Schema-lib choice is opinionated; adapter pattern lets users pick | — Pending |
-| Dual ESM + CJS | Broad compatibility; same as original | — Pending |
+| Dual ESM + CJS | Broad compatibility; no-global-state architecture neutralizes hazard | — Pending |
 | Vitest, fresh tests | Modern runner, ESM-native; original Jest tests are Koa-coupled and dated | — Pending |
-| API: mostly compatible, breaking where it helps | Familiar mental model without being shackled by legacy quirks | — Pending |
+| API: forced break on input binding, opportunistic breaks elsewhere | Stage 3 has no parameter decorators; ecosystem (hono+zod-openapi, ts-rest, ts-api-kit) converged on method-level pattern | — Pending |
 | Lean into Express v5 native async errors | Drop legacy try/catch wrappers in adapter | — Pending |
+| Standard Schema as validation surface (drop class-validator) | Zod/Valibot/ArkType all implement natively; class-validator structurally incompatible with Stage 3 | — Pending |
+| Optional `useContainer()` DI hook with WeakMap default | Not required, not absent; matches ecosystem pattern; ~50 LOC | — Pending |
+| Monorepo (pnpm workspaces) with core + adapter packages | Cleaner peer deps than single-package optional dependencies | — Pending |
+| `tshy` for build | Only `tsc`-based dual build that handles Stage 3 reliably; tsup/tsdown/swc/esbuild have Stage 3 gaps | — Pending |
 
 ## Open Questions
 
 <!-- Resolved during research / requirements / planning phases -->
 
-- **DI: required at all?** — Should the package ship a `useContainer()`-style adapter, or be entirely DI-agnostic (plain class instantiation, factory hook for advanced users)? Investigate how routing-controllers users actually use DI today, what NestJS / tsoa / fastify-decorators do, and whether the abstraction earns its complexity. *Resolution: research phase.*
-- **Specific "new features on top"** — Concrete list to define during requirements (candidates: streaming/SSE helpers, hooks/lifecycle, route-level rate limit decorator, AsyncLocalStorage context, structured logging hooks, OpenAPI hint pass).
-- **Node version target** — Node 20 LTS only? Node 22+? Need to align with Express v5's own minimums.
+- **Specific "new features on top"** — v1 includes AsyncLocalStorage request context + dev-time `printRoutes`. v1.x candidates: SSE/streaming, lifecycle hooks, structured logging hook, `@RateLimit`, `@Timeout`, OpenAPI emit (Zod-first). To finalize during requirements.
 - **Package name** — Deferred until before publish.
-- **Repo/dev tooling** — Single package vs monorepo (e.g., adapters as separate packages); pnpm/npm/bun; biome vs eslint+prettier.
+
+## Resolved Decisions (from research)
+
+- **DI** — Optional `useContainer(IocAdapter)` hook, default WeakMap; no built-in container. (Architecture research)
+- **Validation** — Standard Schema interface, no class-validator support. Zod is the v1 canonical adapter; Valibot in v1.x. (Stack + Architecture research)
+- **API shape** — Method-level input declaration `@Get('/:id', { params, query, body })`. Forced by Stage 3 (no parameter decorators). (Architecture research)
+- **Node** — `engines: ">=20"`, recommend Node 22 LTS, CI matrix Node 20/22/24.
+- **Module format** — Dual ESM+CJS, neutralized via no-global-state architecture.
+- **Build tool** — `tshy` (only `tsc`-based dual build that handles Stage 3 reliably).
+- **Lint/format** — Biome 2 (ESLint 9 + `@typescript-eslint` 8 fallback if needed).
+- **Repo shape** — Monorepo (pnpm workspaces): batteries-included core + small optional adapter packages (`-typedi`, etc.). class-validator adapter dropped per validator decision.
 
 ## Evolution
 
