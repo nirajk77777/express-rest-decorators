@@ -1,3 +1,17 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0.0
+milestone_name: milestone
+status: Roadmap created; ready for `/gsd-plan-phase 1`
+last_updated: "2026-05-07T20:33:30.216Z"
+progress:
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
+---
+
 # State
 
 <!-- Project memory. Updated at every phase/plan transition. -->
@@ -11,6 +25,7 @@
 **Parallelization:** enabled
 
 **Source documents:**
+
 - [PROJECT.md](./PROJECT.md)
 - [REQUIREMENTS.md](./REQUIREMENTS.md)
 - [ROADMAP.md](./ROADMAP.md)
@@ -52,6 +67,11 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 ---
 
 ## Accumulated Context
+
+### Roadmap Evolution
+
+- Phase 1 edited: regenerated: switched to legacy experimentalDecorators + reflect-metadata; single-package repo (no monorepo); DI remains pluggable
+- Phase 1 edited: CLAUDE.md, PROJECT.md, research/STACK.md updated to match new direction: legacy experimentalDecorators + reflect-metadata in core; single-package repo (no monorepo); DI remains pluggable. Historical research preserved with override banners.
 
 ### Key Decisions Locked-In (from research)
 
