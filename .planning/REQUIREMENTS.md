@@ -49,8 +49,8 @@
 
 ### Errors (ERR)
 
-- [ ] **ERR-01**: Library exports a `HttpError` base class and 4xx/5xx subclasses (`BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `MethodNotAllowedError`, `ConflictError`, `InternalServerError`, etc.)
-- [ ] **ERR-02**: `HttpError` instances have `status`, `message`, optional `cause` (ES2022), and a `toJSON()` for consistent serialization
+- [x] **ERR-01**: Library exports a `HttpError` base class and 4xx/5xx subclasses (`BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `MethodNotAllowedError`, `ConflictError`, `InternalServerError`, etc.)
+- [x] **ERR-02**: `HttpError` instances have `status`, `message`, optional `cause` (ES2022), and a `toJSON()` for consistent serialization
 - [ ] **ERR-03**: Library installs ONE Express error middleware that converts thrown errors to HTTP responses; handlers do not need try/catch for async code (Express v5 native rejection forwarding)
 - [ ] **ERR-04**: User can register custom error handlers via `@Middleware({ type: 'after' })` ahead of the library default
 - [ ] **ERR-05**: Errors include a `source` field identifying which controller/method threw, for debuggability
