@@ -8,7 +8,7 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -42,7 +42,7 @@ progress:
 Phase: 01 (metadata-decorator-skeleton) — EXECUTING
 Plan: 1 of 6
 **Phase:** 1 — Metadata & Decorator Skeleton
-**Plan:** Not started
+**Plan:** 01-01 complete (2/6 plans remaining)
 **Status:** Executing Phase 01
 **Progress:** [░░░░░░░░░░] 0% (0 / 5 phases complete)
 
@@ -96,6 +96,10 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - **Package name** — deferred until before publish (Phase 5).
 - **Class-validator legacy adapter** — Out of Scope for v1; technical blocker no longer applies under legacy decorators, but scope decision unchanged. Revisit at v1.x.
 
+### Key Decisions Made (from 01-01)
+
+- BUILD-04/05/06 aligned to legacy decorator direction; reflect-metadata is a core dep; single-package repo confirmed.
+
 ### TODOs
 
 (none yet — populated as phases progress)
@@ -108,8 +112,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Roadmap created from requirements + research synthesis. 5 phases, 58/58 v1 requirements mapped, parallelization metadata captured for Phases 3 and 4.
+**Last action:** 01-01-PLAN.md complete — REQUIREMENTS.md BUILD-04/05/06 and STATE.md Key Decisions rewritten to match legacy decorator direction.
 
-**Resume command:** `/gsd-plan-phase 1`
+**Resume command:** Continue Phase 01 with 01-02-PLAN.md (repo bootstrap)
 
-**Last updated:** 2026-05-07
+**Last updated:** 2026-05-08

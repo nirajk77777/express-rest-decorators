@@ -32,7 +32,7 @@
   4. The library exposes a `useContainer(IocAdapter)` hook with a default lazy-`new` WeakMap-cached fallback; the IoC layer remains pluggable — no specific container (tsyringe, Awilix, TypeDI, etc.) is imported by core, and a grep test asserts core has zero container-library imports. Consumers can wire any container via the hook.
   5. Public type exports include the type-only `StandardSchemaV1` re-export and the `Action` value shape — no schema library is imported by core at runtime. The package builds and publishes from a single root (`src/` → `dist/`) with no workspaces, pnpm/yarn workspace protocol, or sub-packages.
 **Plans**: 6 plans
-  - [ ] 01-01-PLAN.md — Doc rewrite: align REQUIREMENTS.md BUILD-04/05/06 + STATE.md key decisions with Direction Override (Wave 0)
+  - [x] 01-01-PLAN.md — Doc rewrite: align REQUIREMENTS.md BUILD-04/05/06 + STATE.md key decisions with Direction Override (Wave 0)
   - [ ] 01-02-PLAN.md — Repo bootstrap (package.json, tsconfig, vitest) + storage WeakMaps + public type-only types (Wave 1)
   - [ ] 01-03-PLAN.md — Decorators (controller/route/response) + MetadataBuilder + runtime guard (Wave 2)
   - [ ] 01-04-PLAN.md — HttpError base + 4xx/5xx subclasses (Wave 2)
