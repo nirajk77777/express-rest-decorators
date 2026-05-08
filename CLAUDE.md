@@ -5,13 +5,14 @@
 
 An open-source TypeScript library for building structured, decorator-based REST APIs on Express v5 — a modernized, Express-only successor to [`routing-controllers`](https://github.com/typestack/routing-controllers). Targets TypeScript developers who want class-based controllers with modern decorators, native async error handling, and a pluggable validation/DI story. Public OSS package, modest adoption goal.
 
-**Core Value:** **Bring the routing-controllers DX into the Express v5 + modern-TypeScript era** — same mental model, dropped Koa baggage, native async errors, TC39 decorators, pluggable validators.
+**Core Value:** **Bring the routing-controllers DX into the Express v5 + modern-TypeScript era** — same mental model, dropped Koa baggage, native async errors, decorator-based controllers (legacy `experimentalDecorators` + `reflect-metadata`), pluggable validators.
 
 ### Constraints
 
 - **Tech stack**: TypeScript 5+, Express v5 (peer dep), Node 20+ (target TBD — confirm during requirements)
 - **Module format**: Dual ESM + CJS — broad ecosystem compatibility
-- **Decorators**: TC39 Stage 3 only — no `experimentalDecorators`
+- **Decorators**: Legacy TypeScript decorators only — `experimentalDecorators: true` + `emitDecoratorMetadata: true` + `reflect-metadata` shim required
+- **Repo shape**: Single-package repo (no monorepo, no workspaces) — `src/` → `dist/`, dual ESM+CJS published from one root
 - **Validation**: Pluggable adapters — must not hard-depend on any single schema lib
 - **DI**: Pluggable hook at most — no opinionated container in core (pending research)
 - **Tests**: Vitest only — no Jest carry-over
@@ -22,17 +23,24 @@ An open-source TypeScript library for building structured, decorator-based REST 
 <!-- GSD:stack-start source:research/STACK.md -->
 ## Technology Stack
 
+> **⚠️ Direction Override (2026-05-08):** The Stack Research below was generated assuming **TC39 Stage 3 decorators** and a **monorepo** shape. The project has since diverged — see the **Constraints** block above. **Authoritative summary of the override:**
+> - **Decorators are legacy** (`experimentalDecorators: true` + `emitDecoratorMetadata: true`); `reflect-metadata` IS imported by core and is required at runtime.
+> - **Single-package repo** — no `packages/core` + `packages/typedi` split; one `package.json`, one `src/`, one `dist/`.
+> - DI remains pluggable via `useContainer(IocAdapter)` (no specific container in core).
+> - Where the research below says "no `reflect-metadata` in core", "Stage 3 only", "monorepo", "pnpm workspaces", "`packages/core`", "`packages/typedi`", or recommends `experimentalDecorators: false` / `emitDecoratorMetadata: false` — treat that guidance as **superseded**. tshy, Vitest 3, Biome 2, Standard Schema, Node 20+, and Express 5 guidance remain in force.
+
 ## Executive Summary
-- **TypeScript 5.8+** (avoid TS 6.0/7.0-beta turbulence; 5.8 is mature with stable Stage 3 decorators since 5.0).
+- **TypeScript 5.8+** — supports both legacy decorators (`experimentalDecorators` + `emitDecoratorMetadata`) and Stage 3; this project uses the legacy mode.
 - **Node 20+** as peer engines floor; Node 22 as the recommended/CI default. Node 20 hits EOL April 2026, but a brand-new library shipping in 2026 should not lock out 20 users immediately — set `engines: ">=20.0.0"` and document Node 22 LTS as the recommended runtime.
 - **Express v5.1.0+** as a peer dependency (5.1.0 is the current `latest` tag on npm; 5.2.x is the most recent published).
-- **tshy** for dual ESM+CJS builds — uses `tsc` under the hood (decorator-safe), generates correct `exports`, no bundling pitfalls. Avoid `tsup`/`tsdown`/`esbuild`-based bundlers for the core build because of incomplete/inconsistent Stage 3 decorator semantics.
+- **tshy** for dual ESM+CJS builds — uses `tsc` under the hood (preserves legacy decorator + `emitDecoratorMetadata` emit exactly), generates correct `exports`, no bundling pitfalls. Avoid `tsup`/`tsdown`/`esbuild`-based bundlers because their decorator and `emitDecoratorMetadata` handling can diverge from `tsc`.
 - **Vitest 3.x** as the test runner.
 - **Biome v2** for lint+format (single-binary, fast, sufficient for a focused library), with the explicit caveat that Biome's decorator-aware lint coverage is thinner than `@typescript-eslint`'s — falling back to ESLint 9 + `@typescript-eslint` is acceptable if any decorator-specific lint rule is needed.
 - **Standard Schema** (`@standard-schema/spec`) as the *primary* validator integration surface, with thin first-party adapters for **Zod v4**, **Valibot v1**, and **class-validator v0.14** as separate optional peer deps.
-- **No `reflect-metadata` in core.** Stage 3 decorators expose `Symbol.metadata` and `context.metadata`; the legacy `reflect-metadata` shim is fundamentally incompatible with Stage 3 and is not needed. A *legacy adapter package* may consume `reflect-metadata` if class-validator/class-transformer interop is offered, but the core library must remain reflect-free.
+- **`reflect-metadata` IS used by core.** Legacy decorators rely on `reflect-metadata` for the `Reflect.getMetadata("design:paramtypes", ...)` runtime; consumers must `import "reflect-metadata"` once at the top of their entry file (documented in README). This enables type-driven introspection for DI and validation hooks.
+- **Single-package repo.** One `package.json`, one `src/`, one `dist/`. Dual ESM+CJS via tshy from a single root. No pnpm workspaces, no `packages/*` split. Optional integrations (TypeDI adapter, etc.) live as sub-path exports (`<lib>/adapters/typedi`) within the same package.
 - **pnpm 10** for development; package itself published with no opinion on consumer's package manager.
-- **No DI in core.** A `useContainer(resolver)` hook is the most we should expose, and even that is optional — defer the decision to research/requirements and lean toward "no built-in DI" given Stage 3 + adapter-pattern goals.
+- **No DI in core.** A `useContainer(resolver)` hook is the most we should expose, and even that is optional. Auto-injection by constructor type *is* technically possible (legacy decorators + `reflect-metadata` emit `design:paramtypes`), but the policy remains: keep DI pluggable, no specific container in core.
 ## Recommended Stack
 ### Core Technologies
 | Technology | Version | Purpose | Why Recommended |
@@ -71,16 +79,16 @@ An open-source TypeScript library for building structured, decorator-based REST 
 | **Husky + lint-staged** (optional) | Pre-commit hooks | Light touch; enforce Biome on staged files. |
 | **GitHub Actions** | CI | Matrix Node 20/22/24 × Express 5.1/5.2; required green before publish. |
 ## TypeScript Configuration
-### Stage 3 Decorators tsconfig (CRITICAL)
-- `experimentalDecorators: false` — explicit; project requirement.
-- `emitDecoratorMetadata: false` — Stage 3 is **not compatible** with `emitDecoratorMetadata`. Do not request type metadata via `Reflect.getMetadata("design:paramtypes", ...)` anywhere in core. **Confidence: HIGH** (TS 5.2 release notes explicitly state this).
-- `target: ES2022` — required for Stage 3 decorators to emit cleanly. ES2022 is universally supported by Node 18+.
-- `lib`: include `"ESNext.Decorators"` if accessing `Symbol.metadata` directly (TS 5.2+ ships this lib).
-### Stage 3 Decorator Metadata Story
-- TS 5.2+ emits a `[Symbol.metadata]` property on the class when any decorator on/within it writes to `context.metadata`.
-- `Symbol.metadata` is itself an ECMAScript Stage 3 well-known symbol. Polyfill if needed: `(Symbol as any).metadata ??= Symbol.for("Symbol.metadata")`.
-- The library's decorator authors store route metadata on `context.metadata[ROUTES_KEY]` (using a private `Symbol`), then the bootstrap reads `Class[Symbol.metadata]` to assemble the Express router.
-- **`reflect-metadata` is NOT used.** The `reflect-metadata` package patches `Reflect` and is the runtime for legacy `experimentalDecorators` type metadata — it is structurally incompatible with the Stage 3 design. Class-validator/class-transformer's reliance on `reflect-metadata` must be quarantined inside the legacy adapter package.
+### Legacy Decorators tsconfig (CRITICAL — overrides earlier "Stage 3" guidance)
+- `experimentalDecorators: true` — required.
+- `emitDecoratorMetadata: true` — required; the library reads `design:paramtypes` for type-driven introspection.
+- `target: ES2022` — fine for legacy decorators too.
+- `useDefineForClassFields: false` — ensures legacy decorator semantics around class fields are preserved.
+- Consumers must `import "reflect-metadata"` once before any controller import; the README documents this loudly.
+### Decorator Metadata Story (legacy)
+- The library uses `Reflect.defineMetadata` / `Reflect.getMetadata` (provided by the `reflect-metadata` polyfill) to store and read route metadata, parameter type info (`design:paramtypes`), and return-type info (`design:returntype`).
+- A `reflect-metadata` import is the first runtime concern: missing it produces a clear actionable error from the library's bootstrap.
+- Decorator authors attach metadata to the class prototype via `Reflect.defineMetadata(KEY, value, target, propertyKey?)`; the bootstrap walks the controller list, reads metadata, and assembles the Express router.
 ## Build & Publishing
 ### Why tshy (not tsup/tsdown/esbuild)
 | Bundler | Stage 3 decorators? | Verdict |
@@ -96,9 +104,9 @@ An open-source TypeScript library for building structured, decorator-based REST 
 - `@scope/lib/adapters/valibot` — same.
 - `@scope/lib/adapters/class-validator` — quarantines `reflect-metadata`, `class-validator`, `class-transformer`. Provides parity with the original library for migration users. **Document loudly** that opting in pulls in legacy decorator runtime concerns.
 ## Dependency Injection Strategy
-- Default behavior: `new ControllerClass()` (zero-arg constructors).
+- Default behavior: `new ControllerClass()` (zero-arg constructors). Cached via WeakMap.
 - Users wanting tsyringe/typedi/InversifyJS/Awilix can wire `useContainer({ get: token => container.resolve(token) })`.
-- Stage 3 decorators do **not** emit constructor parameter type metadata (no `emitDecoratorMetadata`), so auto-injection by type is structurally impossible without `reflect-metadata` — another reason to keep DI out of core.
+- Legacy decorators + `emitDecoratorMetadata` *do* emit `design:paramtypes`, so auto-injection by constructor type is technically achievable. The project policy nonetheless keeps DI **pluggable only** (no specific container in core) — type-based auto-injection, if added, would be opt-in via the container hook, not built into core.
 ## Alternatives Considered
 | Recommended | Alternative | When to Use Alternative |
 |-------------|-------------|-------------------------|
@@ -113,11 +121,11 @@ An open-source TypeScript library for building structured, decorator-based REST 
 ## What NOT to Use
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| **`reflect-metadata`** in core | Incompatible with Stage 3 decorators; legacy runtime shim. | `Symbol.metadata` / `context.metadata` from Stage 3 spec. Quarantine `reflect-metadata` inside the optional class-validator adapter package only. |
-| **`experimentalDecorators: true`** | Project requirement says no. Legacy decorators are being phased out. | Stage 3 native decorators (`experimentalDecorators: false`). |
-| **`emitDecoratorMetadata: true`** | Not compatible with Stage 3; would require legacy decorators. | Standard Schema (validator metadata) + explicit type tokens for any DI hook. |
-| **tsdown** for the build (today) | Stage 3 decorators not yet supported as of March 2026. | tshy. Re-evaluate tsdown when its docs confirm Stage 3 support. |
-| **swc / esbuild as primary transform** | swc supports `2022-03` revision only; esbuild has known Stage 3 gaps. | `tsc` via tshy. |
+| **Stage 3 decorators** (`experimentalDecorators: false`) | Project requirement is legacy decorators + `reflect-metadata` for ecosystem parity and type-driven introspection. | `experimentalDecorators: true` + `emitDecoratorMetadata: true` + `import "reflect-metadata"`. |
+| **Forgetting `import "reflect-metadata"`** at app entry | Library bootstrap depends on the `Reflect` shim being installed before any controller class is loaded. | Document loudly in README; throw an actionable error from bootstrap if `Reflect.getMetadata` is unavailable. |
+| **Monorepo / pnpm workspaces / `packages/*`** | Project requirement is single-package repo. | One `package.json` at repo root; sub-path exports for optional adapters. |
+| **tsdown** for the build (today) | Decorator + `emitDecoratorMetadata` handling not aligned with `tsc` as of March 2026. | tshy. |
+| **swc / esbuild as primary transform** | Their decorator + metadata emit can diverge from `tsc`'s legacy decorator output. | `tsc` via tshy. |
 | **Jest** | ESM/decorator config friction; project requirement says Vitest. | Vitest 3. |
 | **`glob`-based controller discovery** | The original library shipped `glob` for `controllers: ["src/**/*.controller.ts"]` magic — fragile, slow, security-noisy. | Explicit array of controller classes in bootstrap. |
 | **`template-url`** | Tiny abandoned dep from original. | `URL` / `URLPattern` (native). |
@@ -128,8 +136,8 @@ An open-source TypeScript library for building structured, decorator-based REST 
 - Use Standard Schema integration; no special adapter import needed for basic flow.
 - `pnpm add <lib> valibot express`.
 - Same Standard Schema path; tree-shaking yields the smallest bundle.
-- `pnpm add <lib> class-validator class-transformer reflect-metadata express`.
-- Import from `<lib>/adapters/class-validator`. Document that `import "reflect-metadata"` must run before any controller import. This branch is the *only* place reflect-metadata appears.
+- `pnpm add <lib> class-validator class-transformer express` (`reflect-metadata` is already a core dep — no need to install it again).
+- Import from `<lib>/adapters/class-validator`. `import "reflect-metadata"` is required at app entry (already required by core anyway).
 - `pnpm add tsyringe` (or any container).
 - Call `useContainer({ get: t => container.resolve(t) })` once at bootstrap.
 - Library performs no auto type-based injection.

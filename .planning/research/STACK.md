@@ -6,6 +6,20 @@
 
 ---
 
+> ## ⚠️ Direction Update — 2026-05-08 (overrides parts of this research)
+>
+> The project owner explicitly chose to **diverge from this research** in three areas. PROJECT.md and ROADMAP.md are the canonical source for these — guidance below should be read with these overrides in mind:
+>
+> 1. **Decorators**: The library uses **legacy `experimentalDecorators: true` + `emitDecoratorMetadata: true` + `reflect-metadata`**. The "Stage 3 only / no `reflect-metadata` in core" guidance below is *superseded*. `reflect-metadata` IS imported and required by core.
+> 2. **Repo shape**: **Single-package repo** (no monorepo, no pnpm workspaces). The `packages/core + packages/typedi` structure described below is *not* the chosen shape.
+> 3. **DI**: unchanged — pluggable `useContainer(IocAdapter)` hook only; no specific container picked.
+>
+> The `tsconfig`, "What NOT to Use", and "Pluggable Validation Strategy" sections below predate these decisions and should be read with the override in mind. Build tool (tshy), Vitest, Biome, Standard Schema, and node/express version guidance remain unchanged.
+
+---
+
+---
+
 ## Executive Summary
 
 For a 2026 greenfield TypeScript library targeting **Express v5**, **TC39 Stage 3 decorators**, and **dual ESM+CJS** distribution, the recommended stack is:

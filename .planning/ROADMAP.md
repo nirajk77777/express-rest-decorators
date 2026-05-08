@@ -22,16 +22,22 @@
 ## Phase Details
 
 ### Phase 1: Metadata & Decorator Skeleton
-**Goal**: Establish the foundational decorator surface, per-class metadata model, validation contract, and IoC interface — all decoupled from HTTP. Every other phase consumes this layer.
+**Goal**: Establish the foundational decorator surface, per-class metadata model, validation contract, and pluggable IoC interface — all decoupled from HTTP — built on legacy `experimentalDecorators` + `reflect-metadata` so constructor/parameter type metadata is available to the runtime. Every other phase consumes this layer. Single-package repo (no monorepo).
 **Depends on**: Nothing (foundation).
 **Requirements**: BUILD-04, BUILD-05, ROUTE-01, ROUTE-02, ROUTE-03, RES-01, RES-02, RES-03, RES-07, ERR-01, ERR-02, VAL-01, DI-01, DI-02
 **Success Criteria** (what must be TRUE):
   1. A user can decorate a class with `@Controller` / `@JsonController` and methods with `@Get`/`@Post`/`@Put`/`@Patch`/`@Delete`/`@Head`/`@All`/`@Method`, then call `MetadataBuilder.build([Class])` and observe a fully-resolved metadata tree (controllers → actions → input declarations → response shapers) with zero Express imports.
-  2. Decorating a class compiled with `experimentalDecorators: true` throws an actionable runtime error naming the project, the offending tsconfig flag, and a documentation pointer (no silent miscompile).
+  2. The library compiles and runs only with `experimentalDecorators: true` and `emitDecoratorMetadata: true`; a clear runtime error is thrown when either flag is missing, naming the project and pointing to documentation. Constructor and parameter type metadata is read via `Reflect.getMetadata("design:paramtypes", ...)` and surfaced in the metadata tree.
   3. The library exports a `HttpError` base class with `status`, `message`, `cause`, and `toJSON()`, plus 4xx/5xx subclasses (`BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `MethodNotAllowedError`, `ConflictError`, `InternalServerError`, …) usable independently of any adapter.
-  4. The library exposes a `useContainer(IocAdapter)` hook with a default lazy-`new` WeakMap-cached fallback; `core/` source contains zero `reflect-metadata` imports verified by a grep test.
-  5. Public type exports include the type-only `StandardSchemaV1` re-export and the `Action` value shape — no schema library is imported by core at runtime.
-**Plans**: TBD
+  4. The library exposes a `useContainer(IocAdapter)` hook with a default lazy-`new` WeakMap-cached fallback; the IoC layer remains pluggable — no specific container (tsyringe, Awilix, TypeDI, etc.) is imported by core, and a grep test asserts core has zero container-library imports. Consumers can wire any container via the hook.
+  5. Public type exports include the type-only `StandardSchemaV1` re-export and the `Action` value shape — no schema library is imported by core at runtime. The package builds and publishes from a single root (`src/` → `dist/`) with no workspaces, pnpm/yarn workspace protocol, or sub-packages.
+**Plans**: 6 plans
+  - [ ] 01-01-PLAN.md — Doc rewrite: align REQUIREMENTS.md BUILD-04/05/06 + STATE.md key decisions with Direction Override (Wave 0)
+  - [ ] 01-02-PLAN.md — Repo bootstrap (package.json, tsconfig, vitest) + storage WeakMaps + public type-only types (Wave 1)
+  - [ ] 01-03-PLAN.md — Decorators (controller/route/response) + MetadataBuilder + runtime guard (Wave 2)
+  - [ ] 01-04-PLAN.md — HttpError base + 4xx/5xx subclasses (Wave 2)
+  - [ ] 01-05-PLAN.md — IocAdapter contract + DefaultContainer + useContainer/resetContainer (Wave 2)
+  - [ ] 01-06-PLAN.md — Public barrel src/index.ts + grep-gate + end-to-end SC integration tests (Wave 3)
 
 ### Phase 2: Runtime + Express Adapter (Happy Path)
 **Goal**: Deliver the smallest end-to-end vertical slice that proves the layered design — a real Express v5 app serving routes, validating input via Standard Schema, and propagating async errors natively to one library-installed error middleware.
