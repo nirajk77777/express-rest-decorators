@@ -2,7 +2,7 @@
 
 **Project:** Express Controllers (working title) — modernized Express-v5-only successor to `routing-controllers`.
 **Source:** [PROJECT.md](./PROJECT.md), [research/SUMMARY.md](./research/SUMMARY.md)
-**Last updated:** 2026-05-07
+**Last updated:** 2026-05-08
 
 ---
 
@@ -13,9 +13,9 @@
 - [ ] **BUILD-01**: Library builds dual ESM + CJS via `tshy` with TypeScript 5.8+
 - [ ] **BUILD-02**: Library targets Node ≥20 (`engines.node: ">=20"`) with Node 22 recommended; CI matrix runs Node 20/22/24
 - [ ] **BUILD-03**: Library declares `express ^5.1.0` as a peer dependency; works with Express 5.1.x and 5.2.x
-- [ ] **BUILD-04**: Library uses TC39 Stage 3 decorators only (`experimentalDecorators: false`); installs a runtime guard that throws an actionable error if the consumer has `experimentalDecorators: true`
-- [ ] **BUILD-05**: Library has zero `reflect-metadata` dependency in core
-- [ ] **BUILD-06**: Repo is a pnpm workspaces monorepo (`packages/core` + adapter packages); shipped to npm independently
+- [ ] **BUILD-04**: Library uses legacy TypeScript decorators (`experimentalDecorators: true` + `emitDecoratorMetadata: true`); installs a runtime guard that throws an actionable error if either flag is missing or if `reflect-metadata` has not been imported by the consumer.
+- [ ] **BUILD-05**: Library imports `reflect-metadata` as a runtime dependency in core for reading TS-emitted type metadata (`design:paramtypes`, `design:returntype`, `design:type`); consumers must `import 'reflect-metadata'` once at app entry (documented in README).
+- [ ] **BUILD-06**: Repo is a single-package repo (one `package.json`, one `src/`, one `dist/`); dual ESM+CJS published from the package root via `tshy`. Optional integrations live as sub-path exports within the same package.
 - [ ] **BUILD-07**: `prepublishOnly` runs `attw` and `publint` to verify dual-package config
 - [ ] **BUILD-08**: Vitest 3 test suite covers all public APIs; tests run on both `pool: 'forks'` and `pool: 'threads'`
 - [ ] **BUILD-09**: Lint/format via Biome 2 (ESLint 9 + `@typescript-eslint` fallback if a decorator-aware rule is missing)
@@ -126,9 +126,8 @@ These ship after v1.0 in additive minor releases.
 
 - **Koa support** — Express-only is the focused-package goal
 - **Express v4 fallback** — moving forward only
-- **class-validator support** — incompatible with Stage 3 decorators (requires `experimentalDecorators` + `reflect-metadata`)
-- **Parameter decorators (`@Param`, `@Body`, `@QueryParam` as parameter decorators)** — Stage 3 doesn't support them; replaced by method-level input declaration
-- **`reflect-metadata` in core** — quarantined to optional adapter packages if ever needed
+- **class-validator support** — out of scope for v1; the technical blocker (Stage 3 incompatibility) no longer applies under the legacy decorator direction, but scope remains v1.x at earliest.
+- **Parameter decorators (`@Param`, `@Body`, `@QueryParam` as parameter decorators)** — replaced by method-level input declaration; cleaner type inference and avoids per-arg decorator boilerplate.
 - **Built-in DI container** — only an optional `useContainer()` hook
 - **Drop-in API compatibility with routing-controllers** — input binding break is forced; other breaks are opportunistic
 - **Codemod tool** — migration guide doc only for v1
