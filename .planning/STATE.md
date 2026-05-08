@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
-status: Roadmap created; ready for `/gsd-plan-phase 1`
-last_updated: "2026-05-07T20:33:30.216Z"
+status: executing
+last_updated: "2026-05-08T00:00:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
+  total_plans: 6
   completed_plans: 0
   percent: 0
 ---
@@ -19,7 +19,7 @@ progress:
 ## Project Reference
 
 **Name:** Express Controllers (working title)
-**Core Value:** Bring the routing-controllers DX into the Express v5 + modern-TypeScript era — same mental model, dropped Koa baggage, native async errors, TC39 Stage 3 decorators, pluggable validators.
+**Core Value:** Bring the routing-controllers DX into the Express v5 + modern-TypeScript era — same mental model, dropped Koa baggage, native async errors, legacy TypeScript decorators + reflect-metadata, pluggable validators.
 **Mode:** yolo
 **Granularity:** coarse
 **Parallelization:** enabled
@@ -39,9 +39,11 @@ progress:
 
 ## Current Position
 
+Phase: 01 (metadata-decorator-skeleton) — EXECUTING
+Plan: 1 of 6
 **Phase:** 1 — Metadata & Decorator Skeleton
 **Plan:** Not started
-**Status:** Roadmap created; ready for `/gsd-plan-phase 1`
+**Status:** Executing Phase 01
 **Progress:** [░░░░░░░░░░] 0% (0 / 5 phases complete)
 
 ```
@@ -75,25 +77,24 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ### Key Decisions Locked-In (from research)
 
-- **Decorators:** TC39 Stage 3 only; runtime guard rejects `experimentalDecorators: true` consumers.
-- **Metadata:** Per-class via `Symbol.metadata` + WeakMap; no module-level mutable global registry.
+- **Decorators:** Legacy TypeScript decorators only (`experimentalDecorators: true` + `emitDecoratorMetadata: true`); runtime guard throws if either flag is missing or `reflect-metadata` is not imported.
+- **Metadata:** Hybrid — module-private WeakMaps for library-owned state (keyed by class constructor and prototype); `reflect-metadata` ONLY for TS-emitted keys (`design:paramtypes`, `design:returntype`, `design:type`). No module-level mutable global registry. No `Reflect.defineMetadata` use by core.
 - **Validation:** Standard Schema (type-only) is the core surface; Zod/Valibot/ArkType work natively without adapter code.
 - **DI:** Optional `useContainer(IocAdapter)` with WeakMap default; no built-in container.
 - **Routing:** One `express.Router()` per controller; path-to-regexp v8 syntax validated at registration.
 - **Errors:** Express v5 native async propagation; ONE library-installed Express error middleware; no per-handler try/catch.
 - **Build:** `tshy` for dual ESM+CJS; `attw` + `publint` mandatory in CI.
-- **Repo:** pnpm workspaces monorepo (`packages/core` + `packages/typedi`).
+- **Repo:** Single-package repo (one `package.json`, one `src/`, one `dist/`); optional adapter integrations as sub-path exports.
 - **Lint/format:** Biome 2 (ESLint 9 + `@typescript-eslint` 8 fallback documented).
 - **Tests:** Vitest 3, run under both `pool: 'forks'` and `pool: 'threads'`.
 - **Node:** `engines.node: ">=20"`, recommend 22 LTS, CI matrix on 20/22/24.
-- **`reflect-metadata`:** banned from core; quarantined to optional adapter packages only.
-- **API shape:** method-level input declaration `@Get('/:id', { params, query, body })` with destructured handler args (forced by Stage 3, not chosen).
+- **`reflect-metadata`:** core runtime dependency, used exclusively for reading TS-emitted type metadata; consumer must `import 'reflect-metadata'` at app entry.
+- **API shape:** method-level input declaration `@Get('/:id', { params, query, body })` with destructured handler args (chosen for cleaner type inference).
 
 ### Open Questions
 
 - **Package name** — deferred until before publish (Phase 5).
-- **Exact Stage 3 decorator generic signatures** — Phase 1 research-flag item; resolve during `/gsd-plan-phase 1`.
-- **Class-validator legacy adapter** — currently Out of Scope for v1 per REQUIREMENTS.md; revisit at v1.x if migration users demand it.
+- **Class-validator legacy adapter** — Out of Scope for v1; technical blocker no longer applies under legacy decorators, but scope decision unchanged. Revisit at v1.x.
 
 ### TODOs
 
