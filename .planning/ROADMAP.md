@@ -34,7 +34,7 @@
 **Plans**: 6 plans
   - [x] 01-01-PLAN.md — Doc rewrite: align REQUIREMENTS.md BUILD-04/05/06 + STATE.md key decisions with Direction Override (Wave 0)
   - [x] 01-02-PLAN.md — Repo bootstrap (package.json, tsconfig, vitest) + storage WeakMaps + public type-only types (Wave 1)
-  - [ ] 01-03-PLAN.md — Decorators (controller/route/response) + MetadataBuilder + runtime guard (Wave 2)
+  - [x] 01-03-PLAN.md — Decorators (controller/route/response) + MetadataBuilder + runtime guard (Wave 2)
   - [ ] 01-04-PLAN.md — HttpError base + 4xx/5xx subclasses (Wave 2)
   - [ ] 01-05-PLAN.md — IocAdapter contract + DefaultContainer + useContainer/resetContainer (Wave 2)
   - [ ] 01-06-PLAN.md — Public barrel src/index.ts + grep-gate + end-to-end SC integration tests (Wave 3)

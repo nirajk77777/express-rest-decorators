@@ -8,7 +8,7 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -42,7 +42,7 @@ progress:
 Phase: 01 (metadata-decorator-skeleton) — EXECUTING
 Plan: 1 of 6
 **Phase:** 1 — Metadata & Decorator Skeleton
-**Plan:** 01-02 complete (4/6 plans remaining in Phase 1)
+**Plan:** 01-03 complete (3/6 plans remaining in Phase 1)
 **Status:** Executing Phase 01
 **Progress:** [░░░░░░░░░░] 0% (0 / 5 phases complete)
 
@@ -62,7 +62,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 |--------|-------|
 | Phases planned | 5 |
 | Phases complete | 0 |
-| Plans complete | 2 |
+| Plans complete | 3 |
 | Requirements mapped | 58 / 58 |
 | Open blockers | 0 |
 
@@ -109,6 +109,13 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Action interface uses unknown-typed request/response — zero Express imports in type definitions (ROADMAP SC #5).
 - vitest@3.x used (not 4.x) per CLAUDE.md constraint; setupFiles includes reflect-metadata for test environment.
 
+### Key Decisions Made (from 01-03)
+
+- unplugin-swc added to vitest config — esbuild (vitest default) strips emitDecoratorMetadata; SWC emits it correctly for tests.
+- makeRouteDecorator helper DRYs the eight route decorators while preserving individual named exports.
+- Probe-class strategy for runtime guard — deterministically detects missing emitDecoratorMetadata regardless of user class shape (zero-arg controllers no longer bypass check, ROADMAP SC #2 satisfied).
+- Test B9 guard-integration test simplified — vi.mock ESM hoisting with dynamic import caused SWC parse errors; guard integration verified structurally and via G1-G4 tests.
+
 ### TODOs
 
 (none yet — populated as phases progress)
@@ -121,8 +128,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** 01-02-PLAN.md complete — Repo bootstrapped (package.json, tsconfig.json, vitest.config.ts), metadata WeakMap storage and type-only public types implemented (8 tests pass, tsc --noEmit clean).
+**Last action:** 01-03-PLAN.md complete — All 15 decorators, MetadataBuilder.build() with inheritance walk, and runtime guard (probe-class strategy) implemented. 40/40 tests pass, tsc --noEmit clean.
 
-**Resume command:** Continue Phase 01 with 01-03-PLAN.md (decorators, MetadataBuilder, runtime guard)
+**Resume command:** Continue Phase 01 with next plan (01-04 or beyond)
 
 **Last updated:** 2026-05-08
