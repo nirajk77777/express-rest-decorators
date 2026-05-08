@@ -33,7 +33,7 @@
   5. Public type exports include the type-only `StandardSchemaV1` re-export and the `Action` value shape — no schema library is imported by core at runtime. The package builds and publishes from a single root (`src/` → `dist/`) with no workspaces, pnpm/yarn workspace protocol, or sub-packages.
 **Plans**: 6 plans
   - [x] 01-01-PLAN.md — Doc rewrite: align REQUIREMENTS.md BUILD-04/05/06 + STATE.md key decisions with Direction Override (Wave 0)
-  - [ ] 01-02-PLAN.md — Repo bootstrap (package.json, tsconfig, vitest) + storage WeakMaps + public type-only types (Wave 1)
+  - [x] 01-02-PLAN.md — Repo bootstrap (package.json, tsconfig, vitest) + storage WeakMaps + public type-only types (Wave 1)
   - [ ] 01-03-PLAN.md — Decorators (controller/route/response) + MetadataBuilder + runtime guard (Wave 2)
   - [ ] 01-04-PLAN.md — HttpError base + 4xx/5xx subclasses (Wave 2)
   - [ ] 01-05-PLAN.md — IocAdapter contract + DefaultContainer + useContainer/resetContainer (Wave 2)
@@ -108,7 +108,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Metadata & Decorator Skeleton | 0/0 | Not started | — |
+| 1. Metadata & Decorator Skeleton | 2/6 | In Progress | — |
 | 2. Runtime + Express Adapter | 0/0 | Not started | — |
 | 3. Middleware, Interceptors, Auth | 0/0 | Not started | — |
 | 4. Uploads, Cookies, Sessions, Render, Context | 0/0 | Not started | — |

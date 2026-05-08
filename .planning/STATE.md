@@ -8,7 +8,7 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -42,7 +42,7 @@ progress:
 Phase: 01 (metadata-decorator-skeleton) — EXECUTING
 Plan: 1 of 6
 **Phase:** 1 — Metadata & Decorator Skeleton
-**Plan:** 01-01 complete (2/6 plans remaining)
+**Plan:** 01-02 complete (4/6 plans remaining in Phase 1)
 **Status:** Executing Phase 01
 **Progress:** [░░░░░░░░░░] 0% (0 / 5 phases complete)
 
@@ -62,7 +62,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 |--------|-------|
 | Phases planned | 5 |
 | Phases complete | 0 |
-| Plans complete | 0 |
+| Plans complete | 2 |
 | Requirements mapped | 58 / 58 |
 | Open blockers | 0 |
 
@@ -100,6 +100,15 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 - BUILD-04/05/06 aligned to legacy decorator direction; reflect-metadata is a core dep; single-package repo confirmed.
 
+### Key Decisions Made (from 01-02)
+
+- Single-package repo bootstrapped with legacy decorator flags (experimentalDecorators: true, emitDecoratorMetadata: true).
+- reflect-metadata in dependencies (not devDependencies) — required at runtime by consumers.
+- Module-private WeakMaps in storage.ts — controllerMap and methodMap never exported directly (D-07).
+- Type-only StandardSchemaV1 re-export produces zero runtime cost — no schema lib imported by core.
+- Action interface uses unknown-typed request/response — zero Express imports in type definitions (ROADMAP SC #5).
+- vitest@3.x used (not 4.x) per CLAUDE.md constraint; setupFiles includes reflect-metadata for test environment.
+
 ### TODOs
 
 (none yet — populated as phases progress)
@@ -112,8 +121,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** 01-01-PLAN.md complete — REQUIREMENTS.md BUILD-04/05/06 and STATE.md Key Decisions rewritten to match legacy decorator direction.
+**Last action:** 01-02-PLAN.md complete — Repo bootstrapped (package.json, tsconfig.json, vitest.config.ts), metadata WeakMap storage and type-only public types implemented (8 tests pass, tsc --noEmit clean).
 
-**Resume command:** Continue Phase 01 with 01-02-PLAN.md (repo bootstrap)
+**Resume command:** Continue Phase 01 with 01-03-PLAN.md (decorators, MetadataBuilder, runtime guard)
 
 **Last updated:** 2026-05-08
