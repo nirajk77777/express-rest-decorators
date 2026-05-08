@@ -8,7 +8,7 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -42,7 +42,7 @@ progress:
 Phase: 01 (metadata-decorator-skeleton) — EXECUTING
 Plan: 1 of 6
 **Phase:** 1 — Metadata & Decorator Skeleton
-**Plan:** 01-04 complete (2/6 plans remaining in Phase 1)
+**Plan:** 01-05 complete (1/6 plans remaining in Phase 1)
 **Status:** Executing Phase 01
 **Progress:** [░░░░░░░░░░] 0% (0 / 5 phases complete)
 
@@ -62,7 +62,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 |--------|-------|
 | Phases planned | 5 |
 | Phases complete | 0 |
-| Plans complete | 4 |
+| Plans complete | 5 |
 | Requirements mapped | 58 / 58 |
 | Open blockers | 0 |
 
@@ -116,6 +116,13 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Probe-class strategy for runtime guard — deterministically detects missing emitDecoratorMetadata regardless of user class shape (zero-arg controllers no longer bypass check, ROADMAP SC #2 satisfied).
 - Test B9 guard-integration test simplified — vi.mock ESM hoisting with dynamic import caused SWC parse errors; guard integration verified structurally and via G1-G4 tests.
 
+### Key Decisions Made (from 01-05)
+
+- IocAdapter.get<T>(cls, action?) returns T | Promise<T> — allows async container adapters without breaking sync consumers.
+- DefaultContainer uses WeakMap<ClassConstructor<unknown>, unknown> for per-class singleton caching — avoids Map key collision by using the constructor reference directly.
+- resetContainer() restores to the module-level defaultContainer constant (not a fresh DefaultContainer()) — preserves singleton identity across test teardowns.
+- Zero DI library imports in core — grep gate confirms no tsyringe/typedi/awilix/inversify imports in src/; ROADMAP SC #4 satisfied.
+
 ### Key Decisions Made (from 01-04)
 
 - toJSON() field policy: never include stack or cause — only { name, message, status } (+ details/source for BadRequestError when set); safe for HTTP responses.
@@ -135,8 +142,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** 01-04-PLAN.md complete — HttpError base class + 7 subclasses implemented. TDD: 19/19 tests pass, tsc --noEmit clean. BadRequestError carries details/source for Phase 2 validation. Zero Express imports.
+**Last action:** 01-05-PLAN.md complete — IocAdapter interface + DefaultContainer (WeakMap caching) + useContainer/getContainer/resetContainer hooks implemented. TDD: 9/9 tests pass, tsc --noEmit clean. Zero DI library imports in core (ROADMAP SC #4 satisfied).
 
-**Resume command:** Continue Phase 01 with next plan (01-05)
+**Resume command:** Continue Phase 01 with next plan (01-06)
 
 **Last updated:** 2026-05-08

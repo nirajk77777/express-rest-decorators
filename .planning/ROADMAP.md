@@ -36,7 +36,7 @@
   - [x] 01-02-PLAN.md — Repo bootstrap (package.json, tsconfig, vitest) + storage WeakMaps + public type-only types (Wave 1)
   - [x] 01-03-PLAN.md — Decorators (controller/route/response) + MetadataBuilder + runtime guard (Wave 2)
   - [x] 01-04-PLAN.md — HttpError base + 4xx/5xx subclasses (Wave 2)
-  - [ ] 01-05-PLAN.md — IocAdapter contract + DefaultContainer + useContainer/resetContainer (Wave 2)
+  - [x] 01-05-PLAN.md — IocAdapter contract + DefaultContainer + useContainer/resetContainer (Wave 2)
   - [ ] 01-06-PLAN.md — Public barrel src/index.ts + grep-gate + end-to-end SC integration tests (Wave 3)
 
 ### Phase 2: Runtime + Express Adapter (Happy Path)
@@ -108,7 +108,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Metadata & Decorator Skeleton | 4/6 | In Progress | — |
+| 1. Metadata & Decorator Skeleton | 5/6 | In Progress | — |
 | 2. Runtime + Express Adapter | 0/0 | Not started | — |
 | 3. Middleware, Interceptors, Auth | 0/0 | Not started | — |
 | 4. Uploads, Cookies, Sessions, Render, Context | 0/0 | Not started | — |

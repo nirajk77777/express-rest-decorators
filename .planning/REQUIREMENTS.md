@@ -77,8 +77,8 @@
 
 ### DI Hook (DI)
 
-- [ ] **DI-01**: Library exposes `useContainer(IocAdapter)` to register an external DI container; the `IocAdapter` interface has a single `get<T>(cls: Class<T>, action?: Action): T | Promise<T>` method
-- [ ] **DI-02**: Default container is a lazy `new Class()` cached in a `WeakMap<Class, instance>`; no DI lib required
+- [x] **DI-01**: Library exposes `useContainer(IocAdapter)` to register an external DI container; the `IocAdapter` interface has a single `get<T>(cls: Class<T>, action?: Action): T | Promise<T>` method
+- [x] **DI-02**: Default container is a lazy `new Class()` cached in a `WeakMap<Class, instance>`; no DI lib required
 - [ ] **DI-03**: A separate `@scope/express-controllers-typedi` adapter package is published alongside core (TypeDI 0.x reference adapter)
 
 ### Bootstrap & Public API (API)
