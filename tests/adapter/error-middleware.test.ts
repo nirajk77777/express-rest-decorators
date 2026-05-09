@@ -7,7 +7,7 @@ import { wrapAction, type InvokeAction } from '../../src/adapter/handler-wrapper
 import { BadRequestError, NotFoundError } from '../../src/index.js';
 import type { ControllerMetadata, ActionMetadata } from '../../src/types/resolved.js';
 
-class Ctl {
+class ErrCtl {
   m() {}
 }
 
@@ -16,12 +16,12 @@ function makeApp(invoke: InvokeAction) {
   const ctlMeta: ControllerMetadata = {
     type: 'json',
     basePath: '',
-    target: Ctl,
+    target: ErrCtl,
     responseHandlers: [],
     actions: [],
   };
   const actMeta: ActionMetadata = {
-    target: Ctl,
+    target: ErrCtl,
     method: 'm',
     verb: 'get',
     path: '/',
@@ -75,7 +75,7 @@ describe('libraryErrorMiddleware', () => {
     });
     const res = await request(app).get('/');
     expect(res.status).toBe(500);
-    expect(res.body.source).toBe('Ctl.m');
+    expect(res.body.source).toBe(`${ErrCtl.name}.m`);
   });
 
   it('4. production hides err.message — generic 500 envelope only', async () => {
@@ -174,12 +174,12 @@ describe('libraryErrorMiddleware', () => {
     const ctlMeta: ControllerMetadata = {
       type: 'json',
       basePath: '',
-      target: Ctl,
+      target: ErrCtl,
       responseHandlers: [],
       actions: [],
     };
     const actMeta: ActionMetadata = {
-      target: Ctl,
+      target: ErrCtl,
       method: 'm',
       verb: 'get',
       path: '/',
