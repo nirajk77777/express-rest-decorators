@@ -8,7 +8,7 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -39,12 +39,12 @@ progress:
 
 ## Current Position
 
-Phase: 01 (metadata-decorator-skeleton) — EXECUTING
-Plan: 1 of 6
-**Phase:** 1 — Metadata & Decorator Skeleton
-**Plan:** 01-05 complete (1/6 plans remaining in Phase 1)
-**Status:** Executing Phase 01
-**Progress:** [░░░░░░░░░░] 0% (0 / 5 phases complete)
+Phase: 01 (metadata-decorator-skeleton) — COMPLETE
+Plan: 6 of 6
+**Phase:** 1 — Metadata & Decorator Skeleton — COMPLETE
+**Plan:** 01-06 complete (6/6 plans complete in Phase 1)
+**Status:** Phase 01 complete; ready for Phase 02
+**Progress:** [██░░░░░░░░] 20% (1 / 5 phases complete)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -61,8 +61,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Metric | Value |
 |--------|-------|
 | Phases planned | 5 |
-| Phases complete | 0 |
-| Plans complete | 5 |
+| Phases complete | 1 |
+| Plans complete | 6 |
 | Requirements mapped | 58 / 58 |
 | Open blockers | 0 |
 
@@ -116,6 +116,13 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Probe-class strategy for runtime guard — deterministically detects missing emitDecoratorMetadata regardless of user class shape (zero-arg controllers no longer bypass check, ROADMAP SC #2 satisfied).
 - Test B9 guard-integration test simplified — vi.mock ESM hoisting with dynamic import caused SWC parse errors; guard integration verified structurally and via G1-G4 tests.
 
+### Key Decisions Made (from 01-06)
+
+- FS-based grep helper over execSync: Node fs.readFileSync + JS RegExp for grep gates — avoids /bin/sh quoting fragility from mixed quote characters in patterns.
+- __resetGuardForTest() used in negative-path SC#2 test: cached probe (probed flag) prevented guard re-run after Reflect.getMetadata deletion; seam allows deterministic test.
+- No reflect-metadata import in src/index.ts barrel: consumers must import at app entry per CLAUDE.md Pitfall 6; runtime guard throws actionable error if missing.
+- Phase 1 complete: 88/88 tests pass; tsc --noEmit clean; all 5 ROADMAP SC#1-SC#5 success criteria verified via executable integration tests.
+
 ### Key Decisions Made (from 01-05)
 
 - IocAdapter.get<T>(cls, action?) returns T | Promise<T> — allows async container adapters without breaking sync consumers.
@@ -142,8 +149,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** 01-05-PLAN.md complete — IocAdapter interface + DefaultContainer (WeakMap caching) + useContainer/getContainer/resetContainer hooks implemented. TDD: 9/9 tests pass, tsc --noEmit clean. Zero DI library imports in core (ROADMAP SC #4 satisfied).
+**Last action:** 01-06-PLAN.md complete — src/index.ts barrel + grep-gate integration tests + ROADMAP SC#1-SC#5 acceptance fixtures. 88/88 tests pass, tsc --noEmit clean. Phase 1 complete.
 
-**Resume command:** Continue Phase 01 with next plan (01-06)
+**Resume command:** Begin Phase 02 — Runtime + Express Adapter (Happy Path)
 
-**Last updated:** 2026-05-08
+**Last updated:** 2026-05-09

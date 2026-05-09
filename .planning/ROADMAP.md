@@ -11,7 +11,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Metadata & Decorator Skeleton** — Stage 3 decorators, per-class metadata, IoC contract, runtime mode guard; pure logic, no HTTP yet.
+- [x] **Phase 1: Metadata & Decorator Skeleton** — Stage 3 decorators, per-class metadata, IoC contract, runtime mode guard; pure logic, no HTTP yet.
 - [ ] **Phase 2: Runtime + Express Adapter (Happy Path)** — End-to-end vertical slice: input resolution via Standard Schema, ExpressAdapter, native async error middleware.
 - [ ] **Phase 3: Middleware, Interceptors, Auth, Error Handling** — Orthogonal additions on top of Phase 2 pipeline (parallel with Phase 4).
 - [ ] **Phase 4: Uploads, Cookies, Sessions, Render, Request Context** — Feature-parity edge cases plus AsyncLocalStorage and `printRoutes` (parallel with Phase 3).
@@ -37,7 +37,7 @@
   - [x] 01-03-PLAN.md — Decorators (controller/route/response) + MetadataBuilder + runtime guard (Wave 2)
   - [x] 01-04-PLAN.md — HttpError base + 4xx/5xx subclasses (Wave 2)
   - [x] 01-05-PLAN.md — IocAdapter contract + DefaultContainer + useContainer/resetContainer (Wave 2)
-  - [ ] 01-06-PLAN.md — Public barrel src/index.ts + grep-gate + end-to-end SC integration tests (Wave 3)
+  - [x] 01-06-PLAN.md — Public barrel src/index.ts + grep-gate + end-to-end SC integration tests (Wave 3)
 
 ### Phase 2: Runtime + Express Adapter (Happy Path)
 **Goal**: Deliver the smallest end-to-end vertical slice that proves the layered design — a real Express v5 app serving routes, validating input via Standard Schema, and propagating async errors natively to one library-installed error middleware.
@@ -108,7 +108,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Metadata & Decorator Skeleton | 5/6 | In Progress | — |
+| 1. Metadata & Decorator Skeleton | 6/6 | Complete | 2026-05-09 |
 | 2. Runtime + Express Adapter | 0/0 | Not started | — |
 | 3. Middleware, Interceptors, Auth | 0/0 | Not started | — |
 | 4. Uploads, Cookies, Sessions, Render, Context | 0/0 | Not started | — |

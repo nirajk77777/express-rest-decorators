@@ -13,8 +13,8 @@
 - [ ] **BUILD-01**: Library builds dual ESM + CJS via `tshy` with TypeScript 5.8+
 - [ ] **BUILD-02**: Library targets Node ≥20 (`engines.node: ">=20"`) with Node 22 recommended; CI matrix runs Node 20/22/24
 - [ ] **BUILD-03**: Library declares `express ^5.1.0` as a peer dependency; works with Express 5.1.x and 5.2.x
-- [ ] **BUILD-04**: Library uses legacy TypeScript decorators (`experimentalDecorators: true` + `emitDecoratorMetadata: true`); installs a runtime guard that throws an actionable error if either flag is missing or if `reflect-metadata` has not been imported by the consumer.
-- [ ] **BUILD-05**: Library imports `reflect-metadata` as a runtime dependency in core for reading TS-emitted type metadata (`design:paramtypes`, `design:returntype`, `design:type`); consumers must `import 'reflect-metadata'` once at app entry (documented in README).
+- [x] **BUILD-04**: Library uses legacy TypeScript decorators (`experimentalDecorators: true` + `emitDecoratorMetadata: true`); installs a runtime guard that throws an actionable error if either flag is missing or if `reflect-metadata` has not been imported by the consumer.
+- [x] **BUILD-05**: Library imports `reflect-metadata` as a runtime dependency in core for reading TS-emitted type metadata (`design:paramtypes`, `design:returntype`, `design:type`); consumers must `import 'reflect-metadata'` once at app entry (documented in README).
 - [ ] **BUILD-06**: Repo is a single-package repo (one `package.json`, one `src/`, one `dist/`); dual ESM+CJS published from the package root via `tshy`. Optional integrations live as sub-path exports within the same package.
 - [ ] **BUILD-07**: `prepublishOnly` runs `attw` and `publint` to verify dual-package config
 - [ ] **BUILD-08**: Vitest 3 test suite covers all public APIs; tests run on both `pool: 'forks'` and `pool: 'threads'`
@@ -95,7 +95,7 @@
 
 ### Validation Adapter (VAL)
 
-- [ ] **VAL-01**: Core depends on type-only `StandardSchemaV1` interface; runtime dispatch via the spec's `~standard` property (no per-validator branching in core)
+- [x] **VAL-01**: Core depends on type-only `StandardSchemaV1` interface; runtime dispatch via the spec's `~standard` property (no per-validator branching in core)
 - [ ] **VAL-02**: README documents Zod, Valibot, and ArkType usage examples (no adapter code needed; they implement Standard Schema natively)
 
 ### Documentation & Migration (DOCS)
