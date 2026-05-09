@@ -145,4 +145,19 @@ describe('buildMetadata', () => {
     // working around the module cache. We verify guard integration structurally.
     expect(true).toBe(true); // placeholder - guard integration tested via G1-G4
   });
+
+  it('Test B10: surfaces design:paramtypes on actions (SC#2)', () => {
+    @Controller('/items')
+    class ItemController {
+      @Post('/')
+      create(_id: string, _count: number): void {}
+    }
+
+    const [meta] = buildMetadata([ItemController]);
+    const action = meta!.actions[0]!;
+    expect(action.paramTypes).toBeDefined();
+    expect(action.paramTypes).toHaveLength(2);
+    expect(action.paramTypes![0]).toBe(String);
+    expect(action.paramTypes![1]).toBe(Number);
+  });
 });

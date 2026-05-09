@@ -14,11 +14,17 @@ function makeRouteDecorator(verb: string) {
         target,
         propertyKey
       );
+      const paramTypes: Function[] | undefined = Reflect.getMetadata(
+        'design:paramtypes',
+        target,
+        propertyKey
+      );
       const meta = getOrInitMethodArgs(target, propertyKey);
       meta.verb = verb;
       meta.path = path;
       if (input !== undefined) meta.input = input;
       if (returnType !== undefined) meta.returnType = returnType;
+      if (paramTypes !== undefined) meta.paramTypes = paramTypes;
     };
   };
 }
@@ -46,10 +52,16 @@ export function Method(
       target,
       propertyKey
     );
+    const paramTypes: Function[] | undefined = Reflect.getMetadata(
+      'design:paramtypes',
+      target,
+      propertyKey
+    );
     const meta = getOrInitMethodArgs(target, propertyKey);
     meta.verb = verb.toLowerCase();
     meta.path = path;
     if (input !== undefined) meta.input = input;
     if (returnType !== undefined) meta.returnType = returnType;
+    if (paramTypes !== undefined) meta.paramTypes = paramTypes;
   };
 }

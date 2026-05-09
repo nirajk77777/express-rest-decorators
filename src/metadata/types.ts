@@ -29,5 +29,6 @@ export interface MethodArgs {
   path: string;
   input?: InputDeclaration;
   returnType?: Function;
+  paramTypes?: Function[];
   responseHandlers: ResponseHandlerArgs[];
 }

@@ -15,6 +15,7 @@ export interface ActionMetadata {
   path: string;
   input?: InputDeclaration;
   returnType?: Function;
+  paramTypes?: Function[];
   responseHandlers: ResponseHandlerArgs[];
 }
 

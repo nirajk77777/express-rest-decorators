@@ -25,6 +25,7 @@ function buildController(ctor: Function): ControllerMetadata {
     };
     if (args.input !== undefined) action.input = args.input;
     if (args.returnType !== undefined) action.returnType = args.returnType;
+    if (args.paramTypes !== undefined) action.paramTypes = args.paramTypes;
     actions.push(action);
   }
 
