@@ -91,7 +91,9 @@ describe('detectV4Pattern (D-05)', () => {
         msg = (e as Error).message;
       }
       expect(msg).toContain('uses v4 pattern ":id(\\d+)"');
-      expect(msg).not.toContain(':postId(\\d+)');
+      // The "uses v4 pattern" report names :id(\d+) (the first offender),
+      // not :postId(\d+).
+      expect(msg).not.toMatch(/uses v4 pattern ":postId/);
     });
   });
 

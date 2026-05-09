@@ -40,3 +40,65 @@ export function composePath(routePrefix: string, basePath: string, actionPath: s
   // Collapse any consecutive slashes that resulted from the join.
   return out.replace(/\/{2,}/g, '/');
 }
+
+/**
+ * Detect path-to-regexp v4 patterns that v8 rejects. Throws an actionable error
+ * naming the controller, method, offending substring, and a v8 fix suggestion.
+ * Must run BEFORE router.METHOD(path, ...) so users see our message, not p2re's
+ * terse "Missing parameter name at position N" (per RESEARCH Pitfall C).
+ *
+ * Detected patterns (D-05):
+ *   1. :name(regex) inline regex — e.g. ':id(\\d+)' → move to schema validation
+ *   2. :name? optional-param suffix — e.g. ':id?'   → use '{/:id}' optional-segment
+ *   3. Unnamed (regex) groups — e.g. '(.*)'         → name the parameter
+ *   4. Bare * wildcard (not followed by an identifier char) — e.g. '/files/*' → '*splat'
+ *
+ * Order matters: check (1) before (3) so ':id(\\d+)' reports as case (1),
+ * not case (3); check (2) before (4) for similar reasons.
+ */
+export function detectV4Pattern(
+  composedPath: string,
+  controllerName: string,
+  methodName: string,
+): void {
+  const ctx = `[${controllerName}.${methodName}]`;
+
+  // Check 1: :name(regex) inline regex
+  const namedRegex = composedPath.match(/:[A-Za-z_$][A-Za-z0-9_$]*\([^)]*\)/);
+  if (namedRegex) {
+    throw new Error(
+      `${ctx} Path "${composedPath}" uses v4 pattern "${namedRegex[0]}"; ` +
+        `in path-to-regexp v8 use "move regex to schema validation in the input declaration" instead.`,
+    );
+  }
+
+  // Check 2: :name? optional-param suffix
+  const optionalParam = composedPath.match(/:([A-Za-z_$][A-Za-z0-9_$]*)\?/);
+  if (optionalParam) {
+    const name = optionalParam[1];
+    throw new Error(
+      `${ctx} Path "${composedPath}" uses v4 pattern "${optionalParam[0]}"; ` +
+        `in path-to-regexp v8 use "{/:${name}} optional segment form" instead.`,
+    );
+  }
+
+  // Check 3: unnamed (regex) groups — anything (...) not preceded by ':name'
+  // We've already eliminated :name(...) above, so any remaining '(' is unnamed.
+  const unnamedGroup = composedPath.match(/\([^)]*\)/);
+  if (unnamedGroup) {
+    throw new Error(
+      `${ctx} Path "${composedPath}" uses v4 pattern "${unnamedGroup[0]}"; ` +
+        `in path-to-regexp v8 use "name the parameter (e.g. :path)" instead.`,
+    );
+  }
+
+  // Check 4: bare * wildcard. v8 requires *splat (named) or {*splat} (optional).
+  // A '*' is "bare" if not immediately followed by an identifier character.
+  const bareWildcard = composedPath.match(/\*(?![A-Za-z_$])/);
+  if (bareWildcard) {
+    throw new Error(
+      `${ctx} Path "${composedPath}" uses v4 pattern "*"; ` +
+        `in path-to-regexp v8 use "*splat or {*splat}" instead.`,
+    );
+  }
+}
