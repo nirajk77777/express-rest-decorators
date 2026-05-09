@@ -29,3 +29,6 @@ export { applyResponseHandlers, writeResponse } from './response.js';
 // 02-05 error-middleware + handler-wrapper exports
 export { wrapAction, type InvokeAction } from './handler-wrapper.js';
 export { libraryErrorMiddleware } from './error-middleware.js';
+
+// 02-06 boot exports
+export { useExpressControllers, createExpressServer } from './boot.js';
