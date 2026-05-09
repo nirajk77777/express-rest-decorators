@@ -55,7 +55,7 @@
   - [ ] 02-03-PLAN.md — validation.ts: 4-slot Standard Schema runner, isStandardSchema, renderPath, BadRequestError aggregation (INPUT-01/02/03) (Wave 2)
   - [ ] 02-04-PLAN.md — response.ts: applyResponseHandlers + writeResponse (JSON/string/Buffer/stream/async-iterable/null/undefined, RES-08) (Wave 2)
   - [x] 02-05-PLAN.md — handler-wrapper.ts + error-middleware.ts: D-16 source attribution + D-14/D-15/D-17/D-18 single error middleware (ERR-03, ERR-05) (Wave 2)
-  - [ ] 02-06-PLAN.md — boot.ts: useExpressControllers + createExpressServer wiring; public barrel updates (API-01, API-02, API-03, BUILD-03) (Wave 3)
+  - [x] 02-06-PLAN.md — boot.ts: useExpressControllers + createExpressServer wiring; public barrel updates (API-01, API-02, API-03, BUILD-03) (Wave 3)
   - [ ] 02-07-PLAN.md — End-to-end SC acceptance tests + structural grep gates (all 5 ROADMAP SC, BUILD-03 enforcement) (Wave 4)
 **UI hint**: no
 

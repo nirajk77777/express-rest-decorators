@@ -12,7 +12,7 @@
 
 - [ ] **BUILD-01**: Library builds dual ESM + CJS via `tshy` with TypeScript 5.8+
 - [ ] **BUILD-02**: Library targets Node ≥20 (`engines.node: ">=20"`) with Node 22 recommended; CI matrix runs Node 20/22/24
-- [ ] **BUILD-03**: Library declares `express ^5.1.0` as a peer dependency; works with Express 5.1.x and 5.2.x
+- [x] **BUILD-03**: Library declares `express ^5.1.0` as a peer dependency; works with Express 5.1.x and 5.2.x
 - [x] **BUILD-04**: Library uses legacy TypeScript decorators (`experimentalDecorators: true` + `emitDecoratorMetadata: true`); installs a runtime guard that throws an actionable error if either flag is missing or if `reflect-metadata` has not been imported by the consumer.
 - [x] **BUILD-05**: Library imports `reflect-metadata` as a runtime dependency in core for reading TS-emitted type metadata (`design:paramtypes`, `design:returntype`, `design:type`); consumers must `import 'reflect-metadata'` once at app entry (documented in README).
 - [ ] **BUILD-06**: Repo is a single-package repo (one `package.json`, one `src/`, one `dist/`); dual ESM+CJS published from the package root via `tshy`. Optional integrations live as sub-path exports within the same package.
@@ -30,7 +30,7 @@
 
 ### Input Binding (INPUT)
 
-- [ ] **INPUT-01**: Handler receives a single destructured object containing parsed `params`, `query`, `body`, `headers`, `cookies`, `req`, `res`, `next` — typed from the input declaration
+- [x] **INPUT-01**: Handler receives a single destructured object containing parsed `params`, `query`, `body`, `headers`, `cookies`, `req`, `res`, `next` — typed from the input declaration
 - [ ] **INPUT-02**: Each input slot (`params`, `query`, `body`, `headers`) accepts any Standard Schema-compatible schema (Zod, Valibot, ArkType all work natively); no schema means raw value
 - [ ] **INPUT-03**: Validation failure on any input slot produces a typed `BadRequestError` with field-level error details
 - [ ] **INPUT-04**: User can declare cookie params via input declaration; library uses `cookie` package
@@ -83,9 +83,9 @@
 
 ### Bootstrap & Public API (API)
 
-- [ ] **API-01**: Library exports `useExpressControllers(app, options)` that mounts routers on an existing Express app
-- [ ] **API-02**: Library exports `createExpressServer(options)` returning a configured Express app for users who don't have one
-- [ ] **API-03**: Boot options include: `controllers`, `middlewares`, `interceptors`, `routePrefix`, `cors`, `defaultErrorHandler`, `validation`, `authorizationChecker`, `currentUserChecker`, `printRoutes`
+- [x] **API-01**: Library exports `useExpressControllers(app, options)` that mounts routers on an existing Express app
+- [x] **API-02**: Library exports `createExpressServer(options)` returning a configured Express app for users who don't have one
+- [x] **API-03**: Boot options include: `controllers`, `middlewares`, `interceptors`, `routePrefix`, `cors`, `defaultErrorHandler`, `validation`, `authorizationChecker`, `currentUserChecker`, `printRoutes`
 - [ ] **API-04**: When `printRoutes: true`, library logs a route table at boot for dev-time visibility
 
 ### New Features on Top (NEW)
