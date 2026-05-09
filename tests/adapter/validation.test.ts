@@ -61,6 +61,16 @@ describe('isStandardSchema', () => {
     expect(isStandardSchema({ '~standard': null })).toBe(false);
   });
 
+  it('returns true for a callable (function) carrying ~standard.validate (ArkType shape)', () => {
+    const fn = (() => {}) as unknown as Record<string, unknown> & (() => void);
+    fn['~standard'] = {
+      vendor: 'arktype-like',
+      version: 1 as const,
+      validate: (x: unknown) => ({ value: x }),
+    };
+    expect(isStandardSchema(fn)).toBe(true);
+  });
+
   it('returns true for an object with ~standard.validate function', () => {
     const schema = {
       '~standard': {
@@ -198,16 +208,21 @@ describe('resolveInputs (D-06/D-07/D-10, INPUT-01/02/03)', () => {
 
   it('validator parity failure: Zod, Valibot, ArkType all reject invalid input', async () => {
     const invalidBody = { email: 'nope', name: '' };
-    for (const schema of [zodUserBody, valibotUserBody, arktypeUserBody]) {
+    const cases: Array<[string, unknown]> = [
+      ['zod', zodUserBody],
+      ['valibot', valibotUserBody],
+      ['arktype', arktypeUserBody],
+    ];
+    for (const [name, schema] of cases) {
       const req = mkReq({ body: invalidBody });
+      let caught: unknown;
       try {
         await resolveInputs(req as never, { body: schema });
-        expect.fail('should have thrown');
       } catch (err) {
-        expect(err).toBeInstanceOf(BadRequestError);
-        const e = err as BadRequestError;
-        expect(e.details!.length).toBeGreaterThanOrEqual(1);
+        caught = err;
       }
+      expect(caught, `${name} should throw`).toBeInstanceOf(BadRequestError);
+      expect((caught as BadRequestError).details!.length).toBeGreaterThanOrEqual(1);
     }
   });
 

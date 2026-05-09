@@ -16,6 +16,12 @@ export {
 } from './router-build.js';
 
 // 02-03 validation exports
+export {
+  isStandardSchema,
+  renderPath,
+  resolveInputs,
+  type ResolvedArgs,
+} from './validation.js';
 
 // 02-04 response exports
 
