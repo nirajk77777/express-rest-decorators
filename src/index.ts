@@ -36,3 +36,13 @@ export type {
   ResponseHandlerArgs,
   ResponseHandlerType,
 } from './metadata/types.js';
+
+// Phase 2 — Express adapter (boot APIs)
+export { useExpressControllers, createExpressServer } from './adapter/boot.js';
+
+// Phase 2 — public boot options type
+export type {
+  BootOptions,
+  AuthorizationChecker,
+  CurrentUserChecker,
+} from './adapter/boot-options.js';
