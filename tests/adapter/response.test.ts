@@ -319,7 +319,7 @@ describe('writeResponse (D-11/D-12/D-13, RES-08)', () => {
     const r = await request(app).get('/');
     expect(r.status).toBe(500);
     expect(errors).toHaveLength(1);
-    expect(errors[0].message).toBe('immediate');
+    expect(errors[0]?.message).toBe('immediate');
   });
 
   it('13. HttpCode shaper applied to plain JSON value', async () => {
@@ -348,7 +348,7 @@ describe('writeResponse (D-11/D-12/D-13, RES-08)', () => {
     );
     await request(app).get('/');
     expect(errors).toHaveLength(1);
-    expect(errors[0].source).toBe('StreamCtl.boom');
+    expect(errors[0]?.source).toBe('StreamCtl.boom');
   });
 
   it('INFO #7: existing err.source is NOT overwritten', async () => {
@@ -370,6 +370,6 @@ describe('writeResponse (D-11/D-12/D-13, RES-08)', () => {
     );
     await request(app).get('/');
     expect(errors).toHaveLength(1);
-    expect(errors[0].source).toBe('CustomSource.preset');
+    expect(errors[0]?.source).toBe('CustomSource.preset');
   });
 });

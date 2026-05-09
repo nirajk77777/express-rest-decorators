@@ -24,5 +24,6 @@ export {
 } from './validation.js';
 
 // 02-04 response exports
+export { applyResponseHandlers, writeResponse } from './response.js';
 
 // 02-05 error-middleware + handler-wrapper exports
