@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-09T13:20:03.547Z"
+last_updated: "2026-05-09T13:40:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 13
-  completed_plans: 8
-  percent: 62
+  completed_plans: 12
+  percent: 92
 ---
 
 # State
@@ -40,7 +40,7 @@ progress:
 ## Current Position
 
 Phase: 02 (runtime-express-adapter-happy-path) — EXECUTING
-Plan: 1 of 7
+Plan: 5 of 7 complete (02-01..02-05 done; 02-06 + 02-07 remain)
 **Phase:** 1 — Metadata & Decorator Skeleton — COMPLETE
 **Plan:** 01-06 complete (6/6 plans complete in Phase 1)
 **Status:** Executing Phase 02
@@ -130,6 +130,14 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - resetContainer() restores to the module-level defaultContainer constant (not a fresh DefaultContainer()) — preserves singleton identity across test teardowns.
 - Zero DI library imports in core — grep gate confirms no tsyringe/typedi/awilix/inversify imports in src/; ROADMAP SC #4 satisfied.
 
+### Key Decisions Made (from 02-05)
+
+- wrapAction sets err.source ONLY when missing — preserves user-set source on thrown HttpError (D-16); keeps wrapper purely additive over Express v5 native async forwarding.
+- Coerce null/undefined rejections to a synthetic Error before forwarding — Pitfall A regression hardening (defensive only; rare in practice).
+- libraryErrorMiddleware on headersSent destroys the socket with err and console.errors — never attempts a second JSON write (D-14, RESEARCH Pitfall B).
+- Production error envelope is generic { status:500, name:'InternalServerError', message:'Internal Server Error' } — err.message never escapes the boundary (D-18).
+- Test assertion for source uses `${ErrCtl.name}.m` rather than a string literal — vitest/SWC class-name suffixing made literal asserts brittle without semantic loss.
+
 ### Key Decisions Made (from 01-04)
 
 - toJSON() field policy: never include stack or cause — only { name, message, status } (+ details/source for BadRequestError when set); safe for HTTP responses.
@@ -149,8 +157,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** 01-06-PLAN.md complete — src/index.ts barrel + grep-gate integration tests + ROADMAP SC#1-SC#5 acceptance fixtures. 88/88 tests pass, tsc --noEmit clean. Phase 1 complete.
+**Last action:** 02-05-PLAN.md complete — src/adapter/handler-wrapper.ts + src/adapter/error-middleware.ts; ERR-03 + ERR-05 satisfied; D-14/D-15/D-16/D-18 each have a regression test. 196/196 tests pass; tsc --noEmit clean.
 
-**Resume command:** Begin Phase 02 — Runtime + Express Adapter (Happy Path)
+**Resume command:** Continue Phase 02 — execute 02-06 (boot-wire-public-api) once all Wave 2 plans complete.
 
 **Last updated:** 2026-05-09
