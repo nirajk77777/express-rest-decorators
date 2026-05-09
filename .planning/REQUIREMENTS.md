@@ -25,8 +25,8 @@
 - [ ] **ROUTE-01**: User can declare a controller with `@Controller(basePath?)` or `@JsonController(basePath?)`
 - [ ] **ROUTE-02**: User can declare HTTP methods on controller methods: `@Get`, `@Post`, `@Put`, `@Patch`, `@Delete`, `@Head`, `@All`, `@Method(verb, path)`
 - [ ] **ROUTE-03**: Each method decorator accepts a path string and an optional input declaration object: `@Get('/:id', { params, query, body, headers })`
-- [ ] **ROUTE-04**: Path strings must be path-to-regexp v8-compatible; library validates path strings at registration time and throws an actionable error for v4-style patterns (`*`, `:id?`, `:id(\d+)`, etc.) with a fix suggestion
-- [ ] **ROUTE-05**: Library uses one `express.Router()` per controller; supports multiple controllers, controller inheritance, and class-level `routePrefix`
+- [x] **ROUTE-04**: Path strings must be path-to-regexp v8-compatible; library validates path strings at registration time and throws an actionable error for v4-style patterns (`*`, `:id?`, `:id(\d+)`, etc.) with a fix suggestion
+- [x] **ROUTE-05**: Library uses one `express.Router()` per controller; supports multiple controllers, controller inheritance, and class-level `routePrefix`
 
 ### Input Binding (INPUT)
 
