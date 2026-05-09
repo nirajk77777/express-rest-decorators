@@ -2,8 +2,19 @@ export interface HttpErrorOptions {
   cause?: unknown;
 }
 
+export type ValidationSlot = 'params' | 'query' | 'body' | 'headers';
+
 export interface ValidationIssue {
-  path: ReadonlyArray<PropertyKey>;
+  /**
+   * Which input slot the issue originated from.
+   * Optional for backward compatibility; Phase 2 always populates it.
+   */
+  slot?: ValidationSlot;
+  /**
+   * Path to the offending field. Phase 2 emits a rendered string (e.g. "items[0].name");
+   * pre-Phase-2 callers may pass a ReadonlyArray<PropertyKey>. Both shapes are accepted.
+   */
+  path: string | ReadonlyArray<PropertyKey>;
   message: string;
 }
 
