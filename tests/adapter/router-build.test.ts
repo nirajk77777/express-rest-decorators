@@ -197,13 +197,13 @@ describe('buildControllerRouter (ROUTE-05)', () => {
     const badAction: ActionMetadata = {
       target: meta.target,
       method: 'weird',
-      verb: 'connect', // not on express.Router
+      verb: 'foobar', // not a method on express.Router
       path: '/x',
       responseHandlers: [],
     };
     const cloned: ControllerMetadata = { ...meta, actions: [badAction] };
     expect(() => buildControllerRouter(cloned, '', noopFactory as any)).toThrowError(
-      /Unsupported HTTP verb "connect".*express\.Router has no method "connect"/,
+      /Unsupported HTTP verb "foobar".*express\.Router has no method "foobar"/,
     );
   });
 

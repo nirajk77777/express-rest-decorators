@@ -22,9 +22,16 @@ function collectTs(dir: string): string[] {
 /**
  * Return all non-comment source lines from all .ts files under src/.
  * Strips // single-line comments and * block-comment continuation lines.
+ *
+ * Optional `excludePrefixes` skips files whose path starts with any of the
+ * given prefixes (e.g. ['src/adapter/'] for the SC#1 Express-isolation gate
+ * — Phase 2 introduces the Express adapter under src/adapter/, which is
+ * explicitly the only place Express may be imported).
  */
-function srcLines(): string[] {
-  const files = collectTs('src');
+function srcLines(excludePrefixes: string[] = []): string[] {
+  const files = collectTs('src').filter(
+    f => !excludePrefixes.some(prefix => f.startsWith(prefix)),
+  );
   const lines: string[] = [];
   for (const file of files) {
     for (const line of readFileSync(file, 'utf8').split('\n')) {
@@ -40,14 +47,15 @@ function srcLines(): string[] {
 /**
  * Count source lines matching a JS RegExp across all non-comment lines in src/.
  */
-function countMatches(re: RegExp): number {
-  return srcLines().filter(l => re.test(l)).length;
+function countMatches(re: RegExp, excludePrefixes: string[] = []): number {
+  return srcLines(excludePrefixes).filter(l => re.test(l)).length;
 }
 
 describe('Phase 1 grep gates', () => {
-  it('SC#1: core has zero Express imports', () => {
-    expect(countMatches(/from ['"]express['"]/)).toBe(0);
-    expect(countMatches(/from ['"]express\//)).toBe(0);
+  it('SC#1: core has zero Express imports (src/adapter/ excluded — adapter is the only allowed Express boundary)', () => {
+    const excludeAdapter = ['src/adapter/'];
+    expect(countMatches(/from ['"]express['"]/, excludeAdapter)).toBe(0);
+    expect(countMatches(/from ['"]express\//, excludeAdapter)).toBe(0);
   });
 
   it('SC#4: core has zero DI-library imports', () => {

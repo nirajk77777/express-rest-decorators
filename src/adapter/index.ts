@@ -7,6 +7,13 @@
 export type { BootOptions, AuthorizationChecker, CurrentUserChecker } from './boot-options.js';
 
 // 02-02 router-build exports
+export {
+  composePath,
+  detectV4Pattern,
+  buildControllerRouter,
+  type HandlerFactory,
+  type BuiltRouter,
+} from './router-build.js';
 
 // 02-03 validation exports
 

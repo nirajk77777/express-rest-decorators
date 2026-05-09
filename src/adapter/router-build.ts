@@ -4,6 +4,8 @@
  * Pure functions: path composition (D-04), v4 footgun detection (D-05),
  * and per-controller express.Router() construction (ROUTE-05).
  */
+import { Router, type Router as RouterT, type RequestHandler } from 'express';
+import type { ControllerMetadata, ActionMetadata } from '../types/resolved.js';
 
 /**
  * Compose the final route string from routePrefix + controller basePath + action path.
@@ -101,4 +103,58 @@ export function detectV4Pattern(
         `in path-to-regexp v8 use "*splat or {*splat}" instead.`,
     );
   }
+}
+
+export type HandlerFactory = (
+  controller: ControllerMetadata,
+  action: ActionMetadata,
+) => RequestHandler;
+
+export interface BuiltRouter {
+  router: RouterT;
+  mountPath: string;
+}
+
+/**
+ * Build one express.Router() per controller (ROUTE-05). Validates every
+ * composed route path with detectV4Pattern() BEFORE registering with the
+ * router (ensures users see our v8-suggestion error, not p2re's terse one).
+ *
+ * Returns the router plus the mount path (routePrefix + basePath) so the caller
+ * can do app.use(mountPath, router).
+ *
+ * @param controllerMeta Resolved metadata for one controller (from buildMetadata).
+ * @param routePrefix Global route prefix from BootOptions; '' if none.
+ * @param handlerFactory Caller-provided factory that produces the Express RequestHandler
+ *                       for one action. Plan 02-06 wires this to validation+invoke+response.
+ */
+export function buildControllerRouter(
+  controllerMeta: ControllerMetadata,
+  routePrefix: string,
+  handlerFactory: HandlerFactory,
+): BuiltRouter {
+  const router: RouterT = Router();
+  const controllerName = controllerMeta.target.name;
+
+  for (const action of controllerMeta.actions) {
+    const composed = composePath(routePrefix, controllerMeta.basePath, action.path);
+    detectV4Pattern(composed, controllerName, String(action.method));
+
+    const routerLocalPath = composePath('', '', action.path);
+    const verb = action.verb.toLowerCase();
+
+    const fn = (router as unknown as Record<string, unknown>)[verb];
+    if (typeof fn !== 'function') {
+      throw new Error(
+        `[${controllerName}.${String(action.method)}] Unsupported HTTP verb "${action.verb}" — ` +
+          `express.Router has no method "${verb}".`,
+      );
+    }
+
+    const handler = handlerFactory(controllerMeta, action);
+    (fn as (path: string, h: RequestHandler) => void).call(router, routerLocalPath, handler);
+  }
+
+  const mountPath = composePath(routePrefix, controllerMeta.basePath, '');
+  return { router, mountPath };
 }
