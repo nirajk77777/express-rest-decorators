@@ -49,7 +49,14 @@
   3. Throwing or rejecting a promise inside an async handler reaches the library's single Express error middleware exactly once (no double-wrap, no "headers already sent"); v5 native async propagation is used — no try/catch wrappers around handlers.
   4. Decorator path strings using legacy v4 patterns (`*`, `:id?`, `:id(\d+)`) throw an actionable error at registration time naming the controller, method, and a v8 fix suggestion; valid v8 patterns work end-to-end.
   5. A handler returning a plain object/primitive serializes to JSON (matching `@JsonController`); a handler returning a Node stream or async iterable is piped to the response.
-**Plans**: TBD
+**Plans**: 7 plans
+  - [ ] 02-01-PLAN.md — Foundation: widen ValidationIssue, install Phase 2 devDeps + express peer, scaffold src/adapter/ + tests/adapter/ fixtures (Wave 1)
+  - [ ] 02-02-PLAN.md — router-build.ts: composePath (D-04) + detectV4Pattern (D-05) + buildControllerRouter (ROUTE-05) (Wave 2)
+  - [ ] 02-03-PLAN.md — validation.ts: 4-slot Standard Schema runner, isStandardSchema, renderPath, BadRequestError aggregation (INPUT-01/02/03) (Wave 2)
+  - [ ] 02-04-PLAN.md — response.ts: applyResponseHandlers + writeResponse (JSON/string/Buffer/stream/async-iterable/null/undefined, RES-08) (Wave 2)
+  - [ ] 02-05-PLAN.md — handler-wrapper.ts + error-middleware.ts: D-16 source attribution + D-14/D-15/D-17/D-18 single error middleware (ERR-03, ERR-05) (Wave 2)
+  - [ ] 02-06-PLAN.md — boot.ts: useExpressControllers + createExpressServer wiring; public barrel updates (API-01, API-02, API-03, BUILD-03) (Wave 3)
+  - [ ] 02-07-PLAN.md — End-to-end SC acceptance tests + structural grep gates (all 5 ROADMAP SC, BUILD-03 enforcement) (Wave 4)
 **UI hint**: no
 
 ### Phase 3: Middleware, Interceptors, Auth, Error Handling
