@@ -27,3 +27,4 @@ export {
 export { applyResponseHandlers, writeResponse } from './response.js';
 
 // 02-05 error-middleware + handler-wrapper exports
+export { wrapAction, type InvokeAction } from './handler-wrapper.js';

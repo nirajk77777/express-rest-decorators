@@ -47,7 +47,7 @@ describe('wrapAction', () => {
     const handler = wrapAction(ctl, act, invoke);
     await handler(req, res, next as unknown as NextFunction);
     expect(next).toHaveBeenCalledTimes(1);
-    const err = next.mock.calls[0][0];
+    const err = next.mock.calls[0]![0] as Error & { source?: string };
     expect(err).toBeInstanceOf(Error);
     expect(err.source).toBe('Ctl.m');
   });
@@ -60,7 +60,7 @@ describe('wrapAction', () => {
     const next = vi.fn();
     await wrapAction(ctl, act, invoke)(req, res, next as unknown as NextFunction);
     expect(next).toHaveBeenCalledTimes(1);
-    expect(next.mock.calls[0][0]).toBeInstanceOf(TypeError);
+    expect(next.mock.calls[0]![0]).toBeInstanceOf(TypeError);
   });
 
   it('successful handler does not call next', async () => {
@@ -79,7 +79,7 @@ describe('wrapAction', () => {
     const next = vi.fn();
     await wrapAction(ctl, act, invoke)(req, res, next as unknown as NextFunction);
     expect(next).toHaveBeenCalledTimes(1);
-    expect(next.mock.calls[0][0].source).toBe('CustomSrc');
+    expect((next.mock.calls[0]![0] as { source?: string }).source).toBe('CustomSrc');
   });
 
   it('non-error rejection coerced to Error and source set', async () => {
@@ -88,7 +88,7 @@ describe('wrapAction', () => {
     const next = vi.fn();
     await wrapAction(ctl, act, invoke)(req, res, next as unknown as NextFunction);
     expect(next).toHaveBeenCalledTimes(1);
-    const err = next.mock.calls[0][0];
+    const err = next.mock.calls[0]![0] as Error & { source?: string };
     expect(err).toBeInstanceOf(Error);
     expect(err.source).toBe('Ctl.m');
   });
@@ -100,7 +100,7 @@ describe('wrapAction', () => {
     };
     const next = vi.fn();
     await wrapAction(ctl, act, invoke)(req, res, next as unknown as NextFunction);
-    expect(next.mock.calls[0][0].source).toBe('UsersController.update');
+    expect((next.mock.calls[0]![0] as { source?: string }).source).toBe('UsersController.update');
   });
 
   it('symbol method does not crash and yields non-empty source', async () => {
@@ -111,7 +111,7 @@ describe('wrapAction', () => {
     };
     const next = vi.fn();
     await wrapAction(ctl, act, invoke)(req, res, next as unknown as NextFunction);
-    const src = next.mock.calls[0][0].source as string;
+    const src = (next.mock.calls[0]![0] as { source?: string }).source as string;
     expect(typeof src).toBe('string');
     expect(src.length).toBeGreaterThan(0);
     expect(src).toContain('Symbol(s)');
