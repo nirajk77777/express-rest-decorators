@@ -72,7 +72,7 @@
 **Plans**: 5 plans
   - [x] 03-01-PLAN.md — Decorator + storage layer: 6 new decorators, type extensions, public interfaces (Wave 1)
   - [x] 03-02-PLAN.md — MetadataBuilder extension: fold useBefore/useAfter/interceptors/authorized into resolved metadata with inheritance semantics (Wave 2)
-  - [ ] 03-03-PLAN.md — Adapter helpers: middleware.ts (form detection + DI), interceptor.ts (for/await chain), auth.ts (gate + currentUser cache), validation.ts currentUser slot (Wave 2)
+  - [x] 03-03-PLAN.md — Adapter helpers: middleware.ts (form detection + DI), interceptor.ts (for/await chain), auth.ts (gate + currentUser cache), validation.ts currentUser slot (Wave 2)
   - [ ] 03-04-PLAN.md — Wiring: response.ts next() per branch, error-middleware arity helper, router-build handler array per D-01, boot.ts global mounting + public barrel (Wave 3)
   - [ ] 03-05-PLAN.md — Integration tests: SC#1-#5 + ordering fixture + structural grep gates (Wave 4)
 

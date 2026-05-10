@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T08:54:56.887Z"
+last_updated: "2026-05-10T09:06:16.009Z"
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 18
-  completed_plans: 15
-  percent: 83
+  completed_plans: 16
+  percent: 89
 ---
 
 # State
@@ -40,11 +40,11 @@ progress:
 ## Current Position
 
 Phase: 03 (middleware-interceptors-auth-error-handling) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 **Phase:** 3 — Middleware, Interceptors, Auth, Error Handling — IN PROGRESS
-**Plan:** 03-02 complete (2/5 plans complete in Phase 3)
+**Plan:** 03-03 complete (3/5 plans complete in Phase 3)
 **Status:** Executing Phase 03
-**Progress:** [████████░░] 83%
+**Progress:** [████████░░] 89%
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** `/gsd-execute-phase 3` — execute Phase 3 plans (middleware, interceptors, auth, error handling).
+**Up next:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 04 (router-build wiring).
 
 ---
 
@@ -70,6 +70,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ---
 | Phase 03 P02 | 480 | 2 tasks | 7 files |
+| Phase 03 P03 | 480 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -155,6 +156,17 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Authorized decorator uses last-write-wins semantics; normalized to string[] | null per D-11.
 - markAsInterceptor/isMarkedAsInterceptor added to storage.ts for Interceptor class decorator and boot-time verification.
 
+### Key Decisions Made (from 03-03)
+
+- isClassForm detects class-form via prototype presence (arg.prototype !== undefined && !== null); vi.fn() spies have prototype so tests use real arrow functions for function-form.
+- toRequestHandlers resolves class instances once at compose time (DI at boot, not per-request) per D-05.
+- runInterceptors uses sequential for/await — simplest implementation matching RC; no short-circuit needed.
+- resolveCurrentUser uses in-operator cache so undefined user values are also cache hits (no double-invocation).
+- makeAuthGate: false from currentUserChecker is the strict exception — flows to authChecker per D-12. All other falsy values trigger 401.
+- validateCurrentUser runs as 5th Promise.all arm in resolveInputs — parallel with four slots per D-14.
+- ValidationSlot extended with 'currentUser' additively; SLOTS array uses narrower ReqSlot type to avoid req indexing error.
+- auth.ts try/catch exempted from grep-gate (D-12 escape hatch); middleware.ts and auth.ts added to Express import allow-list.
+
 ### Key Decisions Made (from 03-02)
 
 - mergeMethodChain now does per-field merge instead of whole-record overwrite — required for correct hook accumulation when subclass adds @UseBefore to an inherited method without re-decorating the route.
@@ -174,8 +186,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 3 Plan 02 complete — MetadataBuilder extended with Phase 3 inheritance semantics; 287 tests pass.
+**Last action:** Phase 3 Plan 03 complete — middleware.ts, interceptor.ts, auth.ts created; validation.ts extended with currentUser slot; 342 tests pass.
 
-**Resume command:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 03.
+**Resume command:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 04 (router-build wiring).
 
-**Last updated:** 2026-05-10
+**Last updated:** 2026-05-10T09:06:00Z
