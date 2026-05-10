@@ -84,6 +84,8 @@ describe('Phase 2 grep gates — structural invariants', () => {
       // Phase 3 adapter helpers that use Express types
       'src/adapter/middleware.ts',
       'src/adapter/auth.ts',
+      // Phase 4 adapter helpers that use Express types
+      'src/adapter/request-context.ts',
     ]);
 
     const importers: string[] = [];
@@ -214,13 +216,16 @@ describe('Phase 2 grep gates — structural invariants', () => {
       .filter((l) => /from ['"]\.\/adapter\//.test(l));
     expect(adapterReexports.length).toBeGreaterThan(0);
 
-    // Allowed Phase-2 public surfaces.
+    // Allowed Phase-2 public surfaces (extended by Phase 4 additive exports).
     const allowedSymbols = new Set([
       'useExpressControllers',
       'createExpressServer',
       'BootOptions',
       'AuthorizationChecker',
       'CurrentUserChecker',
+      // Phase 4 — request context (AsyncLocalStorage)
+      'getRequestContext',
+      'RequestContext',
     ]);
 
     // Internals that must NEVER leak.
