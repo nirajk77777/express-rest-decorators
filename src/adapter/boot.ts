@@ -161,9 +161,21 @@ export async function useExpressControllers(
   }
 
   // ── Step 3: Resolve global interceptors ONCE before controller loop ───────
-  const resolvedGlobalInterceptors = await resolveInterceptorClasses(
-    (options.interceptors ?? []) as unknown as Function[],
-  );
+  // WR-08: validate that every entry is class-form (constructor with an
+  // `intercept` method on its prototype). The public type is
+  // ReadonlyArray<ClassConstructor<unknown>>, but force-casting through
+  // `unknown` would let a bare function slip through and explode inside
+  // resolveInterceptorClasses with a confusing error. Fail fast here.
+  const interceptorList = (options.interceptors ?? []) as unknown as Function[];
+  for (let idx = 0; idx < interceptorList.length; idx++) {
+    const i = interceptorList[idx]!;
+    if (typeof i !== 'function' || !('prototype' in i) || (i as { prototype?: unknown }).prototype == null) {
+      throw new TypeError(
+        `BootOptions.interceptors[${idx}] must be a class constructor.`,
+      );
+    }
+  }
+  const resolvedGlobalInterceptors = await resolveInterceptorClasses(interceptorList);
 
   // ── Step 4: Mount controller routers ────────────────────────────────────
   const factory = makeHandlerFactory(options);
