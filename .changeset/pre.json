@@ -5,6 +5,7 @@
     "express-rest-decorators": "0.0.0"
   },
   "changesets": [
-    "initial-release"
+    "initial-release",
+    "rc-2-release-pipeline"
   ]
 }
