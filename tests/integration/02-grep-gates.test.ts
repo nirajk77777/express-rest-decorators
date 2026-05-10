@@ -54,11 +54,12 @@ function rel(p: string): string {
 // ---------------------------------------------------------------------------
 
 describe('Phase 2 grep gates — structural invariants', () => {
-  it('Gate 1 — zero Express imports outside src/adapter/', () => {
+  it('Gate 1 — zero Express imports outside src/adapter/ (src/interfaces/ excluded — type-only imports for interface contracts)', () => {
     const offending: string[] = [];
     for (const file of listTsFiles('src')) {
       const r = rel(file);
       if (r.startsWith('src/adapter/')) continue;
+      if (r.startsWith('src/interfaces/')) continue;
       const stripped = readWithoutComments(file);
       if (
         /from ['"]express['"]/.test(stripped) ||

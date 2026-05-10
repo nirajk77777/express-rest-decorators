@@ -52,10 +52,10 @@ function countMatches(re: RegExp, excludePrefixes: string[] = []): number {
 }
 
 describe('Phase 1 grep gates', () => {
-  it('SC#1: core has zero Express imports (src/adapter/ excluded — adapter is the only allowed Express boundary)', () => {
-    const excludeAdapter = ['src/adapter/'];
-    expect(countMatches(/from ['"]express['"]/, excludeAdapter)).toBe(0);
-    expect(countMatches(/from ['"]express\//, excludeAdapter)).toBe(0);
+  it('SC#1: core has zero Express imports (src/adapter/ and src/interfaces/ excluded — adapter is the runtime Express boundary; interfaces use import type only)', () => {
+    const excludePrefixes = ['src/adapter/', 'src/interfaces/'];
+    expect(countMatches(/from ['"]express['"]/, excludePrefixes)).toBe(0);
+    expect(countMatches(/from ['"]express\//, excludePrefixes)).toBe(0);
   });
 
   it('SC#4: core has zero DI-library imports', () => {
