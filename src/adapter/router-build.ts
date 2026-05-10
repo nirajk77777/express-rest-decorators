@@ -1,11 +1,19 @@
 /**
- * Router-build module for Phase 2.
+ * Router-build module for Phase 2 + Phase 3.
  *
- * Pure functions: path composition (D-04), v4 footgun detection (D-05),
+ * Phase 2: path composition (D-04), v4 footgun detection (D-05),
  * and per-controller express.Router() construction (ROUTE-05).
+ *
+ * Phase 3: async buildControllerRouter with per-route handler array composition
+ * per D-01 steps 3-12: [...ctrlBefore, ...methodBefore, authGate?, invokeHandler, ...methodAfter, ...ctrlAfter]
  */
 import { Router, type Router as RouterT, type RequestHandler } from 'express';
 import type { ControllerMetadata, ActionMetadata } from '../types/resolved.js';
+import type { InterceptorInterface } from '../interfaces/interceptor.js';
+import type { AuthorizationChecker, CurrentUserChecker } from './boot-options.js';
+import { toRequestHandlers } from './middleware.js';
+import { makeAuthGate } from './auth.js';
+import { resolveInterceptorClasses } from './interceptor.js';
 
 /**
  * Compose the final route string from routePrefix + controller basePath + action path.
@@ -105,9 +113,15 @@ export function detectV4Pattern(
   }
 }
 
+/**
+ * Phase 3 updated HandlerFactory type.
+ * The third param is the fully-resolved interceptor chain for this route
+ * ([...globalInterceptors, ...controllerInterceptors, ...methodInterceptors]).
+ */
 export type HandlerFactory = (
   controller: ControllerMetadata,
   action: ActionMetadata,
+  resolvedInterceptors: ReadonlyArray<InterceptorInterface>,
 ) => RequestHandler;
 
 export interface BuiltRouter {
@@ -116,25 +130,44 @@ export interface BuiltRouter {
 }
 
 /**
+ * Phase 3 router options. Replaces the positional (routePrefix, handlerFactory)
+ * signature with a structured options object for additive extension.
+ */
+export interface BuildRouterOptions {
+  routePrefix: string;
+  handlerFactory: HandlerFactory;
+  /** Already-resolved interceptor instances (resolved ONCE at boot, not per-controller). */
+  globalInterceptors: ReadonlyArray<InterceptorInterface>;
+  authChecker?: AuthorizationChecker;
+  currentUserChecker?: CurrentUserChecker;
+}
+
+/**
  * Build one express.Router() per controller (ROUTE-05). Validates every
  * composed route path with detectV4Pattern() BEFORE registering with the
  * router (ensures users see our v8-suggestion error, not p2re's terse one).
+ *
+ * Phase 3: now async. Builds per-route handler arrays per D-01 steps 3-12:
+ *   [...ctrlBefore, ...methodBefore, authGate?, invokeHandler, ...methodAfter, ...ctrlAfter]
  *
  * Returns the router plus the mount path (routePrefix + basePath) so the caller
  * can do app.use(mountPath, router).
  *
  * @param controllerMeta Resolved metadata for one controller (from buildMetadata).
- * @param routePrefix Global route prefix from BootOptions; '' if none.
- * @param handlerFactory Caller-provided factory that produces the Express RequestHandler
- *                       for one action. Plan 02-06 wires this to validation+invoke+response.
+ * @param options BuildRouterOptions — Phase 3 structured options.
  */
-export function buildControllerRouter(
+export async function buildControllerRouter(
   controllerMeta: ControllerMetadata,
-  routePrefix: string,
-  handlerFactory: HandlerFactory,
-): BuiltRouter {
+  options: BuildRouterOptions,
+): Promise<BuiltRouter> {
+  const { routePrefix, handlerFactory, globalInterceptors, authChecker, currentUserChecker } = options;
   const router: RouterT = Router();
   const controllerName = controllerMeta.target.name;
+
+  // Resolve controller-level middleware/interceptors once per controller
+  const ctrlBeforeHandlers = await toRequestHandlers(controllerMeta.useBefore);
+  const ctrlAfterHandlers = await toRequestHandlers(controllerMeta.useAfter);
+  const resolvedCtrlInterceptors = await resolveInterceptorClasses(controllerMeta.interceptors);
 
   for (const action of controllerMeta.actions) {
     const composed = composePath(routePrefix, controllerMeta.basePath, action.path);
@@ -151,8 +184,41 @@ export function buildControllerRouter(
       );
     }
 
-    const handler = handlerFactory(controllerMeta, action);
-    (fn as (path: string, h: RequestHandler) => void).call(router, routerLocalPath, handler);
+    // Per-action middleware/interceptors
+    const methodBeforeHandlers = await toRequestHandlers(action.useBefore);
+    const methodAfterHandlers = await toRequestHandlers(action.useAfter);
+    const resolvedMethodInterceptors = await resolveInterceptorClasses(action.interceptors);
+
+    // D-06 method-wins: if action.authorized is explicitly set (including null),
+    // use it; otherwise fall back to controller-level authorized.
+    const effectiveAuthorized = action.authorized !== undefined
+      ? action.authorized
+      : controllerMeta.authorized;
+
+    const authGate = makeAuthGate(effectiveAuthorized, authChecker, currentUserChecker);
+
+    // All interceptors for this route: global → ctrl → method
+    const allInterceptors: InterceptorInterface[] = [
+      ...globalInterceptors,
+      ...resolvedCtrlInterceptors,
+      ...resolvedMethodInterceptors,
+    ];
+
+    const invokeHandler = handlerFactory(controllerMeta, action, allInterceptors);
+
+    // D-01 steps 3-12 handler array:
+    // [...ctrlBefore, ...methodBefore, authGate?, invokeHandler, ...methodAfter, ...ctrlAfter]
+    const handlers: RequestHandler[] = [
+      ...ctrlBeforeHandlers,
+      ...methodBeforeHandlers,
+      ...(authGate ? [authGate] : []),
+      invokeHandler,
+      ...methodAfterHandlers,
+      ...ctrlAfterHandlers,
+    ];
+
+    (fn as (path: string, ...handlers: RequestHandler[]) => void)
+      .call(router, routerLocalPath, ...handlers);
   }
 
   const mountPath = composePath(routePrefix, controllerMeta.basePath, '');

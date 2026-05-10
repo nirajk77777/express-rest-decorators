@@ -4,6 +4,7 @@ import {
   composePath,
   detectV4Pattern,
   buildControllerRouter,
+  type BuildRouterOptions,
 } from '../../src/adapter/router-build.js';
 import { buildMetadata } from '../../src/metadata/builder.js';
 import {
@@ -14,6 +15,15 @@ import {
 import { Get, JsonController } from '../../src/index.js';
 import type { ActionMetadata, ControllerMetadata } from '../../src/types/resolved.js';
 import type { RequestHandler } from 'express';
+
+/** Helper: build a minimal BuildRouterOptions for Phase 2 backward-compat tests. */
+function makeOpts(routePrefix: string, factory: BuildRouterOptions['handlerFactory']): BuildRouterOptions {
+  return {
+    routePrefix,
+    handlerFactory: factory,
+    globalInterceptors: [],
+  };
+}
 
 describe('composePath (D-04)', () => {
   it('returns /users for empty prefix and basePath with action /users', () => {
@@ -130,16 +140,16 @@ describe('detectV4Pattern (D-05)', () => {
 });
 
 describe('buildControllerRouter (ROUTE-05)', () => {
-  const noopFactory = () => (_req: unknown, _res: unknown, _next?: unknown) => {};
+  const noopFactory: BuildRouterOptions['handlerFactory'] = (_ctl, _act, _interceptors) => (_req: unknown, _res: unknown, _next?: unknown) => {};
 
   function getMeta(ctor: Function): ControllerMetadata {
     const all = buildMetadata([ctor]);
     return all[0]!;
   }
 
-  it('registers one route per action on the express.Router', () => {
+  it('registers one route per action on the express.Router', async () => {
     const meta = getMeta(UsersController);
-    const { router } = buildControllerRouter(meta, '', noopFactory as any);
+    const { router } = await buildControllerRouter(meta, makeOpts('', noopFactory));
     // 4 actions: GET /:id, POST /, GET /null, GET /undef
     const routePaths = router.stack
       .map((l: any) => l.route?.path)
@@ -151,9 +161,9 @@ describe('buildControllerRouter (ROUTE-05)', () => {
     expect(routePaths).toContain('/undef');
   });
 
-  it('registers correct verbs on each route', () => {
+  it('registers correct verbs on each route', async () => {
     const meta = getMeta(UsersController);
-    const { router } = buildControllerRouter(meta, '', noopFactory as any);
+    const { router } = await buildControllerRouter(meta, makeOpts('', noopFactory));
     const layers = router.stack.filter((l: any) => l.route);
     const byPath: Record<string, string[]> = {};
     for (const l of layers) {
@@ -165,19 +175,19 @@ describe('buildControllerRouter (ROUTE-05)', () => {
     expect(byPath['/']).toContain('post');
   });
 
-  it('returns the correct mountPath when routePrefix is supplied', () => {
+  it('returns the correct mountPath when routePrefix is supplied', async () => {
     const meta = getMeta(UsersController);
-    const { mountPath } = buildControllerRouter(meta, '/api', noopFactory as any);
+    const { mountPath } = await buildControllerRouter(meta, makeOpts('/api', noopFactory));
     expect(mountPath).toBe('/api/users');
   });
 
-  it('returns the correct mountPath with no routePrefix', () => {
+  it('returns the correct mountPath with no routePrefix', async () => {
     const meta = getMeta(UsersController);
-    const { mountPath } = buildControllerRouter(meta, '', noopFactory as any);
+    const { mountPath } = await buildControllerRouter(meta, makeOpts('', noopFactory));
     expect(mountPath).toBe('/users');
   });
 
-  it('throws when any action path triggers a v4 pattern detection', () => {
+  it('throws when any action path triggers a v4 pattern detection', async () => {
     @JsonController('/bad')
     class BadController {
       @Get('/:id?')
@@ -186,12 +196,12 @@ describe('buildControllerRouter (ROUTE-05)', () => {
       }
     }
     const meta = getMeta(BadController);
-    expect(() => buildControllerRouter(meta, '', noopFactory as any)).toThrowError(
+    await expect(buildControllerRouter(meta, makeOpts('', noopFactory))).rejects.toThrow(
       /\[BadController\.lookup\].*uses v4 pattern ":id\?"/,
     );
   });
 
-  it('throws a clear error for unsupported HTTP verbs', () => {
+  it('throws a clear error for unsupported HTTP verbs', async () => {
     const meta = getMeta(UsersController);
     // Hand-craft a metadata clone with one bad-verb action
     const badAction: ActionMetadata = {
@@ -205,14 +215,14 @@ describe('buildControllerRouter (ROUTE-05)', () => {
       interceptors: [],
     };
     const cloned: ControllerMetadata = { ...meta, actions: [badAction] };
-    expect(() => buildControllerRouter(cloned, '', noopFactory as any)).toThrowError(
+    await expect(buildControllerRouter(cloned, makeOpts('', noopFactory))).rejects.toThrow(
       /Unsupported HTTP verb "foobar".*express\.Router has no method "foobar"/,
     );
   });
 
-  it('honors inheritance — DerivedController exposes inherited and own routes (ROUTE-05)', () => {
+  it('honors inheritance — DerivedController exposes inherited and own routes (ROUTE-05)', async () => {
     const meta = getMeta(DerivedController);
-    const { router, mountPath } = buildControllerRouter(meta, '', noopFactory as any);
+    const { router, mountPath } = await buildControllerRouter(meta, makeOpts('', noopFactory));
     const paths = router.stack
       .map((l: any) => l.route?.path)
       .filter((p: any) => typeof p === 'string');
@@ -222,18 +232,18 @@ describe('buildControllerRouter (ROUTE-05)', () => {
     expect(mountPath).toBe('/derived');
     // Sanity: BaseController stays /base when built directly
     const baseMeta = getMeta(BaseController);
-    const built = buildControllerRouter(baseMeta, '', noopFactory as any);
-    expect(built.mountPath).toBe('/base');
+    const { mountPath: baseMount } = await buildControllerRouter(baseMeta, makeOpts('', noopFactory));
+    expect(baseMount).toBe('/base');
   });
 
-  it('does not invoke the handler factory until route is hit (factory called once per action)', () => {
+  it('does not invoke the handler factory until route is built (factory called once per action)', async () => {
     const meta = getMeta(UsersController);
     let calls = 0;
-    const factory = () => {
+    const factory: BuildRouterOptions['handlerFactory'] = (_ctl, _act, _interceptors) => {
       calls++;
       return ((_req: unknown, _res: unknown) => {}) as RequestHandler;
     };
-    buildControllerRouter(meta, '', factory);
+    await buildControllerRouter(meta, makeOpts('', factory));
     expect(calls).toBe(meta.actions.length);
   });
 });
