@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T11:05:43.176Z"
+last_updated: "2026-05-10T15:14:00Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 24
-  completed_plans: 18
-  percent: 75
+  completed_plans: 19
+  percent: 79
 ---
 
 # State
@@ -39,12 +39,12 @@ progress:
 
 ## Current Position
 
-Phase: 03 (middleware-interceptors-auth-error-handling) — COMPLETE
-Plan: 5 of 5 (ALL COMPLETE)
+Phase: 04 (uploads-cookies-sessions-render-request-context) — EXECUTING
+Plan: 2 of 6
 **Phase:** 4
-**Plan:** Not started
-**Status:** Ready to execute
-**Progress:** [██████████] 100% (Phase 3)
+**Plan:** 1 complete, 2 up next
+**Status:** Executing Phase 04
+**Progress:** [████████░░] 79% (Phase 4 plan 1/6 complete)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** `/gsd-execute-phase 4` — Phase 4 (cookies, sessions, uploads, CORS, AsyncLocalStorage) or `/gsd-execute-phase 5` — Phase 5 (publish pipeline).
+**Up next:** Phase 4 Plan 2 (04-02).
 
 ---
 
@@ -73,6 +73,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Phase 03 P03 | 480 | 3 tasks | 10 files |
 | Phase 03 P04 | 480 | 4 tasks | 8 files |
 | Phase 03 P05 | 1080 | 4 tasks | 6 files |
+| Phase 04 P01 | 900 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -186,6 +187,14 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Grep-gate for barrel exports uses transitive barrel check (decorators/middleware.ts for decorator names, interfaces/index.ts for interface type names) since `index.ts` uses `export *`.
 - Phase 3 complete: 416 tests passing, tsc --noEmit clean, all 5 ROADMAP SC verified by integration tests.
 
+### Key Decisions Made (from 04-01)
+
+- ALS singleton is module-scoped (one per process, not per-app); als.run() scopes per-request — no cross-request leakage.
+- createExpressServer restructured to pass body parsers as middlewares option so ALS runs outermost before express.json() (D-11/D-18 anti-pattern avoided).
+- requestId lives ONLY in ALS store (D-13): no req.requestId, no req[Symbol] — confirmed by grep gate.
+- createAlsMiddleware is NOT exported from public barrel; only getRequestContext + RequestContext type are public.
+- Phase 2 grep gates extended (not loosened) to allow Phase 4 adapter additions in the explicit allow-lists.
+
 ### Key Decisions Made (from 03-02)
 
 - mergeMethodChain now does per-field merge instead of whole-record overwrite — required for correct hook accumulation when subclass adds @UseBefore to an inherited method without re-decorating the route.
@@ -205,8 +214,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 3 Plan 05 complete — 6 integration test files, 33 tests, all 5 ROADMAP SC verified, 8 structural grep gates locked; total suite 416 tests pass; tsc --noEmit clean.
+**Last action:** Phase 4 Plan 01 complete — AsyncLocalStorage request context (src/adapter/request-context.ts), wired as outermost middleware in boot.ts, 6 smoke tests pass, 425 total tests pass; tsc --noEmit clean.
 
-**Resume command:** `/gsd-execute-phase 4` or `/gsd-execute-phase 5`
+**Resume command:** `/gsd-execute-phase 4` (continue with plan 02)
 
-**Last updated:** 2026-05-10T13:35:00Z
+**Last updated:** 2026-05-10T15:14:00Z

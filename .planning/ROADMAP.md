@@ -87,7 +87,7 @@
   4. A user can boot the app with `cors: true | CorsOptions` (lazy-loaded `cors` package) and with `controllers: ['src/controllers/**/*.ts']` glob loading via `tinyglobby`; `printRoutes: true` logs a route table at boot.
   5. From anywhere in the request call chain (handler, middleware, interceptor, downstream service) `getRequestContext()` returns `{ req, res, requestId }` with `requestId` sourced from `X-Request-Id` or a generated UUID — verified by an ALS smoke test that crosses await boundaries.
 **Plans**: 6 plans
-  - [ ] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1)
+  - [x] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1) — COMPLETE: 3 tasks, 5 files, 6 smoke tests, 425 suite pass
   - [ ] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2)
   - [ ] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2)
   - [ ] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)

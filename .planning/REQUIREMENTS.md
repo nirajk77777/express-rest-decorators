@@ -90,8 +90,8 @@
 
 ### New Features on Top (NEW)
 
-- [ ] **NEW-01**: Library provides `getRequestContext()` returning the current request via AsyncLocalStorage; available anywhere in the call chain without injection
-- [ ] **NEW-02**: Each request automatically populates the AsyncLocalStorage context with `{ req, res, requestId }`; `requestId` from `X-Request-Id` header or generated UUID
+- [x] **NEW-01**: Library provides `getRequestContext()` returning the current request via AsyncLocalStorage; available anywhere in the call chain without injection
+- [x] **NEW-02**: Each request automatically populates the AsyncLocalStorage context with `{ req, res, requestId }`; `requestId` from `X-Request-Id` header or generated UUID
 
 ### Validation Adapter (VAL)
 
