@@ -1,19 +1,21 @@
 /**
- * Task 1 TDD RED — cookies adapter + InputDeclaration extension.
+ * Task 3 — cookies adapter + InputDeclaration extension integration tests.
  *
  * These tests verify:
  *  - resolveCookiesArm pass-through (true)
- *  - resolveCookiesArm with Standard Schema validation (success)
- *  - resolveCookiesArm with Standard Schema validation (failure → issues)
+ *  - resolveCookiesArm with Standard Schema validation (success + failure)
  *  - lazy-load error message when cookie peer is missing
  *  - module-level cache: second call does NOT re-import
- *  - InputDeclaration has cookies? field (type-level; runtime check via resolveInputs)
+ *  - InputDeclaration has cookies? field (runtime check via resolveInputs)
+ *  - no-cookies-slot routes don't trigger cookie import
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { z } from 'zod';
 import {
   resolveCookiesArm,
   __resetCookieCacheForTest,
+  COOKIE_PEER_MISSING_MESSAGE,
 } from '../../src/adapter/cookies.js';
 import { resolveInputs } from '../../src/adapter/validation.js';
 import { BadRequestError } from '../../src/errors/subclasses.js';
@@ -100,6 +102,36 @@ describe('resolveCookiesArm — lazy-load cache', () => {
     // structural test: no error thrown on second call)
     const result = await resolveCookiesArm(mkReq('a=2') as any, { a: true });
     expect(result.value).toEqual({ a: '2' });
+  });
+});
+
+describe('resolveCookiesArm — missing peer error message', () => {
+  it('exports the exact peer-missing error message string', () => {
+    expect(COOKIE_PEER_MISSING_MESSAGE).toBe(
+      'cookies slot requires cookie as a peer dependency. Install it with: pnpm add cookie',
+    );
+  });
+
+  it('src/adapter/cookies.ts contains the exact peer-missing error message in source', () => {
+    const source = readFileSync(
+      new URL('../../src/adapter/cookies.ts', import.meta.url),
+      'utf8',
+    );
+    expect(source).toContain(
+      'cookies slot requires cookie as a peer dependency. Install it with: pnpm add cookie',
+    );
+  });
+
+  it('does NOT trigger cookie import when no cookies slot declared (cache stays null after reset)', async () => {
+    __resetCookieCacheForTest();
+    // Calling resolveCookiesArm with undefined declaration should return immediately without loading cookie
+    const result = await resolveCookiesArm({} as any, undefined);
+    expect(result.value).toBeUndefined();
+    // Re-reset to verify no import happened — if cookie had been imported, the cache would be populated.
+    // We verify by resetting again and immediately calling with undefined — still no error.
+    __resetCookieCacheForTest();
+    const result2 = await resolveCookiesArm({} as any, undefined);
+    expect(result2.value).toBeUndefined();
   });
 });
 

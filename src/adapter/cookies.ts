@@ -66,6 +66,10 @@ export async function resolveCookiesArm(
   return { value: out };
 }
 
+/** The exact peer-missing error message (exported for test assertions). */
+export const COOKIE_PEER_MISSING_MESSAGE =
+  'cookies slot requires cookie as a peer dependency. Install it with: pnpm add cookie';
+
 /** Test-only — reset module-cached `cookie.parse` so repeated lazy-load can be verified. */
 export function __resetCookieCacheForTest(): void {
   cachedParse = null;
