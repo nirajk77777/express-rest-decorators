@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T09:06:16.009Z"
+last_updated: "2026-05-10T09:22:47.488Z"
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 18
-  completed_plans: 16
-  percent: 89
+  completed_plans: 17
+  percent: 94
 ---
 
 # State
@@ -40,11 +40,11 @@ progress:
 ## Current Position
 
 Phase: 03 (middleware-interceptors-auth-error-handling) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 **Phase:** 3 — Middleware, Interceptors, Auth, Error Handling — IN PROGRESS
-**Plan:** 03-03 complete (3/5 plans complete in Phase 3)
+**Plan:** 03-04 complete (4/5 plans complete in Phase 3)
 **Status:** Executing Phase 03
-**Progress:** [████████░░] 89%
+**Progress:** [█████████░] 94%
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 04 (router-build wiring).
+**Up next:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 05 (SC acceptance tests).
 
 ---
 
@@ -167,6 +167,16 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - ValidationSlot extended with 'currentUser' additively; SLOTS array uses narrower ReqSlot type to avoid req indexing error.
 - auth.ts try/catch exempted from grep-gate (D-12 escape hatch); middleware.ts and auth.ts added to Express import allow-list.
 
+### Key Decisions Made (from 03-04)
+
+- async-boot: useExpressControllers/createExpressServer now async (Promise<Express>) — required for eager DI resolution and boot-time arity detection (Phase 3 breaking change; pre-v1).
+- res.on('finish', () => next()) registered before pipe() in stream/async-iterable branches — enables @UseAfter to fire after streaming completes (D-01 Pattern 2, RESEARCH Pitfall 7).
+- isErrorMiddlewareInstance: use.length === 4 detection mirrors Express algorithm; rest-args arrow footgun documented (Pitfall 2).
+- method-wins for @Authorized: action.authorized !== undefined ? action.authorized : controllerMeta.authorized (D-06 Open Question #2 resolved).
+- global interceptors resolved ONCE before controller loop — pre-resolved InterceptorInterface[] passed to every buildControllerRouter call (Open Question #3 resolved).
+- D-08 short-circuit: interceptors skipped entirely when handler returns null or undefined.
+- function-form middleware entries in BootOptions.middlewares default to 'before' (class-form entries use getMiddlewareType).
+
 ### Key Decisions Made (from 03-02)
 
 - mergeMethodChain now does per-field merge instead of whole-record overwrite — required for correct hook accumulation when subclass adds @UseBefore to an inherited method without re-decorating the route.
@@ -186,8 +196,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 3 Plan 03 complete — middleware.ts, interceptor.ts, auth.ts created; validation.ts extended with currentUser slot; 342 tests pass.
+**Last action:** Phase 3 Plan 04 complete — writeResponse next() calls, isErrorMiddlewareInstance, async buildControllerRouter with D-01 handler arrays, async boot.ts orchestration, public barrel Phase 3 exports; 383 tests pass.
 
-**Resume command:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 04 (router-build wiring).
+**Resume command:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 05 (SC acceptance tests).
 
-**Last updated:** 2026-05-10T09:06:00Z
+**Last updated:** 2026-05-10T09:26:00Z

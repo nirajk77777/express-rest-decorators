@@ -52,7 +52,7 @@
 - [x] **ERR-01**: Library exports a `HttpError` base class and 4xx/5xx subclasses (`BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `NotFoundError`, `MethodNotAllowedError`, `ConflictError`, `InternalServerError`, etc.)
 - [x] **ERR-02**: `HttpError` instances have `status`, `message`, optional `cause` (ES2022), and a `toJSON()` for consistent serialization
 - [x] **ERR-03**: Library installs ONE Express error middleware that converts thrown errors to HTTP responses; handlers do not need try/catch for async code (Express v5 native rejection forwarding)
-- [ ] **ERR-04**: User can register custom error handlers via `@Middleware({ type: 'after' })` ahead of the library default
+- [x] **ERR-04**: User can register custom error handlers via `@Middleware({ type: 'after' })` ahead of the library default
 - [x] **ERR-05**: Errors include a `source` field identifying which controller/method threw, for debuggability
 
 ### Middleware & Interceptors (MW)
@@ -60,13 +60,13 @@
 - [x] **MW-01**: User can attach Express middleware to controllers/methods via `@UseBefore(...)` and `@UseAfter(...)` accepting function and class forms
 - [x] **MW-02**: User can declare a global or scoped middleware class with `@Middleware({ type: 'before' | 'after' })` implementing an `ExpressMiddlewareInterface`
 - [x] **MW-03**: User can declare an interceptor class with `@Interceptor()` and attach via `@UseInterceptor(...)` to transform handler return values before serialization
-- [ ] **MW-04**: Middleware execution order is deterministic, top-to-bottom (controller-level before method-level for `before`; reversed for `after`); documented with a test fixture proving the rule
+- [x] **MW-04**: Middleware execution order is deterministic, top-to-bottom (controller-level before method-level for `before`; reversed for `after`); documented with a test fixture proving the rule
 
 ### Authorization (AUTH)
 
 - [x] **AUTH-01**: User can mark controllers/methods as `@Authorized(roles?)`
-- [ ] **AUTH-02**: User registers a global `authorizationChecker(action, roles)` function returning boolean/Promise<boolean>; failed checks return 401/403
-- [ ] **AUTH-03**: User registers a global `currentUserChecker(action)` resolving the current user; user is exposed via input declaration
+- [x] **AUTH-02**: User registers a global `authorizationChecker(action, roles)` function returning boolean/Promise<boolean>; failed checks return 401/403
+- [x] **AUTH-03**: User registers a global `currentUserChecker(action)` resolving the current user; user is exposed via input declaration
 
 ### File Upload, Cookies, Static (UTIL)
 
