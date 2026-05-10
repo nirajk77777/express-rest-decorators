@@ -8,6 +8,9 @@ import express, {
 import { buildMetadata } from '../metadata/builder.js';
 import { getContainer } from '../container/use-container.js';
 import { createAlsMiddleware } from './request-context.js';
+import { loadCorsMiddleware } from './cors.js';
+import { resolveControllers } from './glob-loader.js';
+import { buildRouteTable, printRouteTable } from './print-routes.js';
 import type {
   ControllerMetadata,
   ActionMetadata,
@@ -155,14 +158,24 @@ export async function useExpressControllers(
   app: Express,
   options: BootOptions,
 ): Promise<Express> {
-  // Phase 4 D-11/D-18: ALS wrapper MUST be the outermost app.use() owned by the library.
-  // Mounted BEFORE glob expansion result is used, BEFORE CORS, BEFORE lib globals, BEFORE routers.
+  // D-18 step 1: Glob expansion FIRST — resolve mixed (ClassConstructor | string)[] array
+  // before any middleware is mounted. resolveControllers is a no-op for pure class arrays.
+  const resolvedControllerClasses = await resolveControllers(options.controllers);
+
+  // Build metadata from resolved class list (no strings, only class constructors)
+  const meta = buildMetadata(resolvedControllerClasses as unknown as Function[]);
+  const routePrefix = options.routePrefix ?? '';
+
+  // D-18 step 2 / D-11: ALS wrapper MUST be the outermost app.use() owned by the library.
+  // Mounted AFTER glob expansion (which runs at boot before any HTTP is served),
+  // BEFORE CORS, BEFORE lib globals, BEFORE routers.
   app.use(createAlsMiddleware());
 
-  const controllers = buildMetadata(
-    options.controllers as unknown as Function[],
-  );
-  const routePrefix = options.routePrefix ?? '';
+  // D-18 step 3 / UTIL-03: CORS middleware AFTER ALS, BEFORE lib globals.
+  if (options.cors) {
+    const corsMw = await loadCorsMiddleware(options.cors === true ? undefined : options.cors);
+    app.use(corsMw);
+  }
 
   // ── Step 1: Partition global middleware ──────────────────────────────────
   // class-form entries: split by getMiddlewareType() → before / after
@@ -230,7 +243,7 @@ export async function useExpressControllers(
   // ── Step 4: Mount controller routers ────────────────────────────────────
   const factory = makeHandlerFactory(options);
 
-  for (const controllerMeta of controllers) {
+  for (const controllerMeta of meta) {
     const { router, mountPath } = await buildControllerRouter(controllerMeta, {
       routePrefix,
       handlerFactory: factory,
@@ -271,6 +284,12 @@ export async function useExpressControllers(
     } else {
       app.use(libraryErrorMiddleware);
     }
+  }
+
+  // D-18 step 10 / API-04: printRoutes — LAST, after all routers and middleware mounted.
+  // Walks library metadata only — does NOT introspect Express internals.
+  if (options.printRoutes) {
+    printRouteTable(buildRouteTable(meta, routePrefix));
   }
 
   return app;
