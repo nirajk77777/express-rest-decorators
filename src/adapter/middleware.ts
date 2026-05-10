@@ -1,11 +1,23 @@
 import type { Request, Response, NextFunction, RequestHandler } from 'express';
 import { getContainer } from '../container/use-container.js';
 
-/** D-06: distinguishes function-form from class-form middleware. */
+/**
+ * D-06: distinguishes function-form from class-form middleware.
+ *
+ * Heuristic: a class-form middleware MUST have a `use` method on its
+ * prototype. Plain `function`-declared Express middleware
+ * (`function mw(req,res,next){}`) ALSO has a non-null `.prototype` in JS
+ * (every non-arrow, non-bound function does), so a bare `prototype !==
+ * undefined` check would misclassify them as class-form. We narrow the
+ * probe to "prototype exists AND has a callable `use` member", which
+ * matches the `ExpressMiddlewareInterface` / `ExpressErrorMiddlewareInterface`
+ * contract that class-form middleware must implement.
+ */
 export function isClassForm(arg: unknown): boolean {
   if (typeof arg !== 'function') return false;
   const proto = (arg as { prototype?: unknown }).prototype;
-  return proto !== undefined && proto !== null;
+  if (proto === undefined || proto === null) return false;
+  return typeof (proto as { use?: unknown }).use === 'function';
 }
 
 export interface ResolvedMiddleware {

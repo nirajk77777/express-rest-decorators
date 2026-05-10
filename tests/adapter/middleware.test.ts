@@ -11,14 +11,35 @@ describe('isClassForm', () => {
     expect(isClassForm(arrow)).toBe(false);
   });
 
-  it('returns true for named function declarations', () => {
-    function fn() {}
-    expect(isClassForm(fn)).toBe(true);
+  it('returns false for named function declarations without a `use` method on prototype', () => {
+    // BL-01 (REVIEW.md, phase 03): every non-arrow JS function has a
+    // `.prototype`, so the original spec misclassified ordinary Express
+    // function-form middleware as class-form. Function-form middleware
+    // must be passed through verbatim.
+    function fn(_req: unknown, _res: unknown, _next: unknown) {}
+    expect(isClassForm(fn)).toBe(false);
   });
 
-  it('returns true for class constructors', () => {
+  it('returns false for bare class constructors lacking a `use` method', () => {
+    // BL-01: class-form middleware is identified by having a `use` method
+    // on its prototype (matching ExpressMiddlewareInterface). A class
+    // without `use` is not a valid middleware class.
     class C {}
-    expect(isClassForm(C)).toBe(true);
+    expect(isClassForm(C)).toBe(false);
+  });
+
+  it('returns true for class constructors with a `use` method on prototype', () => {
+    class M {
+      use(_req: unknown, _res: unknown, _next: unknown) {}
+    }
+    expect(isClassForm(M)).toBe(true);
+  });
+
+  it('returns true for error-middleware class constructors (4-arg use)', () => {
+    class ErrM {
+      use(_err: unknown, _req: unknown, _res: unknown, _next: unknown) {}
+    }
+    expect(isClassForm(ErrM)).toBe(true);
   });
 
   it('returns false for null', () => {
