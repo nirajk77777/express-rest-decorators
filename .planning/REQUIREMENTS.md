@@ -57,14 +57,14 @@
 
 ### Middleware & Interceptors (MW)
 
-- [ ] **MW-01**: User can attach Express middleware to controllers/methods via `@UseBefore(...)` and `@UseAfter(...)` accepting function and class forms
-- [ ] **MW-02**: User can declare a global or scoped middleware class with `@Middleware({ type: 'before' | 'after' })` implementing an `ExpressMiddlewareInterface`
-- [ ] **MW-03**: User can declare an interceptor class with `@Interceptor()` and attach via `@UseInterceptor(...)` to transform handler return values before serialization
+- [x] **MW-01**: User can attach Express middleware to controllers/methods via `@UseBefore(...)` and `@UseAfter(...)` accepting function and class forms
+- [x] **MW-02**: User can declare a global or scoped middleware class with `@Middleware({ type: 'before' | 'after' })` implementing an `ExpressMiddlewareInterface`
+- [x] **MW-03**: User can declare an interceptor class with `@Interceptor()` and attach via `@UseInterceptor(...)` to transform handler return values before serialization
 - [ ] **MW-04**: Middleware execution order is deterministic, top-to-bottom (controller-level before method-level for `before`; reversed for `after`); documented with a test fixture proving the rule
 
 ### Authorization (AUTH)
 
-- [ ] **AUTH-01**: User can mark controllers/methods as `@Authorized(roles?)`
+- [x] **AUTH-01**: User can mark controllers/methods as `@Authorized(roles?)`
 - [ ] **AUTH-02**: User registers a global `authorizationChecker(action, roles)` function returning boolean/Promise<boolean>; failed checks return 401/403
 - [ ] **AUTH-03**: User registers a global `currentUserChecker(action)` resolving the current user; user is exposed via input declaration
 

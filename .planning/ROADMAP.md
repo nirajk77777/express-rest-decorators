@@ -12,7 +12,7 @@
 ## Phases
 
 - [x] **Phase 1: Metadata & Decorator Skeleton** — Stage 3 decorators, per-class metadata, IoC contract, runtime mode guard; pure logic, no HTTP yet.
-- [ ] **Phase 2: Runtime + Express Adapter (Happy Path)** — End-to-end vertical slice: input resolution via Standard Schema, ExpressAdapter, native async error middleware.
+- [x] **Phase 2: Runtime + Express Adapter (Happy Path)** — End-to-end vertical slice: input resolution via Standard Schema, ExpressAdapter, native async error middleware.
 - [ ] **Phase 3: Middleware, Interceptors, Auth, Error Handling** — Orthogonal additions on top of Phase 2 pipeline (parallel with Phase 4).
 - [ ] **Phase 4: Uploads, Cookies, Sessions, Render, Request Context** — Feature-parity edge cases plus AsyncLocalStorage and `printRoutes` (parallel with Phase 3).
 - [ ] **Phase 5: Adapter Packages, Build, Docs, Migration, Publish** — Monorepo packaging, dual ESM+CJS verification, migration guide, v1.0.0 to npm.
@@ -50,13 +50,13 @@
   4. Decorator path strings using legacy v4 patterns (`*`, `:id?`, `:id(\d+)`) throw an actionable error at registration time naming the controller, method, and a v8 fix suggestion; valid v8 patterns work end-to-end.
   5. A handler returning a plain object/primitive serializes to JSON (matching `@JsonController`); a handler returning a Node stream or async iterable is piped to the response.
 **Plans**: 7 plans
-  - [ ] 02-01-PLAN.md — Foundation: widen ValidationIssue, install Phase 2 devDeps + express peer, scaffold src/adapter/ + tests/adapter/ fixtures (Wave 1)
-  - [ ] 02-02-PLAN.md — router-build.ts: composePath (D-04) + detectV4Pattern (D-05) + buildControllerRouter (ROUTE-05) (Wave 2)
-  - [ ] 02-03-PLAN.md — validation.ts: 4-slot Standard Schema runner, isStandardSchema, renderPath, BadRequestError aggregation (INPUT-01/02/03) (Wave 2)
-  - [ ] 02-04-PLAN.md — response.ts: applyResponseHandlers + writeResponse (JSON/string/Buffer/stream/async-iterable/null/undefined, RES-08) (Wave 2)
+  - [x] 02-01-PLAN.md — Foundation: widen ValidationIssue, install Phase 2 devDeps + express peer, scaffold src/adapter/ + tests/adapter/ fixtures (Wave 1)
+  - [x] 02-02-PLAN.md — router-build.ts: composePath (D-04) + detectV4Pattern (D-05) + buildControllerRouter (ROUTE-05) (Wave 2)
+  - [x] 02-03-PLAN.md — validation.ts: 4-slot Standard Schema runner, isStandardSchema, renderPath, BadRequestError aggregation (INPUT-01/02/03) (Wave 2)
+  - [x] 02-04-PLAN.md — response.ts: applyResponseHandlers + writeResponse (JSON/string/Buffer/stream/async-iterable/null/undefined, RES-08) (Wave 2)
   - [x] 02-05-PLAN.md — handler-wrapper.ts + error-middleware.ts: D-16 source attribution + D-14/D-15/D-17/D-18 single error middleware (ERR-03, ERR-05) (Wave 2)
   - [x] 02-06-PLAN.md — boot.ts: useExpressControllers + createExpressServer wiring; public barrel updates (API-01, API-02, API-03, BUILD-03) (Wave 3)
-  - [ ] 02-07-PLAN.md — End-to-end SC acceptance tests + structural grep gates (all 5 ROADMAP SC, BUILD-03 enforcement) (Wave 4)
+  - [x] 02-07-PLAN.md — End-to-end SC acceptance tests + structural grep gates (all 5 ROADMAP SC, BUILD-03 enforcement) (Wave 4)
 **UI hint**: no
 
 ### Phase 3: Middleware, Interceptors, Auth, Error Handling
@@ -69,7 +69,12 @@
   3. A user can declare an `@Interceptor()` class and attach it via `@UseInterceptor(...)` to transform a handler's return value before serialization.
   4. A user can mark routes `@Authorized(roles?)` and register global `authorizationChecker` and `currentUserChecker` functions; failed checks return 401 (no checker / no user) or 403 (forbidden); the resolved current user is exposed via the input declaration.
   5. A user-defined `@Middleware({ type: 'after' })` error handler runs ahead of the library default error middleware and can format/replace the HTTP response.
-**Plans**: TBD
+**Plans**: 5 plans
+  - [x] 03-01-PLAN.md — Decorator + storage layer: 6 new decorators, type extensions, public interfaces (Wave 1)
+  - [ ] 03-02-PLAN.md — MetadataBuilder extension: fold useBefore/useAfter/interceptors/authorized into resolved metadata with inheritance semantics (Wave 2)
+  - [ ] 03-03-PLAN.md — Adapter helpers: middleware.ts (form detection + DI), interceptor.ts (for/await chain), auth.ts (gate + currentUser cache), validation.ts currentUser slot (Wave 2)
+  - [ ] 03-04-PLAN.md — Wiring: response.ts next() per branch, error-middleware arity helper, router-build handler array per D-01, boot.ts global mounting + public barrel (Wave 3)
+  - [ ] 03-05-PLAN.md — Integration tests: SC#1-#5 + ordering fixture + structural grep gates (Wave 4)
 
 ### Phase 4: Uploads, Cookies, Sessions, Render, Request Context
 **Goal**: Complete v1 feature parity by adding file upload, cookies, sessions, render/redirect/location, CORS, glob loading, route-table dump, and the AsyncLocalStorage-backed request context — each feature small and independently verifiable.
@@ -117,7 +122,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 |-------|----------------|--------|-----------|
 | 1. Metadata & Decorator Skeleton | 6/6 | Complete | 2026-05-09 |
 | 2. Runtime + Express Adapter | 0/0 | Not started | — |
-| 3. Middleware, Interceptors, Auth | 0/0 | Not started | — |
+| 3. Middleware, Interceptors, Auth | 1/5 | In Progress|  |
 | 4. Uploads, Cookies, Sessions, Render, Context | 0/0 | Not started | — |
 | 5. Adapter Packages, Build, Docs, Publish | 0/0 | Not started | — |
 
