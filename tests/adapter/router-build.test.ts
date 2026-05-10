@@ -200,6 +200,9 @@ describe('buildControllerRouter (ROUTE-05)', () => {
       verb: 'foobar', // not a method on express.Router
       path: '/x',
       responseHandlers: [],
+      useBefore: [],
+      useAfter: [],
+      interceptors: [],
     };
     const cloned: ControllerMetadata = { ...meta, actions: [badAction] };
     expect(() => buildControllerRouter(cloned, '', noopFactory as any)).toThrowError(

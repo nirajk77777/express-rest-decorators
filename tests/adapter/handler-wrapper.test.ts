@@ -23,6 +23,9 @@ function makeMeta(
     target: ctlClass,
     responseHandlers: [],
     actions: [],
+    useBefore: [],
+    useAfter: [],
+    interceptors: [],
   };
   const act: ActionMetadata = {
     target: ctlClass,
@@ -30,6 +33,9 @@ function makeMeta(
     verb: 'get',
     path: '/',
     responseHandlers: [],
+    useBefore: [],
+    useAfter: [],
+    interceptors: [],
   };
   return { ctl, act };
 }

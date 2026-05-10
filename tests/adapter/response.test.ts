@@ -127,6 +127,9 @@ function ctlMeta(
     type,
     responseHandlers,
     actions: [],
+    useBefore: [],
+    useAfter: [],
+    interceptors: [],
   };
 }
 
@@ -141,6 +144,9 @@ function actMeta(
     verb: 'get',
     path: '/',
     responseHandlers,
+    useBefore: [],
+    useAfter: [],
+    interceptors: [],
   };
 }
 

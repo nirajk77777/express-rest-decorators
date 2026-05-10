@@ -19,6 +19,9 @@ function makeApp(invoke: InvokeAction) {
     target: ErrCtl,
     responseHandlers: [],
     actions: [],
+    useBefore: [],
+    useAfter: [],
+    interceptors: [],
   };
   const actMeta: ActionMetadata = {
     target: ErrCtl,
@@ -26,6 +29,9 @@ function makeApp(invoke: InvokeAction) {
     verb: 'get',
     path: '/',
     responseHandlers: [],
+    useBefore: [],
+    useAfter: [],
+    interceptors: [],
   };
   app.get('/', wrapAction(ctlMeta, actMeta, invoke));
   app.use(libraryErrorMiddleware);
@@ -177,6 +183,9 @@ describe('libraryErrorMiddleware', () => {
       target: ErrCtl,
       responseHandlers: [],
       actions: [],
+      useBefore: [],
+      useAfter: [],
+      interceptors: [],
     };
     const actMeta: ActionMetadata = {
       target: ErrCtl,
@@ -184,6 +193,9 @@ describe('libraryErrorMiddleware', () => {
       verb: 'get',
       path: '/',
       responseHandlers: [],
+      useBefore: [],
+      useAfter: [],
+      interceptors: [],
     };
     app.get(
       '/',
