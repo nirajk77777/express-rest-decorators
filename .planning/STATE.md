@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T15:14:00Z"
+last_updated: "2026-05-10T15:31:00Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 24
-  completed_plans: 19
-  percent: 79
+  completed_plans: 20
+  percent: 83
 ---
 
 # State
@@ -40,11 +40,11 @@ progress:
 ## Current Position
 
 Phase: 04 (uploads-cookies-sessions-render-request-context) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 **Phase:** 4
-**Plan:** 1 complete, 2 up next
+**Plan:** 2 complete, 3 up next
 **Status:** Executing Phase 04
-**Progress:** [████████░░] 79% (Phase 4 plan 1/6 complete)
+**Progress:** [████████░░] 83% (Phase 4 plan 2/6 complete)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** Phase 4 Plan 2 (04-02).
+**Up next:** Phase 4 Plan 3 (04-03).
 
 ---
 
@@ -74,6 +74,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Phase 03 P04 | 480 | 4 tasks | 8 files |
 | Phase 03 P05 | 1080 | 4 tasks | 6 files |
 | Phase 04 P01 | 900 | 3 tasks | 5 files |
+| Phase 04 P02 | 349 | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -187,6 +188,14 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Grep-gate for barrel exports uses transitive barrel check (decorators/middleware.ts for decorator names, interfaces/index.ts for interface type names) since `index.ts` uses `export *`.
 - Phase 3 complete: 416 tests passing, tsc --noEmit clean, all 5 ROADMAP SC verified by integration tests.
 
+### Key Decisions Made (from 04-02)
+
+- COOKIE_PEER_MISSING_MESSAGE exported as constant — test assertions use constant, not hardcoded string duplicate.
+- ValidationSlot widened additively with 'cookies', 'session', 'files' — no breaking change to existing code.
+- cookies.ts try/catch exempted from Gate 3 (Phase 4 D-15 peer-not-found requirement documented in gate).
+- resolveInputs req type widened to include session? — avoids hard Express.Request cast for session arm.
+- @types/cookie added as devDependency — required for tsc clean on dynamic import typing.
+
 ### Key Decisions Made (from 04-01)
 
 - ALS singleton is module-scoped (one per process, not per-app); als.run() scopes per-request — no cross-request leakage.
@@ -214,8 +223,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 4 Plan 01 complete — AsyncLocalStorage request context (src/adapter/request-context.ts), wired as outermost middleware in boot.ts, 6 smoke tests pass, 425 total tests pass; tsc --noEmit clean.
+**Last action:** Phase 4 Plan 02 complete — cookies slot (resolveCookiesArm, lazy cookie.parse) and session slot (resolveSessionArm, req.session only) added to InputDeclaration and wired as Promise.all arms in validation.ts; 447 total tests pass; tsc --noEmit clean.
 
-**Resume command:** `/gsd-execute-phase 4` (continue with plan 02)
+**Resume command:** `/gsd-execute-phase 4` (continue with plan 03)
 
-**Last updated:** 2026-05-10T15:14:00Z
+**Last updated:** 2026-05-10T15:31:00Z

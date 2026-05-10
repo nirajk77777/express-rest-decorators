@@ -33,8 +33,8 @@
 - [x] **INPUT-01**: Handler receives a single destructured object containing parsed `params`, `query`, `body`, `headers`, `cookies`, `req`, `res`, `next` — typed from the input declaration
 - [ ] **INPUT-02**: Each input slot (`params`, `query`, `body`, `headers`) accepts any Standard Schema-compatible schema (Zod, Valibot, ArkType all work natively); no schema means raw value
 - [ ] **INPUT-03**: Validation failure on any input slot produces a typed `BadRequestError` with field-level error details
-- [ ] **INPUT-04**: User can declare cookie params via input declaration; library uses `cookie` package
-- [ ] **INPUT-05**: User can declare session/request-scoped data via input declaration when `express-session` middleware is wired
+- [x] **INPUT-04**: User can declare cookie params via input declaration; library uses `cookie` package
+- [x] **INPUT-05**: User can declare session/request-scoped data via input declaration when `express-session` middleware is wired
 
 ### Response Shaping (RES)
 

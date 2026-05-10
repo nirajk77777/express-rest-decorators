@@ -88,7 +88,7 @@
   5. From anywhere in the request call chain (handler, middleware, interceptor, downstream service) `getRequestContext()` returns `{ req, res, requestId }` with `requestId` sourced from `X-Request-Id` or a generated UUID — verified by an ALS smoke test that crosses await boundaries.
 **Plans**: 6 plans
   - [x] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1) — COMPLETE: 3 tasks, 5 files, 6 smoke tests, 425 suite pass
-  - [ ] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2)
+  - [x] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2) — COMPLETE: 3 tasks, 8 files, 22 new tests, 447 suite pass
   - [ ] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2)
   - [ ] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)
   - [ ] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2)
@@ -135,7 +135,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | 1. Metadata & Decorator Skeleton | 6/6 | Complete | 2026-05-09 |
 | 2. Runtime + Express Adapter | 0/0 | Not started | — |
 | 3. Middleware, Interceptors, Auth | 4/5 | In Progress|  |
-| 4. Uploads, Cookies, Sessions, Render, Context | 0/0 | Not started | — |
+| 4. Uploads, Cookies, Sessions, Render, Context | 2/6 | In Progress | — |
 | 5. Adapter Packages, Build, Docs, Publish | 0/0 | Not started | — |
 
 ---
