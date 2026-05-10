@@ -49,18 +49,20 @@ export interface ResolvedArgs {
   query: unknown;
   body: unknown;
   headers: unknown;
+  currentUser?: unknown;
 }
 
-const SLOTS: ReadonlyArray<ValidationSlot> = ['params', 'query', 'body', 'headers'];
+type ReqSlot = 'params' | 'query' | 'body' | 'headers';
+const SLOTS: ReadonlyArray<ReqSlot> = ['params', 'query', 'body', 'headers'];
 
 interface SlotResult {
-  slot: ValidationSlot;
+  slot: ReqSlot;
   value?: unknown;
   issues?: ValidationIssue[];
 }
 
 async function validateSlot(
-  slot: ValidationSlot,
+  slot: ReqSlot,
   schema: unknown,
   raw: unknown
 ): Promise<SlotResult> {
@@ -81,26 +83,66 @@ async function validateSlot(
   return { slot, value: result.value };
 }
 
+interface CurrentUserSlotResult {
+  value?: unknown;
+  issues?: ValidationIssue[];
+}
+
+/**
+ * Resolve and optionally validate the currentUser slot (D-14).
+ * Runs as a 5th arm of Promise.all alongside the four SLOTS.
+ * If declaration is undefined or resolver is undefined, returns { value: undefined }.
+ */
+async function validateCurrentUser(
+  declaration: true | import('../types/standard-schema.js').StandardSchemaV1 | undefined,
+  resolver: (() => Promise<unknown>) | undefined,
+): Promise<CurrentUserSlotResult> {
+  if (declaration === undefined || resolver === undefined) return { value: undefined };
+  const raw = await resolver();
+  if (declaration === true) return { value: raw };
+  if (!isStandardSchema(declaration)) return { value: raw };
+  const out = declaration['~standard'].validate(raw);
+  const result = await Promise.resolve(out);
+  if (result.issues) {
+    return {
+      issues: result.issues.map((iss) => ({
+        slot: 'currentUser' as ValidationSlot,
+        path: renderPath(iss.path),
+        message: iss.message,
+      })),
+    };
+  }
+  return { value: result.value };
+}
+
 /**
  * Run all four input slots through Standard Schema validators concurrently (D-06).
  * Aggregates every issue from every failing slot into a single BadRequestError (D-07).
  * Validated values replace raw req values in the returned object; req is NOT mutated (D-10, Pitfall F).
  *
  * The wrapper in Plan 02-05 attaches err.source after this throws.
+ *
+ * D-14: Optional 5th currentUser arm resolved via provided closure (caller supplies closure
+ * with checker + action already bound so this function stays Express/auth-agnostic).
  */
 export async function resolveInputs(
   req: Pick<Request, 'params' | 'query' | 'body' | 'headers'>,
-  input?: InputDeclaration
+  input?: InputDeclaration,
+  currentUserResolver?: () => Promise<unknown>,
 ): Promise<ResolvedArgs> {
   const decl = input ?? {};
-  const results = await Promise.all(
-    SLOTS.map((s) =>
-      validateSlot(s, (decl as Record<ValidationSlot, unknown>)[s], req[s])
-    )
-  );
+  const [results, currentUserResult] = await Promise.all([
+    Promise.all(
+      SLOTS.map((s) =>
+        validateSlot(s, (decl as Record<ReqSlot, unknown>)[s], req[s])
+      )
+    ),
+    validateCurrentUser(decl.currentUser, currentUserResolver),
+  ]);
 
   const allIssues: ValidationIssue[] = [];
   for (const r of results) if (r.issues) allIssues.push(...r.issues);
+  if (currentUserResult.issues) allIssues.push(...currentUserResult.issues);
 
   if (allIssues.length > 0) {
     throw new BadRequestError('Validation failed', { details: allIssues });
@@ -115,5 +157,6 @@ export async function resolveInputs(
   for (const r of results) {
     args[r.slot] = r.value;
   }
+  args.currentUser = currentUserResult.value;
   return args;
 }

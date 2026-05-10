@@ -81,6 +81,9 @@ describe('Phase 2 grep gates — structural invariants', () => {
       'src/adapter/error-middleware.ts',
       'src/adapter/response.ts',
       'src/adapter/validation.ts',
+      // Phase 3 adapter helpers that use Express types
+      'src/adapter/middleware.ts',
+      'src/adapter/auth.ts',
     ]);
 
     const importers: string[] = [];
@@ -100,11 +103,14 @@ describe('Phase 2 grep gates — structural invariants', () => {
     expect(importers).not.toContain('src/adapter/boot-options.ts');
   });
 
-  it('Gate 3 — no try/catch in src/adapter/ except handler-wrapper.ts', () => {
+  it('Gate 3 — no try/catch in src/adapter/ except handler-wrapper.ts and auth.ts', () => {
     const offenders: { file: string; count: number }[] = [];
     for (const file of listTsFiles('src/adapter')) {
       const r = rel(file);
+      // handler-wrapper.ts: source-attribution wrapper (Phase 2 D-16)
+      // auth.ts: D-12 escape hatch — user-thrown HttpErrors from checkers must propagate via next(err)
       if (r === 'src/adapter/handler-wrapper.ts') continue;
+      if (r === 'src/adapter/auth.ts') continue;
       const stripped = readWithoutComments(file);
       const matches = stripped.match(/\btry\s*\{/g);
       if (matches && matches.length > 0) {
