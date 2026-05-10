@@ -255,11 +255,17 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 (none)
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260510-qb4 | Remove unnecessary GSD-style planning comments from src/ | 2026-05-10 | 87f6c60 | [260510-qb4-remove-unnecessary-gsd-style-planning-co](./quick/260510-qb4-remove-unnecessary-gsd-style-planning-co/) |
+
 ---
 
 ## Session Continuity
 
-**Last action:** Phase 4 Plan 06 complete — End-to-end integration test suite (20 tests: SC#1..#5 + D-18 boot-order) and Phase 4 structural grep gates (16 tests: 12 invariant gates). Phase 4 complete. 569 total tests pass; tsc --noEmit clean.
+**Last action:** Quick task 260510-qb4 — stripped GSD planning references (Phase N, D-0X, REQ-, etc.) from src/ comments and JSDoc. 27 files, ~50 hits removed. typecheck/test/docs:build all green.
 
 **Resume command:** `/gsd-execute-phase 5` (Phase 5: publish pipeline)
 
