@@ -658,22 +658,16 @@ export function Authorized(roleOrRoles?: string | string[]): ClassDecorator & Me
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`@UseAfter` and error responses**
-   - What we know: D-01 pipeline shows `@UseAfter` runs after the response writer, before the global after-middleware. Error paths skip to the error chain.
-   - What's unclear: Should `@UseAfter` run when the handler throws (error path)? CONTEXT.md does not specify. RC does not run `@UseAfter` on error paths.
-   - Recommendation: Follow RC — `@UseAfter` does NOT run on error paths. The `wrapAction` try/catch calls `next(err)` which skips to error middleware, bypassing the `@UseAfter` handlers in the route array. Document this.
+   - **RESOLVED:** `@UseAfter` does NOT run on error paths. The `wrapAction` try/catch calls `next(err)` which skips remaining route handlers and goes directly to error middleware, bypassing `@UseAfter`. Follows routing-controllers semantics. Documented in Plan 04 + Plan 05 SC tests.
 
 2. **Controller-level `@Authorized` vs method-level**
-   - What we know: D-11 normalizes the decorator; Phase 1's inheritance walk handles subclass-wins.
-   - What's unclear: If both controller AND method have `@Authorized`, which wins? Should they combine (AND logic) or should method override controller?
-   - Recommendation: Method-level wins (subclass-wins / last-write-wins per Phase 1 D-06). If only controller-level is set and method is not decorated, the controller-level applies. Document this. RC follows the same rule.
+   - **RESOLVED:** Method-level wins (last-write-wins per Phase 1 D-06). Implemented in Plan 04 router-build as `action.authorized !== undefined ? action.authorized : controllerMeta.authorized`. If only controller-level is set, controller-level applies.
 
 3. **Global interceptors ordering relative to controller-level**
-   - What we know: D-09 says global `@Interceptor()` runs FIRST (outermost), then controller-level, then method-level.
-   - What's unclear: `BootOptions.interceptors` currently typed as `ReadonlyArray<ClassConstructor<unknown>>`. The boot logic needs to resolve them and prepend to every route's interceptor chain.
-   - Recommendation: In `boot.ts`, resolve global interceptors once at boot (via `getContainer().get()` for each), store as an array, and pass to `router-build.ts` as a parameter. The route-level chain becomes `[...globalInterceptors, ...ctrlInterceptors, ...methodInterceptors]`.
+   - **RESOLVED:** `boot.ts` resolves `options.interceptors` ONCE before the controller loop via `await resolveInterceptorClasses(options.interceptors ?? [])`. The resulting `InterceptorInterface[]` is passed (already-resolved) into every `buildControllerRouter` call as `globalInterceptors`. Per-route chain composes as `[...globalInterceptors, ...ctrlInterceptors, ...methodInterceptors]`. Implemented in Plan 04 Tasks 3 + 4.
 
 ---
 
