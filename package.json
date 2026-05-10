@@ -47,7 +47,7 @@
     "test": "vitest run",
     "test:forks": "vitest run --pool=forks",
     "test:threads": "vitest run --pool=threads",
-    "test:build": "vitest run tests/build",
+    "test:build": "vitest run --config vitest.build.config.ts",
     "test:watch": "vitest",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
