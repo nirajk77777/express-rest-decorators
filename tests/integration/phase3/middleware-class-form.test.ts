@@ -81,9 +81,9 @@ describe('class-form middleware with custom container DI', () => {
     const injectedDep = new InjectedDep();
 
     useContainer({
-      get: (cls: unknown) => {
-        if (cls === DIMw) return new DIMw(injectedDep);
-        return new (cls as new () => unknown)();
+      get: <T>(cls: new (...args: unknown[]) => T): T => {
+        if ((cls as unknown) === DIMw) return new DIMw(injectedDep) as unknown as T;
+        return new (cls as new () => T)();
       },
     });
 
