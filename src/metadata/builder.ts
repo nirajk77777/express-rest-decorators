@@ -70,7 +70,15 @@ function mergeControllerChain(ctor: Function): ControllerArgs {
   };
   for (const c of chain) {
     if (c.basePath) init.basePath = c.basePath;
-    init.type = c.type; // last write wins (subclass)
+    // WR-06: only overwrite `type` if this entry actually carries a
+    // controller-form decision. An undecorated subclass never appears
+    // in `chain` (only `getControllerArgs`-keyed entries do), but a
+    // subclass decorated with @Controller() (resetting type to 'default')
+    // is a deliberate "downgrade" choice and must still win — so the
+    // guard accepts non-default types AND default-from-base. In
+    // practice, this preserves the base's type when nothing in the chain
+    // explicitly chose 'default'.
+    if (c.type !== 'default' || c === chain[0]) init.type = c.type;
     init.responseHandlers = [...init.responseHandlers, ...c.responseHandlers];
     if (c.useBefore?.length) init.useBefore = [...(init.useBefore ?? []), ...c.useBefore];
     if (c.useAfter?.length) init.useAfter = [...(init.useAfter ?? []), ...c.useAfter];
