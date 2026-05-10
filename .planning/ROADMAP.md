@@ -14,7 +14,7 @@
 - [x] **Phase 1: Metadata & Decorator Skeleton** — Stage 3 decorators, per-class metadata, IoC contract, runtime mode guard; pure logic, no HTTP yet.
 - [x] **Phase 2: Runtime + Express Adapter (Happy Path)** — End-to-end vertical slice: input resolution via Standard Schema, ExpressAdapter, native async error middleware.
 - [x] **Phase 3: Middleware, Interceptors, Auth, Error Handling** — Orthogonal additions on top of Phase 2 pipeline (parallel with Phase 4). COMPLETE — 416 tests, all 5 SC verified.
-- [ ] **Phase 4: Uploads, Cookies, Sessions, Render, Request Context** — Feature-parity edge cases plus AsyncLocalStorage and `printRoutes` (parallel with Phase 3).
+- [x] **Phase 4: Uploads, Cookies, Sessions, Render, Request Context** — Feature-parity edge cases plus AsyncLocalStorage and `printRoutes` (parallel with Phase 3). COMPLETE — 569 total tests, all 5 SC verified.
 - [ ] **Phase 5: Adapter Packages, Build, Docs, Migration, Publish** — Monorepo packaging, dual ESM+CJS verification, migration guide, v1.0.0 to npm.
 
 ---
@@ -92,7 +92,7 @@
   - [x] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2) — COMPLETE: 3 tasks, 9 files, 26 new tests, 473 suite pass
   - [x] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2) — COMPLETE: 3 tasks, 11 files, 43 new tests, 516 suite pass
   - [x] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2) — COMPLETE: 3 tasks, 11 files, 17 new tests, 533 suite pass
-  - [ ] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3)
+  - [x] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3) — COMPLETE: 2 tasks, 2 files, 36 new tests (20 integration + 16 grep gates), 569 suite pass
 
 ### Phase 5: Adapter Packages, Build, Docs, Migration, Publish
 **Goal**: Ship a publishable v1.0.0: monorepo build pipeline, dual ESM+CJS distribution verified by `attw`/`publint`, CI matrix, TypeDI adapter, migration guide, and a runnable README — all on npm under provenance.

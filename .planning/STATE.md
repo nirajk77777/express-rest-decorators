@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T16:10:00Z"
+last_updated: "2026-05-10T16:15:00Z"
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 24
-  completed_plans: 22
-  percent: 92
+  completed_plans: 23
+  percent: 96
 ---
 
 # State
@@ -39,20 +39,20 @@ progress:
 
 ## Current Position
 
-Phase: 04 (uploads-cookies-sessions-render-request-context) — EXECUTING
-Plan: 6 of 6
-**Phase:** 4
-**Plan:** 5 complete, 6 up next
-**Status:** Executing Phase 04
-**Progress:** [█████████░] 95% (Phase 4 plan 5/6 complete)
+Phase: 04 (uploads-cookies-sessions-render-request-context) — COMPLETE
+Plan: 6 of 6 (all complete)
+**Phase:** 4 COMPLETE
+**Plan:** 6/6 complete
+**Status:** Phase 04 complete — ready for Phase 05
+**Progress:** [██████████] 100% (Phase 4 all 6/6 plans complete)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
-                       │               ├──► Phase 5
+                       │               ├──► Phase 5 ◄── UP NEXT
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** Phase 4 Plan 6 (04-06).
+**Up next:** Phase 5 (publish pipeline).
 
 ---
 
@@ -61,8 +61,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Metric | Value |
 |--------|-------|
 | Phases planned | 5 |
-| Phases complete | 2 |
-| Plans complete | 14 |
+| Phases complete | 4 |
+| Plans complete | 23 |
 | Requirements mapped | 58 / 58 |
 | Open blockers | 0 |
 
@@ -78,6 +78,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Phase 04 P03 | 1500 | 3 tasks | 9 files |
 | Phase 04 P04 | 480 | 3 tasks | 11 files |
 | Phase 04 P05 | 600 | 3 tasks | 11 files |
+| Phase 04 P06 | 250 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -216,6 +217,13 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Grep gates (02-grep-gates.test.ts) extended additively: cors.ts added to Express import allow-list; cors.ts and glob-loader.ts added to try/catch exemption list (D-15 pattern — same rationale as cookies.ts and uploads.ts).
 - D-18 step 1 is glob expansion (resolveControllers) which runs BEFORE any app.use() call — it's a boot-time computation, not an HTTP concern.
 
+### Key Decisions Made (from 04-06)
+
+- Gate 5 (express-session) checks import/require only — session.ts documents invariant in comments, causing false positive under full-grep approach; adjusted to code-only matching.
+- stripComments() helper strips block + inline comments before regex matching in grep gates — prevents false positives from invariant documentation strings (same pattern as Phase 1/2 grep gates).
+- SC#2-D multer missing-peer uses source-file string verification (readFileSync) — vi.doMock cannot mock ESM peers already loaded in Vitest (consistent with 04-03/04-05 decisions).
+- spy.mock.calls captured before spy.mockRestore() in printRoutes test — spy records are cleared on restore.
+
 ### Key Decisions Made (from 04-02)
 
 - COOKIE_PEER_MISSING_MESSAGE exported as constant — test assertions use constant, not hardcoded string duplicate.
@@ -251,8 +259,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 4 Plan 05 complete — CORS lazy-load (loadCorsMiddleware), glob controller loading (resolveControllers via tinyglobby), and printRoutes route table (buildRouteTable + printRouteTable walking library metadata); all three wired into boot.ts per D-18; 533 total tests pass; tsc --noEmit clean.
+**Last action:** Phase 4 Plan 06 complete — End-to-end integration test suite (20 tests: SC#1..#5 + D-18 boot-order) and Phase 4 structural grep gates (16 tests: 12 invariant gates). Phase 4 complete. 569 total tests pass; tsc --noEmit clean.
 
-**Resume command:** `/gsd-execute-phase 4` (continue with plan 06)
+**Resume command:** `/gsd-execute-phase 5` (Phase 5: publish pipeline)
 
-**Last updated:** 2026-05-10T16:05:00Z
+**Last updated:** 2026-05-10T16:15:00Z
