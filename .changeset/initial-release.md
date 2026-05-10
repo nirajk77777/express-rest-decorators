@@ -1,8 +1,8 @@
 ---
-'@nirajk/express-controllers': minor
+'express-rest-decorators': minor
 ---
 
-Initial release of `@nirajk/express-controllers` — a decorator-based REST controller framework for Express v5 and the modernized successor to `routing-controllers`.
+Initial release of `express-rest-decorators` — a decorator-based REST controller framework for Express v5 and the modernized successor to `routing-controllers`.
 
 ### Added
 

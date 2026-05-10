@@ -1,11 +1,11 @@
-# @nirajk/express-controllers
+# express-rest-decorators
 
 > Decorator-based REST controllers for Express v5 — modernized routing-controllers successor.
 
-[![npm version](https://img.shields.io/npm/v/@nirajk/express-controllers/next.svg)](https://www.npmjs.com/package/@nirajk/express-controllers)
+[![npm version](https://img.shields.io/npm/v/express-rest-decorators/next.svg)](https://www.npmjs.com/package/express-rest-decorators)
 [![CI](https://img.shields.io/github/actions/workflow/status/nirajk/express-controllers/ci.yml?branch=main)](https://github.com/nirajk/express-controllers/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Types](https://img.shields.io/npm/types/@nirajk/express-controllers.svg)](https://github.com/nirajk/express-controllers)
+[![Types](https://img.shields.io/npm/types/express-rest-decorators.svg)](https://github.com/nirajk/express-controllers)
 
 ---
 
@@ -20,7 +20,7 @@ Validation is **validator-agnostic** via [Standard Schema](https://standardschem
 ## Install
 
 ```bash
-pnpm add @nirajk/express-controllers express reflect-metadata zod
+pnpm add express-rest-decorators express reflect-metadata zod
 # or: npm install / yarn add — same package list
 ```
 
@@ -32,7 +32,7 @@ pnpm add @nirajk/express-controllers express reflect-metadata zod
 import 'reflect-metadata';
 import express from 'express';
 import { z } from 'zod';
-import { JsonController, Get, Post, useExpressControllers } from '@nirajk/express-controllers';
+import { JsonController, Get, Post, useExpressControllers } from 'express-rest-decorators';
 
 const UserSchema = z.object({ name: z.string(), email: z.string().email() });
 
@@ -121,7 +121,7 @@ The library does not bundle a DI container. It exposes one hook — `useContaine
 
 ```typescript
 import { Container } from 'typedi';
-import { useContainer } from '@nirajk/express-controllers';
+import { useContainer } from 'express-rest-decorators';
 
 useContainer({ get: (token) => Container.get(token) });
 ```
@@ -175,7 +175,7 @@ Full API reference (TypeDoc): <https://nirajk.github.io/express-controllers/> �
 Throwing an `HttpError` (or any subclass) from a handler short-circuits to the library's error middleware, which serializes it to a JSON response with the matching status code:
 
 ```typescript
-import { JsonController, Get, NotFoundError } from '@nirajk/express-controllers';
+import { JsonController, Get, NotFoundError } from 'express-rest-decorators';
 
 @JsonController('/users')
 class UserController {

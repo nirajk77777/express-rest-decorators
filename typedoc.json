@@ -3,7 +3,7 @@
   "entryPoints": ["src/index.ts"],
   "entryPointStrategy": "resolve",
   "out": "docs",
-  "name": "@nirajk/express-controllers",
+  "name": "express-rest-decorators",
   "readme": "README.md",
   "tsconfig": "./tsconfig.json",
   "skipErrorChecking": false,
@@ -13,6 +13,6 @@
   "includeVersion": true,
   "navigationLinks": {
     "GitHub": "https://github.com/nirajk/express-controllers",
-    "npm": "https://www.npmjs.com/package/@nirajk/express-controllers"
+    "npm": "https://www.npmjs.com/package/express-rest-decorators"
   }
 }

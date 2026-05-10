@@ -1,4 +1,4 @@
-# Contributing to `@nirajk/express-controllers`
+# Contributing to `express-rest-decorators`
 
 Thanks for your interest in contributing! This document covers the dev loop, commands, and release flow.
 
@@ -95,14 +95,14 @@ Releases are **maintainer-only**. The flow:
 3. Merging the Version Packages PR triggers `release.yml`, which runs `pnpm build`, `attw --pack`, `publint`, and `changeset publish --provenance`.
 4. The same workflow rebuilds TypeDoc and publishes it to GitHub Pages.
 
-The v1.0.0 release uses the `next` dist-tag for RCs (`pnpm install @nirajk/express-controllers@next`). Once `1.0.0` ships, `next` is retired and the package promotes to `latest`.
+The v1.0.0 release uses the `next` dist-tag for RCs (`pnpm install express-rest-decorators@next`). Once `1.0.0` ships, `next` is retired and the package promotes to `latest`.
 
 ## Reporting Bugs / Requesting Features
 
 Open an issue at <https://github.com/nirajk/express-controllers/issues>. Please include:
 
 - Node version (`node -v`)
-- Library version (`pnpm list @nirajk/express-controllers`)
+- Library version (`pnpm list express-rest-decorators`)
 - Express version (`pnpm list express`)
 - A minimal reproduction (a failing test case is ideal).
 

@@ -1,6 +1,6 @@
-# Migration Guide — `routing-controllers@0.11` → `@nirajk/express-controllers@1`
+# Migration Guide — `routing-controllers@0.11` → `express-rest-decorators@1`
 
-This guide walks you through the differences between [`routing-controllers`](https://github.com/typestack/routing-controllers) v0.11 and `@nirajk/express-controllers` v1. Six chapters cover the rationale, the single biggest break, the breaking changes table, per-feature recipes, what's gone, and what's new.
+This guide walks you through the differences between [`routing-controllers`](https://github.com/typestack/routing-controllers) v0.11 and `express-rest-decorators` v1. Six chapters cover the rationale, the single biggest break, the breaking changes table, per-feature recipes, what's gone, and what's new.
 
 If you're new to the library and not migrating from anything, the [README](./README.md) is the better starting point.
 
@@ -36,10 +36,10 @@ class UserController {
 }
 ```
 
-**After** (`@nirajk/express-controllers` v1):
+**After** (`express-rest-decorators` v1):
 
 ```typescript
-import { JsonController, Get, Post } from '@nirajk/express-controllers';
+import { JsonController, Get, Post } from 'express-rest-decorators';
 import { z } from 'zod';
 
 const CreateUserSchema = z.object({ name: z.string(), email: z.string().email() });
@@ -66,7 +66,7 @@ If you're rewriting a routing-controllers codebase, this is the structural chang
 
 ## Chapter 3: Breaking Changes Table
 
-| Feature | `routing-controllers@0.11` | `@nirajk/express-controllers@1` |
+| Feature | `routing-controllers@0.11` | `express-rest-decorators@1` |
 |---|---|---|
 | Parameter decorators | `@Param`, `@Body`, `@QueryParam`, `@HeaderParam`, `@CookieParam`, `@SessionParam`, `@UploadedFile` as **arg** decorators | Method-level input declaration: `{ params, query, body, headers, cookies, session, files }` slot object on the route decorator |
 | Koa support | Yes (Express + Koa) | **Removed** — Express v5 only |
@@ -120,14 +120,14 @@ create({ query, body, headers }) { /* all three are typed */ }
 - `@Authorized(roles?)` checks `authorizationChecker(action, roles)`; method-level `@Authorized` overrides class-level (method-wins).
 - `currentUserChecker` resolves the user object referenced by `@CurrentUser()` (the one parameter decorator that survives — it's a thin wrapper on `currentUserChecker`).
 
-The shapes of `ExpressMiddlewareInterface`, `ExpressErrorMiddlewareInterface`, and `InterceptorInterface` are largely RC-compatible — the imports change to `@nirajk/express-controllers`, the methods are unchanged.
+The shapes of `ExpressMiddlewareInterface`, `ExpressErrorMiddlewareInterface`, and `InterceptorInterface` are largely RC-compatible — the imports change to `express-rest-decorators`, the methods are unchanged.
 
 ### File Uploads
 
 Uploads move into the `files` slot of the input declaration. Multer is an **optional** peer dependency.
 
 ```typescript
-import { UploadedFile, UploadedFiles } from '@nirajk/express-controllers';
+import { UploadedFile, UploadedFiles } from 'express-rest-decorators';
 
 @Post('/avatar', {
   files: {

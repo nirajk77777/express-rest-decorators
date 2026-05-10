@@ -1,5 +1,5 @@
 {
-  "name": "@nirajk/express-controllers",
+  "name": "express-rest-decorators",
   "version": "1.0.0-rc.1",
   "description": "Decorator-based REST controllers for Express v5 (modernized routing-controllers successor)",
   "repository": {
