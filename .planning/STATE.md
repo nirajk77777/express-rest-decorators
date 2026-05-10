@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T08:48:14.282Z"
+last_updated: "2026-05-10T08:54:56.887Z"
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 18
-  completed_plans: 14
-  percent: 78
+  completed_plans: 15
+  percent: 83
 ---
 
 # State
@@ -40,11 +40,11 @@ progress:
 ## Current Position
 
 Phase: 03 (middleware-interceptors-auth-error-handling) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 **Phase:** 3 — Middleware, Interceptors, Auth, Error Handling — IN PROGRESS
-**Plan:** 03-01 complete (1/5 plans complete in Phase 3)
+**Plan:** 03-02 complete (2/5 plans complete in Phase 3)
 **Status:** Executing Phase 03
-**Progress:** [████████░░] 78%
+**Progress:** [████████░░] 83%
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -69,6 +69,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Phase 03 P01 | 255s | 3 tasks | 11 files |
 
 ---
+| Phase 03 P02 | 480 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -154,6 +155,13 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Authorized decorator uses last-write-wins semantics; normalized to string[] | null per D-11.
 - markAsInterceptor/isMarkedAsInterceptor added to storage.ts for Interceptor class decorator and boot-time verification.
 
+### Key Decisions Made (from 03-02)
+
+- mergeMethodChain now does per-field merge instead of whole-record overwrite — required for correct hook accumulation when subclass adds @UseBefore to an inherited method without re-decorating the route.
+- Hook arrays (useBefore/useAfter/interceptors) concat base-first regardless of whether subclass re-applies route decorator.
+- authorized field emitted conditionally from resolved metadata (only when !== undefined) to preserve three-way distinction: undefined=not-decorated, null=any-authenticated-user, string[]=specific-roles.
+- Resolved metadata hook arrays default to [] (required fields) so adapter code can spread without null guards.
+
 ### TODOs
 
 (none yet — populated as phases progress)
@@ -166,8 +174,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 3 Plan 01 complete — decorator/storage/interface foundation for middleware, interceptors, auth established; 270 tests pass.
+**Last action:** Phase 3 Plan 02 complete — MetadataBuilder extended with Phase 3 inheritance semantics; 287 tests pass.
 
-**Resume command:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 02 (MetadataBuilder extension).
+**Resume command:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 03.
 
 **Last updated:** 2026-05-10
