@@ -1090,19 +1090,22 @@ return app;
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **BootOptions.controllers type widening**
+   - **RESOLVED:** Widen to `ReadonlyArray<ClassConstructor<unknown> | string>` directly in `boot-options.ts`. No breaking change.
    - What we know: Current type is `ReadonlyArray<ClassConstructor<unknown>>`. Phase 4 needs `ReadonlyArray<ClassConstructor<unknown> | string>`.
    - What's unclear: Whether widening this type is a breaking change for TypeScript consumers who have `as const` arrays of controller classes (TS will complain if the element type doesn't include `string`). In practice, adding `| string` to the element type is additive (accepts more, not less) — not breaking.
    - Recommendation: Widen to `ReadonlyArray<ClassConstructor<unknown> | string>` directly in `boot-options.ts`. No breaking change.
 
 2. **`cors` CorsOptions type — using `@types/cors` in the public API**
+   - **RESOLVED:** Keep `boolean | Record<string, unknown>` as the public type OR use a local `CorsOptions` interface that mirrors the `cors` package's shape. Avoids leaking a devDep type into the public API.
    - What we know: `BootOptions.cors` currently typed as `boolean | Record<string, unknown>`. The better type is `boolean | CorsOptions` from `@types/cors`.
    - What's unclear: Whether importing from `@types/cors` in `boot-options.ts` creates a hard dev-dep requirement on `@types/cors` for users of the type.
    - Recommendation: Keep `boolean | Record<string, unknown>` as the public type OR use a local `CorsOptions` interface that mirrors the `cors` package's shape. Avoids leaking a devDep type into the public API.
 
 3. **Session TypeScript types**
+   - **RESOLVED:** Docs-only. The library never calls `express-session` itself; the typing is the consumer's concern.
    - What we know: `express-session` adds `session` to `Request` via module augmentation. Users who install `@types/express-session` get the augmentation. Users who don't get `req.session` typed as `any`.
    - What's unclear: Whether the library should ship a type-augmentation snippet in docs or export a helper type.
    - Recommendation: Docs-only. The library never calls `express-session` itself; the typing is the consumer's concern.

@@ -86,7 +86,13 @@
   3. A handler decorated with `@Redirect(template)` returning a target string issues a 3xx redirect; `@Location(template)` sets the Location header; `@Render(template)` renders an Express view-engine template with the returned data.
   4. A user can boot the app with `cors: true | CorsOptions` (lazy-loaded `cors` package) and with `controllers: ['src/controllers/**/*.ts']` glob loading via `tinyglobby`; `printRoutes: true` logs a route table at boot.
   5. From anywhere in the request call chain (handler, middleware, interceptor, downstream service) `getRequestContext()` returns `{ req, res, requestId }` with `requestId` sourced from `X-Request-Id` or a generated UUID — verified by an ALS smoke test that crosses await boundaries.
-**Plans**: TBD
+**Plans**: 6 plans
+  - [ ] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1)
+  - [ ] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2)
+  - [ ] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2)
+  - [ ] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)
+  - [ ] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2)
+  - [ ] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3)
 
 ### Phase 5: Adapter Packages, Build, Docs, Migration, Publish
 **Goal**: Ship a publishable v1.0.0: monorepo build pipeline, dual ESM+CJS distribution verified by `attw`/`publint`, CI matrix, TypeDI adapter, migration guide, and a runnable README — all on npm under provenance.
@@ -98,7 +104,13 @@
   3. A migration guide documents every breaking change vs `routing-controllers` v0.11 with before/after code, leading with the parameter-decorator → method-level input declaration change; README documents Zod, Valibot, and ArkType usage with no adapter code.
   4. A separate `@scope/express-controllers-typedi` adapter package is published alongside core and demonstrably wires TypeDI into `useContainer(IocAdapter)` in an example app.
   5. v1.0.0 is published to npm with provenance, a Keep-a-Changelog `CHANGELOG.md` driven by Changesets, generated TypeDoc API reference, and Biome 2 (with documented ESLint 9 + `@typescript-eslint` 8 fallback) enforced in CI.
-**Plans**: TBD
+**Plans**: 6 plans
+  - [ ] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1)
+  - [ ] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2)
+  - [ ] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2)
+  - [ ] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)
+  - [ ] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2)
+  - [ ] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3)
 
 ---
 
