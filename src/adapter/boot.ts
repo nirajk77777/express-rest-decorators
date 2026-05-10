@@ -184,7 +184,14 @@ export async function useExpressControllers(
 
   // ── Step 6: Mount user error middleware + library fallback ───────────────
   if (options.defaultErrorHandler !== false) {
-    // User error middleware classes (4-arg use) — already resolved above
+    // User error middleware classes (4-arg use) — already resolved above.
+    //
+    // WR-02: the IMPLICIT-RETURN arrow body below is load-bearing. Express
+    // v5 forwards rejections from a returned Promise automatically, but
+    // ONLY if the wrapper actually RETURNS the Promise. If a future
+    // refactor changes the body to a block (e.g. `(...)=>{ instance.use(...) }`)
+    // the rejection silently disappears into UnhandledPromiseRejection.
+    // Keep this an arrow with implicit return — do NOT wrap in braces.
     for (const { instance } of userErrorMwInstances) {
       app.use(((err: unknown, req: Request, res: Response, next: NextFunction) =>
         (instance.use as (e: unknown, q: Request, s: Response, n: NextFunction) => unknown)(err, req, res, next)
