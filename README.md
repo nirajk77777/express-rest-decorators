@@ -155,7 +155,7 @@ The same recipe wires **tsyringe**, **Awilix**, **InversifyJS**, or any containe
 | `printRoutes` | `boolean` | Log the route table at boot (dev only). |
 | `onLogError` | `(err) => void` | Override `console.error` for headers-already-sent errors. |
 
-Full API reference (TypeDoc): `<GITHUB_PAGES_URL>` — published on first release (see plan 05-06).
+Full API reference (TypeDoc): <https://nirajk.github.io/express-controllers/> — published to GitHub Pages on first release (link 404s until Plan 05-07 ships v1.0.0-rc.1).
 
 ## Compatibility
 
