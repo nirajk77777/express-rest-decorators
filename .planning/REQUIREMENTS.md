@@ -41,9 +41,9 @@
 - [ ] **RES-01**: User can set HTTP status with `@HttpCode(code)`
 - [ ] **RES-02**: User can override status when handler returns null/undefined: `@OnNull(code)`, `@OnUndefined(code)`
 - [ ] **RES-03**: User can set response headers via `@Header(name, value)` and content type via `@ContentType(type)`
-- [ ] **RES-04**: User can redirect via `@Redirect(template)` returning the redirect target from handler
-- [ ] **RES-05**: User can set Location header via `@Location(template)`
-- [ ] **RES-06**: User can render a view template via `@Render(template)` when an Express view engine is configured
+- [x] **RES-04**: User can redirect via `@Redirect(template)` returning the redirect target from handler
+- [x] **RES-05**: User can set Location header via `@Location(template)`
+- [x] **RES-06**: User can render a view template via `@Render(template)` when an Express view engine is configured
 - [ ] **RES-07**: Plain object/primitive returns from handlers are serialized as JSON by default (matching `@JsonController`); strings sent as-is for `@Controller`
 - [ ] **RES-08**: Async iterables / streams returned from handlers are piped to the response
 

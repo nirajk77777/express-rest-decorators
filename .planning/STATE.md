@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T15:59:00Z"
+last_updated: "2026-05-10T16:10:00Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 24
-  completed_plans: 21
-  percent: 88
+  completed_plans: 22
+  percent: 92
 ---
 
 # State
@@ -40,11 +40,11 @@ progress:
 ## Current Position
 
 Phase: 04 (uploads-cookies-sessions-render-request-context) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 **Phase:** 4
-**Plan:** 3 complete, 4 up next
+**Plan:** 4 complete, 5 up next
 **Status:** Executing Phase 04
-**Progress:** [█████████░] 88% (Phase 4 plan 3/6 complete)
+**Progress:** [█████████░] 92% (Phase 4 plan 4/6 complete)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** Phase 4 Plan 4 (04-04).
+**Up next:** Phase 4 Plan 5 (04-05).
 
 ---
 
@@ -76,6 +76,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Phase 04 P01 | 900 | 3 tasks | 5 files |
 | Phase 04 P02 | 349 | 3 tasks | 8 files |
 | Phase 04 P03 | 1500 | 3 tasks | 9 files |
+| Phase 04 P04 | 480 | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -198,6 +199,14 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - files arm (arm 8) never produces validation issues — multer handles size/type rejection at mw layer.
 - vi.spyOn on ESM module default export not possible in Vitest; Test 5 uses structural source verification instead.
 
+### Key Decisions Made (from 04-04)
+
+- Shaper WeakMaps stored separately from MethodArgs; builder folds them in mergeMethodChain via getter helpers per prototype level (subclass-wins semantics).
+- null always short-circuits to 204 before shaper dispatch (D-13/Pitfall 8); undefined passes to shapers which handle it per D-05/D-06/D-07.
+- @HttpCode wins over explicit @Redirect status: resolved via responseHandlers scan at dispatch time (D-10).
+- applyLocation falls through to writeResponse so body still flows (D-07); only applyRedirect/applyRender skip writeResponse.
+- src/adapter/render.ts added to grep-gate allow-list for Express imports (structural invariant maintained).
+
 ### Key Decisions Made (from 04-02)
 
 - COOKIE_PEER_MISSING_MESSAGE exported as constant — test assertions use constant, not hardcoded string duplicate.
@@ -233,8 +242,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 4 Plan 03 complete — slot-based file uploads via UploadedFile/UploadedFiles factory markers with lazy multer loading, mandatory limits+fileFilter enforcement, and single .fields() instance per route; 473 total tests pass; tsc --noEmit clean.
+**Last action:** Phase 4 Plan 04 complete — @Render/@Redirect/@Location response shaper decorators with WeakMap storage, template interpolation, and shaper dispatch in handler pipeline; 516 total tests pass; tsc --noEmit clean.
 
-**Resume command:** `/gsd-execute-phase 4` (continue with plan 04)
+**Resume command:** `/gsd-execute-phase 4` (continue with plan 05)
 
-**Last updated:** 2026-05-10T15:59:00Z
+**Last updated:** 2026-05-10T16:10:00Z

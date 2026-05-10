@@ -90,7 +90,7 @@
   - [x] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1) — COMPLETE: 3 tasks, 5 files, 6 smoke tests, 425 suite pass
   - [x] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2) — COMPLETE: 3 tasks, 8 files, 22 new tests, 447 suite pass
   - [x] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2) — COMPLETE: 3 tasks, 9 files, 26 new tests, 473 suite pass
-  - [ ] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)
+  - [x] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2) — COMPLETE: 3 tasks, 11 files, 43 new tests, 516 suite pass
   - [ ] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2)
   - [ ] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3)
 
