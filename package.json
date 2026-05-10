@@ -1,6 +1,6 @@
 {
   "name": "@nirajk/express-controllers",
-  "version": "0.0.0",
+  "version": "1.0.0-rc.1",
   "description": "Decorator-based REST controllers for Express v5 (modernized routing-controllers successor)",
   "repository": {
     "type": "git",
