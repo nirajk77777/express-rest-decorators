@@ -2,7 +2,7 @@ export interface HttpErrorOptions {
   cause?: unknown;
 }
 
-export type ValidationSlot = 'params' | 'query' | 'body' | 'headers' | 'currentUser';
+export type ValidationSlot = 'params' | 'query' | 'body' | 'headers' | 'currentUser' | 'cookies' | 'session' | 'files';
 
 export interface ValidationIssue {
   /**

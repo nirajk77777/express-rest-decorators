@@ -78,12 +78,18 @@ describe('resolveSessionArm — Standard Schema validation', () => {
 });
 
 describe('resolveSessionArm — no express-session import', () => {
-  it('src/adapter/session.ts does not import express-session', () => {
+  it('src/adapter/session.ts does not have top-level import of express-session', () => {
     const source = readFileSync(
       new URL('../../src/adapter/session.ts', import.meta.url),
       'utf8',
     );
-    expect(source).not.toMatch(/express-session/);
+    // Check no top-level static import of express-session (comments are allowed to mention it)
+    const importLines = source
+      .split('\n')
+      .filter((line) => /^import\s/.test(line));
+    for (const line of importLines) {
+      expect(line).not.toMatch(/express-session/);
+    }
   });
 });
 

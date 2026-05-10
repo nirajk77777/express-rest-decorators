@@ -86,6 +86,8 @@ describe('Phase 2 grep gates — structural invariants', () => {
       'src/adapter/auth.ts',
       // Phase 4 adapter helpers that use Express types
       'src/adapter/request-context.ts',
+      'src/adapter/cookies.ts',
+      'src/adapter/session.ts',
     ]);
 
     const importers: string[] = [];
@@ -111,8 +113,10 @@ describe('Phase 2 grep gates — structural invariants', () => {
       const r = rel(file);
       // handler-wrapper.ts: source-attribution wrapper (Phase 2 D-16)
       // auth.ts: D-12 escape hatch — user-thrown HttpErrors from checkers must propagate via next(err)
+      // cookies.ts: Phase 4 D-15 — try/catch required for lazy peer-not-found error message
       if (r === 'src/adapter/handler-wrapper.ts') continue;
       if (r === 'src/adapter/auth.ts') continue;
+      if (r === 'src/adapter/cookies.ts') continue;
       const stripped = readWithoutComments(file);
       const matches = stripped.match(/\btry\s*\{/g);
       if (matches && matches.length > 0) {

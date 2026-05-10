@@ -31,11 +31,11 @@ type ReqShape = {
 const mkReq = (
   cookieHeader: string,
   overrides: Partial<ReqShape> = {},
-): ReqShape & { headers: { cookie: string } } => ({
+): ReqShape => ({
   params: {},
   query: {},
   body: undefined,
-  headers: { cookie: cookieHeader },
+  headers: { cookie: cookieHeader } as Record<string, string | string[] | undefined>,
   ...overrides,
 });
 

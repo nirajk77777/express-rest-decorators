@@ -35,6 +35,10 @@ export interface InputDeclaration {
   body?: unknown;
   headers?: unknown;
   currentUser?: true | StandardSchemaV1;
+  /** Phase 4 D-01: per-key cookie declaration. true = pass-through; schema = validate. */
+  cookies?: Record<string, true | StandardSchemaV1>;
+  /** Phase 4 D-02: session pass-through (true) or validated. req.session is wired by the consumer. */
+  session?: true | StandardSchemaV1;
 }
 
 export interface ControllerArgs {
