@@ -7,3 +7,5 @@ coverage
 .tshy-build/
 docs/
 pnpm-debug.log*
+.planning/
+.claude/
