@@ -1,0 +1,192 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>express-rest-decorators - v1.0.0-rc.2</title><meta name="description" content="Documentation for express-rest-decorators"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script><script async src="assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">express-rest-decorators - v1.0.0-rc.2</a><div id="tsd-toolbar-links"><a href="https://github.com/nirajk77777/express-rest-decorators">GitHub</a><a href="https://www.npmjs.com/package/express-rest-decorators">npm</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>express-rest-decorators - v1.0.0-rc.2</h1></div><div class="tsd-panel tsd-typography"><h1 id="express-rest-decorators" class="tsd-anchor-link">express-rest-decorators<a href="#express-rest-decorators" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<blockquote>
+<p>Decorator-based REST controllers for Express v5 — modernized routing-controllers successor.</p>
+</blockquote>
+<p><a href="https://www.npmjs.com/package/express-rest-decorators"><img src="https://img.shields.io/npm/v/express-rest-decorators.svg" alt="npm version"></a>
+<a href="https://github.com/nirajk77777/express-rest-decorators/actions"><img src="https://img.shields.io/github/actions/workflow/status/nirajk77777/express-rest-decorators/ci.yml?branch=main" alt="CI"></a>
+<a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+<a href="https://github.com/nirajk77777/express-rest-decorators"><img src="https://img.shields.io/npm/types/express-rest-decorators.svg" alt="Types"></a></p>
+<hr>
+<h2 id="why-this-exists" class="tsd-anchor-link">Why this exists<a href="#why-this-exists" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Express v5 finally landed with <strong>native async error propagation</strong> — promise rejections in route handlers now flow to error middleware automatically, no <code>try/catch</code> boilerplate, no <code>Promise.resolve().catch(next)</code> shims. This library is built on top of that single change. It targets Express 5 only; there is no v4 fallback.</p>
+<p>The mental model is <strong>routing-controllers</strong> (legacy TypeScript decorators + <code>reflect-metadata</code>) — class-based controllers, decorator-driven routing, dependency-injection hook. If you've used routing-controllers v0.10/v0.11, this will feel familiar. The big break is <strong>method-level input declaration</strong>: instead of <code>@Param('id') id: string</code> argument decorators, schemas live on the method decorator itself, and the handler receives one typed input object.</p>
+<p>Validation is <strong>validator-agnostic</strong> via <a href="https://standardschema.dev/">Standard Schema</a>. Zod, Valibot, ArkType — anything that implements <code>StandardSchemaV1</code> works as the schema for <code>params</code> / <code>query</code> / <code>body</code> / <code>headers</code> / <code>cookies</code> / <code>session</code>. No adapter package required. See the <a href="media/MIGRATION.md">Migration Guide</a> for a full comparison vs routing-controllers v0.11.</p>
+<h2 id="install" class="tsd-anchor-link">Install<a href="#install" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<pre><code class="bash"><span class="hl-0">pnpm</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">express-rest-decorators</span><span class="hl-1"> </span><span class="hl-2">express</span><span class="hl-1"> </span><span class="hl-2">reflect-metadata</span><span class="hl-1"> </span><span class="hl-2">zod</span><br/><span class="hl-3"># or: npm install / yarn add — same package list</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>express</code> and <code>reflect-metadata</code> are required at runtime. The validator is your choice — <code>zod</code>, <code>valibot</code>, or <code>arktype</code> all work; pick one.</p>
+<h2 id="quick-start" class="tsd-anchor-link">Quick start<a href="#quick-start" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<pre><code class="typescript"><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-2">&#39;reflect-metadata&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-5">express</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;express&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">z</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;zod&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">JsonController</span><span class="hl-1">, </span><span class="hl-5">Get</span><span class="hl-1">, </span><span class="hl-5">Post</span><span class="hl-1">, </span><span class="hl-5">useExpressControllers</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;express-rest-decorators&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">UserSchema</span><span class="hl-1"> = </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">object</span><span class="hl-1">({ </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">string</span><span class="hl-1">(), </span><span class="hl-5">email:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">string</span><span class="hl-1">().</span><span class="hl-0">email</span><span class="hl-1">() });</span><br/><br/><span class="hl-1">@</span><span class="hl-0">JsonController</span><span class="hl-1">(</span><span class="hl-2">&#39;/users&#39;</span><span class="hl-1">)</span><br/><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-8">UserController</span><span class="hl-1"> {</span><br/><span class="hl-1">  @</span><span class="hl-0">Get</span><span class="hl-1">(</span><span class="hl-2">&#39;/:id&#39;</span><span class="hl-1">, { </span><span class="hl-5">params:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">object</span><span class="hl-1">({ </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-5">coerce</span><span class="hl-1">.</span><span class="hl-0">number</span><span class="hl-1">() }) })</span><br/><span class="hl-1">  </span><span class="hl-0">getOne</span><span class="hl-1">({ </span><span class="hl-5">params</span><span class="hl-1"> }: { </span><span class="hl-5">params</span><span class="hl-1">: { </span><span class="hl-5">id</span><span class="hl-1">: </span><span class="hl-8">number</span><span class="hl-1"> } }) {</span><br/><span class="hl-1">    </span><span class="hl-4">return</span><span class="hl-1"> { </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-5">params</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">, </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;Ada&#39;</span><span class="hl-1"> };</span><br/><span class="hl-1">  }</span><br/><br/><span class="hl-1">  @</span><span class="hl-0">Post</span><span class="hl-1">(</span><span class="hl-2">&#39;/&#39;</span><span class="hl-1">, { </span><span class="hl-5">body:</span><span class="hl-1"> </span><span class="hl-5">UserSchema</span><span class="hl-1"> })</span><br/><span class="hl-1">  </span><span class="hl-0">create</span><span class="hl-1">({ </span><span class="hl-5">body</span><span class="hl-1"> }: { </span><span class="hl-5">body</span><span class="hl-1">: </span><span class="hl-8">z</span><span class="hl-1">.</span><span class="hl-8">infer</span><span class="hl-1">&lt;</span><span class="hl-6">typeof</span><span class="hl-1"> </span><span class="hl-5">UserSchema</span><span class="hl-1">&gt; }) {</span><br/><span class="hl-1">    </span><span class="hl-4">return</span><span class="hl-1"> { </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-9">1</span><span class="hl-1">, ...</span><span class="hl-5">body</span><span class="hl-1"> };</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">app</span><span class="hl-1"> = </span><span class="hl-0">express</span><span class="hl-1">();</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-0">use</span><span class="hl-1">(</span><span class="hl-5">express</span><span class="hl-1">.</span><span class="hl-0">json</span><span class="hl-1">());</span><br/><span class="hl-0">useExpressControllers</span><span class="hl-1">(</span><span class="hl-5">app</span><span class="hl-1">, { </span><span class="hl-5">controllers:</span><span class="hl-1"> [</span><span class="hl-5">UserController</span><span class="hl-1">] });</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-0">listen</span><span class="hl-1">(</span><span class="hl-9">3000</span><span class="hl-1">, () </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-2">&#39;http://localhost:3000&#39;</span><span class="hl-1">));</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Required <code>tsconfig.json</code> compiler options:</p>
+<pre><code class="json"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-10">&quot;compilerOptions&quot;</span><span class="hl-1">: {</span><br/><span class="hl-1">    </span><span class="hl-10">&quot;experimentalDecorators&quot;</span><span class="hl-1">: </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-10">&quot;emitDecoratorMetadata&quot;</span><span class="hl-1">: </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-10">&quot;target&quot;</span><span class="hl-1">: </span><span class="hl-2">&quot;ES2022&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-10">&quot;useDefineForClassFields&quot;</span><span class="hl-1">: </span><span class="hl-6">false</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>import 'reflect-metadata'</code> MUST appear <strong>once</strong> at the top of your application's entry file, before any controller class is loaded. The library's bootstrap throws an actionable error if <code>Reflect.getMetadata</code> is unavailable.</p>
+<h2 id="validators" class="tsd-anchor-link">Validators<a href="#validators" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Any Standard-Schema-implementing library works as the input schema. The same <code>@Post('/', { body: schema })</code> route accepts whichever you prefer — there is no adapter import.</p>
+<h3 id="zod" class="tsd-anchor-link">Zod<a href="#zod" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">z</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;zod&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">Body</span><span class="hl-1"> = </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">object</span><span class="hl-1">({ </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-0">string</span><span class="hl-1">() });</span><br/><br/><span class="hl-1">@</span><span class="hl-0">Post</span><span class="hl-1">(</span><span class="hl-2">&#39;/&#39;</span><span class="hl-1">, { </span><span class="hl-5">body:</span><span class="hl-1"> </span><span class="hl-5">Body</span><span class="hl-1"> })</span><br/><span class="hl-0">create</span><span class="hl-1">({ </span><span class="hl-5">body</span><span class="hl-1"> }: { </span><span class="hl-5">body:</span><span class="hl-1"> </span><span class="hl-5">z</span><span class="hl-1">.</span><span class="hl-5">infer</span><span class="hl-1">&lt;</span><span class="hl-6">typeof</span><span class="hl-1"> </span><span class="hl-5">Body</span><span class="hl-1">&gt; }) {</span><br/><span class="hl-1">  </span><span class="hl-4">return</span><span class="hl-1"> </span><span class="hl-5">body</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="valibot" class="tsd-anchor-link">Valibot<a href="#valibot" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-6">*</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-5">v</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;valibot&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">Body</span><span class="hl-1"> = </span><span class="hl-5">v</span><span class="hl-1">.</span><span class="hl-0">object</span><span class="hl-1">({ </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-5">v</span><span class="hl-1">.</span><span class="hl-0">string</span><span class="hl-1">() });</span><br/><br/><span class="hl-1">@</span><span class="hl-0">Post</span><span class="hl-1">(</span><span class="hl-2">&#39;/&#39;</span><span class="hl-1">, { </span><span class="hl-5">body:</span><span class="hl-1"> </span><span class="hl-5">Body</span><span class="hl-1"> })</span><br/><span class="hl-0">create</span><span class="hl-1">({ </span><span class="hl-5">body</span><span class="hl-1"> }: { </span><span class="hl-5">body:</span><span class="hl-1"> </span><span class="hl-5">v</span><span class="hl-1">.</span><span class="hl-5">InferOutput</span><span class="hl-1">&lt;</span><span class="hl-6">typeof</span><span class="hl-1"> </span><span class="hl-5">Body</span><span class="hl-1">&gt; }) {</span><br/><span class="hl-1">  </span><span class="hl-4">return</span><span class="hl-1"> </span><span class="hl-5">body</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="arktype" class="tsd-anchor-link">ArkType<a href="#arktype" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<pre><code class="typescript"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">type</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;arktype&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">Body</span><span class="hl-1"> = </span><span class="hl-0">type</span><span class="hl-1">({ </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;string&#39;</span><span class="hl-1"> });</span><br/><br/><span class="hl-1">@</span><span class="hl-0">Post</span><span class="hl-1">(</span><span class="hl-2">&#39;/&#39;</span><span class="hl-1">, { </span><span class="hl-5">body:</span><span class="hl-1"> </span><span class="hl-5">Body</span><span class="hl-1"> })</span><br/><span class="hl-0">create</span><span class="hl-1">({ </span><span class="hl-5">body</span><span class="hl-1"> }: { </span><span class="hl-5">body:</span><span class="hl-1"> </span><span class="hl-6">typeof</span><span class="hl-1"> </span><span class="hl-5">Body</span><span class="hl-1">.</span><span class="hl-5">infer</span><span class="hl-1"> }) {</span><br/><span class="hl-1">  </span><span class="hl-4">return</span><span class="hl-1"> </span><span class="hl-5">body</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p><strong>Why three?</strong> Any library implementing the <a href="https://standardschema.dev/">Standard Schema</a> v1 spec works without adapter code. Pick the one that fits your bundle-size / DX preferences.</p>
+<h2 id="dependency-injection" class="tsd-anchor-link">Dependency Injection<a href="#dependency-injection" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>The library does not bundle a DI container. It exposes one hook — <code>useContainer</code> — that accepts anything with a <code>.get(token)</code> shape:</p>
+<pre><code class="typescript"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">Container</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;typedi&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">useContainer</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;express-rest-decorators&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-0">useContainer</span><span class="hl-1">({ </span><span class="hl-0">get</span><span class="hl-5">:</span><span class="hl-1"> (</span><span class="hl-5">token</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-5">Container</span><span class="hl-1">.</span><span class="hl-0">get</span><span class="hl-1">(</span><span class="hl-5">token</span><span class="hl-1">) });</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The same recipe wires <strong>tsyringe</strong>, <strong>Awilix</strong>, <strong>InversifyJS</strong>, or any container with a <code>.get(token)</code> shape. There is <strong>no</strong> <code>express-rest-decorators-typedi</code> package — the single-package rule means container integrations are recipes, not packages. Without <code>useContainer</code>, controllers are instantiated with their zero-arg constructor and cached in a <code>WeakMap</code>.</p>
+<h2 id="feature-tour" class="tsd-anchor-link">Feature tour<a href="#feature-tour" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
+<li><strong>Method-level input declaration</strong> — one declaration object per route covers <code>params</code>, <code>query</code>, <code>body</code>, <code>headers</code>, <code>cookies</code>, <code>session</code>, and <code>files</code>.</li>
+<li><strong>Middleware &amp; interceptors</strong> — <code>@UseBefore</code>, <code>@UseAfter</code>, <code>@Middleware</code>, <code>@Interceptor</code>, <code>@UseInterceptor</code> for class- or function-shaped middleware and response interceptors.</li>
+<li><strong>Authorization</strong> — <code>@Authorized(roles?)</code> with global <code>authorizationChecker</code> and <code>currentUserChecker</code> boot hooks.</li>
+<li><strong>File uploads</strong> — <code>UploadedFile(...)</code> and <code>UploadedFiles(...)</code> slot markers in the method's <code>files</code> slot. Multer is an optional peer; <code>limits</code> and <code>fileFilter</code> are mandatory by design.</li>
+<li><strong>Response shaping</strong> — <code>@Render</code>, <code>@Redirect</code>, <code>@Location</code>, <code>@Header</code>, <code>@ContentType</code>, <code>@HttpCode</code>, <code>@OnNull</code>, <code>@OnUndefined</code>.</li>
+<li><strong>Request context</strong> — <code>getRequestContext()</code> returns <code>{ req, res, requestId }</code> from anywhere in the call chain, powered by <code>AsyncLocalStorage</code> (works across <code>await</code> boundaries).</li>
+<li><strong>Route table dump</strong> — <code>printRoutes: true</code> boot option logs a fixed-format <code>METHOD / PATH / CONTROLLER.METHOD</code> table after mount. Dev-time only.</li>
+<li><strong>Glob controller loading</strong> — <code>controllers: ['src/controllers/**/*.ts']</code> expands via <code>tinyglobby</code> (optional peer); explicit class arrays are recommended for production.</li>
+</ul>
+<h2 id="boot-options" class="tsd-anchor-link">Boot options<a href="#boot-options" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>controllers</code></td>
+<td><code>Array&lt;Class | string&gt;</code></td>
+<td>Controller classes or glob patterns. Required.</td>
+</tr>
+<tr>
+<td><code>routePrefix</code></td>
+<td><code>string</code></td>
+<td>Prepended to every controller's base path.</td>
+</tr>
+<tr>
+<td><code>middlewares</code></td>
+<td><code>Array&lt;Class | Function&gt;</code></td>
+<td>Global middleware applied before all routes.</td>
+</tr>
+<tr>
+<td><code>interceptors</code></td>
+<td><code>Array&lt;Class&gt;</code></td>
+<td>Global response interceptors.</td>
+</tr>
+<tr>
+<td><code>cors</code></td>
+<td><code>boolean | CorsOptionsLike</code></td>
+<td>Mount <code>cors()</code> middleware (optional peer).</td>
+</tr>
+<tr>
+<td><code>defaultErrorHandler</code></td>
+<td><code>boolean</code> (default <code>true</code>)</td>
+<td>Mount the library's error middleware.</td>
+</tr>
+<tr>
+<td><code>validation</code></td>
+<td><code>unknown</code></td>
+<td>Reserved for future validator overrides.</td>
+</tr>
+<tr>
+<td><code>authorizationChecker</code></td>
+<td><code>(action, roles?) =&gt; boolean | Promise&lt;boolean&gt;</code></td>
+<td>Used by <code>@Authorized</code>.</td>
+</tr>
+<tr>
+<td><code>currentUserChecker</code></td>
+<td><code>(action) =&gt; unknown</code></td>
+<td>Resolves the current user for the request.</td>
+</tr>
+<tr>
+<td><code>printRoutes</code></td>
+<td><code>boolean</code></td>
+<td>Log the route table at boot (dev only).</td>
+</tr>
+<tr>
+<td><code>onLogError</code></td>
+<td><code>(err) =&gt; void</code></td>
+<td>Override <code>console.error</code> for headers-already-sent errors.</td>
+</tr>
+</tbody>
+</table>
+<p>Full API reference (TypeDoc): <a href="https://nirajk77777.github.io/express-rest-decorators/">https://nirajk77777.github.io/express-rest-decorators/</a> — published to GitHub Pages on first release (link 404s until Plan 05-07 ships v1.0.0-rc.1).</p>
+<h2 id="compatibility" class="tsd-anchor-link">Compatibility<a href="#compatibility" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TypeScript</td>
+<td><code>&gt;=5.8</code></td>
+</tr>
+<tr>
+<td>Node.js</td>
+<td><code>&gt;=20.0.0</code> (Node 22 LTS recommended)</td>
+</tr>
+<tr>
+<td>Express</td>
+<td><code>^5.1.0</code> (peer)</td>
+</tr>
+<tr>
+<td>reflect-metadata</td>
+<td><code>^0.2.2</code></td>
+</tr>
+<tr>
+<td>Standard Schema</td>
+<td><code>^1.0.0</code> (<code>@standard-schema/spec</code>)</td>
+</tr>
+<tr>
+<td>Zod</td>
+<td><code>^4.0.0</code> (also <code>^3.25.0</code>)</td>
+</tr>
+<tr>
+<td>Valibot</td>
+<td><code>^1.0.0</code></td>
+</tr>
+<tr>
+<td>ArkType</td>
+<td><code>^2.0.0</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="errors" class="tsd-anchor-link">Errors<a href="#errors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Throwing an <code>HttpError</code> (or any subclass) from a handler short-circuits to the library's error middleware, which serializes it to a JSON response with the matching status code:</p>
+<pre><code class="typescript"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">JsonController</span><span class="hl-1">, </span><span class="hl-5">Get</span><span class="hl-1">, </span><span class="hl-5">NotFoundError</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;express-rest-decorators&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-1">@</span><span class="hl-0">JsonController</span><span class="hl-1">(</span><span class="hl-2">&#39;/users&#39;</span><span class="hl-1">)</span><br/><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-8">UserController</span><span class="hl-1"> {</span><br/><span class="hl-1">  @</span><span class="hl-0">Get</span><span class="hl-1">(</span><span class="hl-2">&#39;/:id&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-0">getOne</span><span class="hl-1">({ </span><span class="hl-5">params</span><span class="hl-1"> }: { </span><span class="hl-5">params</span><span class="hl-1">: { </span><span class="hl-5">id</span><span class="hl-1">: </span><span class="hl-8">string</span><span class="hl-1"> } }) {</span><br/><span class="hl-1">    </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">user</span><span class="hl-1"> = </span><span class="hl-0">lookup</span><span class="hl-1">(</span><span class="hl-5">params</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">);</span><br/><span class="hl-1">    </span><span class="hl-4">if</span><span class="hl-1"> (!</span><span class="hl-5">user</span><span class="hl-1">) </span><span class="hl-4">throw</span><span class="hl-1"> </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">NotFoundError</span><span class="hl-1">(</span><span class="hl-2">`User </span><span class="hl-6">${</span><span class="hl-5">params</span><span class="hl-11">.</span><span class="hl-5">id</span><span class="hl-6">}</span><span class="hl-2"> not found`</span><span class="hl-1">);</span><br/><span class="hl-1">    </span><span class="hl-4">return</span><span class="hl-1"> </span><span class="hl-5">user</span><span class="hl-1">;</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Exported subclasses cover the common cases: <code>BadRequestError</code> (400), <code>UnauthorizedError</code> (401), <code>ForbiddenError</code> (403), <code>NotFoundError</code> (404), <code>MethodNotAllowedError</code> (405), <code>ConflictError</code> (409), <code>InternalServerError</code> (500). Validation failures from any Standard Schema implementation are converted to <code>BadRequestError</code> automatically.</p>
+<h2 id="async-errors-express-v5" class="tsd-anchor-link">Async errors &amp; Express v5<a href="#async-errors-express-v5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Express v5 propagates promise rejections from <code>async</code> handlers to error middleware natively — no per-handler <code>try/catch</code>, no <code>Promise.resolve().catch(next)</code> wrapper. The library installs <strong>one</strong> error middleware (when <code>defaultErrorHandler</code> is <code>true</code>, the default) that:</p>
+<ol>
+<li>Recognizes <code>HttpError</code> and serializes the matching status code + message.</li>
+<li>Converts Standard Schema validation issues to <code>BadRequestError</code>.</li>
+<li>Falls back to <code>500 Internal Server Error</code> for unrecognized throwables.</li>
+<li>Logs via <code>console.error</code> (override with <code>onLogError</code>) when an error arrives after <code>res.headersSent</code>.</li>
+</ol>
+<p>Set <code>defaultErrorHandler: false</code> to opt out and install your own.</p>
+<h2 id="migrating-from-routing-controllers" class="tsd-anchor-link">Migrating from routing-controllers<a href="#migrating-from-routing-controllers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>Coming from <code>routing-controllers@0.11</code> (or earlier)? See <a href="media/MIGRATION.md">MIGRATION.md</a>. The lead chapter covers the single biggest change — <strong>parameter decorators (<code>@Param</code>, <code>@Body</code>, <code>@QueryParam</code>, ...) replaced by method-level input declaration</strong>. The remaining chapters are mostly mechanical decorator renames + a single Breaking Changes table.</p>
+<h2 id="license" class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>MIT — see <a href="media/LICENSE">LICENSE</a>.</p>
+<h2 id="contributing" class="tsd-anchor-link">Contributing<a href="#contributing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>See <a href="media/CONTRIBUTING.md">CONTRIBUTING.md</a> for the dev loop, scripts, and release flow. Bug reports and feature requests welcome at <a href="https://github.com/nirajk77777/express-rest-decorators/issues">https://github.com/nirajk77777/express-rest-decorators/issues</a>.</p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#express-rest-decorators"><span>express-<wbr/>rest-<wbr/>decorators</span></a><ul><li><a href="#why-this-exists"><span>Why this exists</span></a></li><li><a href="#install"><span>Install</span></a></li><li><a href="#quick-start"><span>Quick start</span></a></li><li><a href="#validators"><span>Validators</span></a></li><li><ul><li><a href="#zod"><span>Zod</span></a></li><li><a href="#valibot"><span>Valibot</span></a></li><li><a href="#arktype"><span>Ark<wbr/>Type</span></a></li></ul></li><li><a href="#dependency-injection"><span>Dependency <wbr/>Injection</span></a></li><li><a href="#feature-tour"><span>Feature tour</span></a></li><li><a href="#boot-options"><span>Boot options</span></a></li><li><a href="#compatibility"><span>Compatibility</span></a></li><li><a href="#errors"><span>Errors</span></a></li><li><a href="#async-errors-express-v5"><span>Async errors &amp; <wbr/>Express v5</span></a></li><li><a href="#migrating-from-routing-controllers"><span>Migrating from routing-<wbr/>controllers</span></a></li><li><a href="#license"><span>License</span></a></li><li><a href="#contributing"><span>Contributing</span></a></li></ul></div></details></div><div class="site-menu"><nav id="tsd-sidebar-links" class="tsd-navigation"><a href="https://github.com/nirajk77777/express-rest-decorators" class="tsd-nav-link">GitHub</a><a href="https://www.npmjs.com/package/express-rest-decorators" class="tsd-nav-link">npm</a></nav><nav class="tsd-navigation"><a href="modules.html">express-rest-decorators - v1.0.0-rc.2</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
