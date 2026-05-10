@@ -2,8 +2,8 @@
 
 > Decorator-based REST controllers for Express v5 — modernized routing-controllers successor.
 
-[![npm version](https://img.shields.io/npm/v/express-rest-decorators/next.svg)](https://www.npmjs.com/package/express-rest-decorators)
-[![CI](https://img.shields.io/github/actions/workflow/status/nirajk/express-rest-decorators/ci.yml?branch=main)](https://github.com/nirajk77777/express-rest-decorators/actions)
+[![npm version](https://img.shields.io/npm/v/express-rest-decorators.svg)](https://www.npmjs.com/package/express-rest-decorators)
+[![CI](https://img.shields.io/github/actions/workflow/status/nirajk77777/express-rest-decorators/ci.yml?branch=main)](https://github.com/nirajk77777/express-rest-decorators/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Types](https://img.shields.io/npm/types/express-rest-decorators.svg)](https://github.com/nirajk77777/express-rest-decorators)
 
