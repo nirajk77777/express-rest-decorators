@@ -16,6 +16,10 @@
     "node": ">=20.0.0"
   },
   "packageManager": "pnpm@10.33.4",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "files": [
     "dist",
     "README.md",
@@ -60,7 +64,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "docs:build": "typedoc",
-    "release": "pnpm build && attw --pack . --profile node16 && publint && changeset publish --provenance --tag next",
+    "release": "pnpm build && attw --pack . --profile node16 && publint && changeset publish --tag next",
     "prepublishOnly": "pnpm build && attw --pack . --profile node16 && publint"
   },
   "dependencies": {
