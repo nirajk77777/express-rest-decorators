@@ -186,7 +186,7 @@ The library performs no automatic constructor-type injection by default. Auto-in
 - **Parameter decorators as the primary input mechanism.** `@Param`, `@Body`, `@QueryParam`, `@HeaderParam`, `@CookieParam`, `@SessionParam`, `@UploadedFile` are not exported. Use the method-level input declaration object.
 - **`class-validator` / `class-transformer` as the default validator.** v1 ships zero validation libraries — Standard Schema is the surface; you bring Zod/Valibot/ArkType. A `class-validator` adapter is deferred to a post-v1.x release and is **not** in v1.
 - **`body-parser` as a runtime dep.** Express 5 ships `express.json()` / `express.urlencoded()` natively. Call `app.use(express.json())` in your bootstrap.
-- **`@scope/express-controllers-typedi` style sub-packages.** The single-package repo policy means container integrations are documented recipes (Chapter 4), not separate npm packages.
+- **`express-rest-decorators-typedi` style sub-packages.** The single-package repo policy means container integrations are documented recipes (Chapter 4), not separate npm packages.
 
 ---
 

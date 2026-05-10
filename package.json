@@ -4,11 +4,11 @@
   "description": "Decorator-based REST controllers for Express v5 (modernized routing-controllers successor)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nirajk/express-controllers.git"
+    "url": "git+https://github.com/nirajk/express-rest-decorators.git"
   },
-  "homepage": "https://github.com/nirajk/express-controllers#readme",
+  "homepage": "https://github.com/nirajk/express-rest-decorators#readme",
   "bugs": {
-    "url": "https://github.com/nirajk/express-controllers/issues"
+    "url": "https://github.com/nirajk/express-rest-decorators/issues"
   },
   "type": "module",
   "license": "MIT",

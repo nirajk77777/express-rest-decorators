@@ -3,9 +3,9 @@
 > Decorator-based REST controllers for Express v5 — modernized routing-controllers successor.
 
 [![npm version](https://img.shields.io/npm/v/express-rest-decorators/next.svg)](https://www.npmjs.com/package/express-rest-decorators)
-[![CI](https://img.shields.io/github/actions/workflow/status/nirajk/express-controllers/ci.yml?branch=main)](https://github.com/nirajk/express-controllers/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/nirajk/express-rest-decorators/ci.yml?branch=main)](https://github.com/nirajk/express-rest-decorators/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Types](https://img.shields.io/npm/types/express-rest-decorators.svg)](https://github.com/nirajk/express-controllers)
+[![Types](https://img.shields.io/npm/types/express-rest-decorators.svg)](https://github.com/nirajk/express-rest-decorators)
 
 ---
 
@@ -126,7 +126,7 @@ import { useContainer } from 'express-rest-decorators';
 useContainer({ get: (token) => Container.get(token) });
 ```
 
-The same recipe wires **tsyringe**, **Awilix**, **InversifyJS**, or any container with a `.get(token)` shape. There is **no** `@scope/express-controllers-typedi` package — the single-package rule means container integrations are recipes, not packages. Without `useContainer`, controllers are instantiated with their zero-arg constructor and cached in a `WeakMap`.
+The same recipe wires **tsyringe**, **Awilix**, **InversifyJS**, or any container with a `.get(token)` shape. There is **no** `express-rest-decorators-typedi` package — the single-package rule means container integrations are recipes, not packages. Without `useContainer`, controllers are instantiated with their zero-arg constructor and cached in a `WeakMap`.
 
 ## Feature tour
 
@@ -155,7 +155,7 @@ The same recipe wires **tsyringe**, **Awilix**, **InversifyJS**, or any containe
 | `printRoutes` | `boolean` | Log the route table at boot (dev only). |
 | `onLogError` | `(err) => void` | Override `console.error` for headers-already-sent errors. |
 
-Full API reference (TypeDoc): <https://nirajk.github.io/express-controllers/> — published to GitHub Pages on first release (link 404s until Plan 05-07 ships v1.0.0-rc.1).
+Full API reference (TypeDoc): <https://nirajk.github.io/express-rest-decorators/> — published to GitHub Pages on first release (link 404s until Plan 05-07 ships v1.0.0-rc.1).
 
 ## Compatibility
 
@@ -211,4 +211,4 @@ MIT — see [LICENSE](./LICENSE).
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for the dev loop, scripts, and release flow. Bug reports and feature requests welcome at <https://github.com/nirajk/express-controllers/issues>.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the dev loop, scripts, and release flow. Bug reports and feature requests welcome at <https://github.com/nirajk/express-rest-decorators/issues>.
