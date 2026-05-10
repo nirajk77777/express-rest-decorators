@@ -17,7 +17,7 @@ Thanks for your interest in contributing! This document covers the dev loop, com
 ## Setup
 
 ```bash
-git clone https://github.com/nirajk/express-rest-decorators.git
+git clone https://github.com/nirajk77777/express-rest-decorators.git
 cd express-rest-decorators
 pnpm install --frozen-lockfile
 ```
@@ -99,7 +99,7 @@ The v1.0.0 release uses the `next` dist-tag for RCs (`pnpm install express-rest-
 
 ## Reporting Bugs / Requesting Features
 
-Open an issue at <https://github.com/nirajk/express-rest-decorators/issues>. Please include:
+Open an issue at <https://github.com/nirajk77777/express-rest-decorators/issues>. Please include:
 
 - Node version (`node -v`)
 - Library version (`pnpm list express-rest-decorators`)
