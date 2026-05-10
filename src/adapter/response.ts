@@ -32,10 +32,20 @@ export function applyResponseHandlers(
       case 'content-type':
         res.type(String(h.value));
         break;
-      // 'null-result-code' / 'undefined-result-code' — handled in writeResponse
-      // unknown types — ignored silently
-      default:
+      case 'null-result-code':
+      case 'undefined-result-code':
+        // Handled in writeResponse — intentional no-op here.
         break;
+      // WR-07: exhaustiveness check — if a future ResponseHandlerType
+      // is added without updating this switch, this assignment fails
+      // typecheck. Cast through `unknown` because the case lists above
+      // narrow to `never` at runtime, which is the desired property,
+      // but TS may still see the union if the type is widened.
+      default: {
+        const _exhaust: never = h.type as never;
+        void _exhaust;
+        break;
+      }
     }
   }
 }
