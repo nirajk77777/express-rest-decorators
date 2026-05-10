@@ -7,6 +7,7 @@ import express, {
 } from 'express';
 import { buildMetadata } from '../metadata/builder.js';
 import { getContainer } from '../container/use-container.js';
+import { createAlsMiddleware } from './request-context.js';
 import type {
   ControllerMetadata,
   ActionMetadata,
@@ -109,6 +110,10 @@ export async function useExpressControllers(
   app: Express,
   options: BootOptions,
 ): Promise<Express> {
+  // Phase 4 D-11/D-18: ALS wrapper MUST be the outermost app.use() owned by the library.
+  // Mounted BEFORE glob expansion result is used, BEFORE CORS, BEFORE lib globals, BEFORE routers.
+  app.use(createAlsMiddleware());
+
   const controllers = buildMetadata(
     options.controllers as unknown as Function[],
   );
@@ -229,18 +234,28 @@ export async function useExpressControllers(
 /**
  * Create a fresh Express v5 app, install body-parsers (express.json() and
  * express.urlencoded({extended:true}) per D-02), then mount controllers.
- * Convenience entry point — equivalent to:
- *
- *   const app = express();
- *   app.use(express.json());
- *   app.use(express.urlencoded({ extended: true }));
- *   await useExpressControllers(app, options);
+ * Convenience entry point.
  *
  * Phase 3 breaking change: now returns Promise<Express>.
+ *
+ * Boot order (D-18):
+ *   1. app.use(alsMiddleware)              ← installed by useExpressControllers as first call
+ *   2. app.use(express.json())             ← body parsers after ALS (not before)
+ *   3. app.use(express.urlencoded(...))
+ *   4. ... controller routers and error middleware via useExpressControllers
+ *
+ * Note: body parsers are passed via BootOptions.middlewares as function-form globals
+ * so they mount INSIDE useExpressControllers AFTER the ALS wrapper, honoring D-11/D-18.
  */
 export async function createExpressServer(options: BootOptions): Promise<Express> {
   const app = express();
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-  return useExpressControllers(app, options);
+  // D-11/D-18: ALS wrapper is the OUTERMOST — body parsers must come AFTER it.
+  // We achieve this by passing body parsers as the first global before-middlewares so they
+  // are mounted by useExpressControllers AFTER the ALS wrapper.
+  const bodyParsers = [
+    express.json() as import('express').RequestHandler,
+    express.urlencoded({ extended: true }) as import('express').RequestHandler,
+  ];
+  const mergedMiddlewares = [...bodyParsers, ...(options.middlewares ?? [])];
+  return useExpressControllers(app, { ...options, middlewares: mergedMiddlewares });
 }
