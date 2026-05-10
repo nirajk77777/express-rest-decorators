@@ -9,3 +9,4 @@ docs/
 pnpm-debug.log*
 .planning/
 .claude/
+CLAUDE.md
