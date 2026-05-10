@@ -1,0 +1,8 @@
+{
+  "mode": "pre",
+  "tag": "rc",
+  "initialVersions": {
+    "@nirajk/express-controllers": "0.0.0"
+  },
+  "changesets": []
+}
