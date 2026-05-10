@@ -137,8 +137,16 @@ describe('Phase 2 grep gates — structural invariants', () => {
 
     // Locate function bodies by name. We don't need to parse — split on the
     // function declarations and inspect the slice belonging to each.
-    const useIdx = stripped.indexOf('export function useExpressControllers');
-    const createIdx = stripped.indexOf('export function createExpressServer');
+    // Phase 3 breaking change: these functions are now async, so search for
+    // both 'export function' and 'export async function'.
+    const useIdx = Math.max(
+      stripped.indexOf('export function useExpressControllers'),
+      stripped.indexOf('export async function useExpressControllers'),
+    );
+    const createIdx = Math.max(
+      stripped.indexOf('export function createExpressServer'),
+      stripped.indexOf('export async function createExpressServer'),
+    );
     expect(useIdx, 'useExpressControllers not found in boot.ts').toBeGreaterThan(-1);
     expect(createIdx, 'createExpressServer not found in boot.ts').toBeGreaterThan(-1);
 
@@ -164,8 +172,15 @@ describe('Phase 2 grep gates — structural invariants', () => {
 
   it('Gate 6 — buildMetadata called exactly once per useExpressControllers', () => {
     const stripped = readWithoutComments('src/adapter/boot.ts');
-    const useIdx = stripped.indexOf('export function useExpressControllers');
-    const createIdx = stripped.indexOf('export function createExpressServer');
+    // Phase 3 breaking change: functions are now async
+    const useIdx = Math.max(
+      stripped.indexOf('export function useExpressControllers'),
+      stripped.indexOf('export async function useExpressControllers'),
+    );
+    const createIdx = Math.max(
+      stripped.indexOf('export function createExpressServer'),
+      stripped.indexOf('export async function createExpressServer'),
+    );
     expect(useIdx).toBeGreaterThan(-1);
     const useBody =
       useIdx < createIdx && createIdx > -1

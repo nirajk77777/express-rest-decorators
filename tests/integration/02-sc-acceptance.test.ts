@@ -10,6 +10,9 @@
  * SC #3 — Async throw → libraryErrorMiddleware exactly once; native v5 propagation; no try/catch around handlers.
  * SC #4 — v4 path patterns throw at registration with ctl.method + suggestion; v8 patterns work end-to-end.
  * SC #5 — JSON / primitive / null / string / Buffer / stream / async-iterable response writing + @Header end-to-end.
+ *
+ * Phase 3 breaking change: useExpressControllers and createExpressServer are now async.
+ * All call sites updated to await the result.
  */
 import 'reflect-metadata';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -86,7 +89,7 @@ describe("SC #1 — useExpressControllers / createExpressServer; multi-controlle
   }
 
   it('createExpressServer mounts body-parsers and routes (D-01, D-02)', async () => {
-    const app = createExpressServer({ controllers: [SC1Users] });
+    const app = await createExpressServer({ controllers: [SC1Users] });
     const res = await request(app)
       .post('/users')
       .send({ email: 'a@b.co', name: 'Niraj' })
@@ -100,7 +103,7 @@ describe("SC #1 — useExpressControllers / createExpressServer; multi-controlle
   });
 
   it('useExpressControllers respects routePrefix and multiple controllers', async () => {
-    const app = createExpressServer({
+    const app = await createExpressServer({
       controllers: [SC1Users, SC1Text],
       routePrefix: '/api',
     });
@@ -114,7 +117,7 @@ describe("SC #1 — useExpressControllers / createExpressServer; multi-controlle
   });
 
   it('controller inheritance — derived controller exposes both inherited and own routes', async () => {
-    const app = createExpressServer({ controllers: [SC1Derived] });
+    const app = await createExpressServer({ controllers: [SC1Derived] });
 
     const inherited = await request(app).get('/derived/ping');
     expect(inherited.status).toBe(200);
@@ -185,7 +188,7 @@ describe('SC #2 — Standard Schema validation (Zod/Valibot/ArkType); failure �
   }
 
   it('Zod body schema — happy path returns transformed value in handler arg', async () => {
-    const app = createExpressServer({ controllers: [ZodCtl] });
+    const app = await createExpressServer({ controllers: [ZodCtl] });
     const res = await request(app)
       .post('/zod')
       .send({ email: 'a@b.co', name: 'Niraj' })
@@ -195,21 +198,21 @@ describe('SC #2 — Standard Schema validation (Zod/Valibot/ArkType); failure �
   });
 
   it('Valibot query schema — happy path', async () => {
-    const app = createExpressServer({ controllers: [ValiCtl] });
+    const app = await createExpressServer({ controllers: [ValiCtl] });
     const res = await request(app).get('/valibot?x=hello');
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ vendor: 'valibot', x: 'hello' });
   });
 
   it('ArkType params schema — happy path', async () => {
-    const app = createExpressServer({ controllers: [ArkCtl] });
+    const app = await createExpressServer({ controllers: [ArkCtl] });
     const res = await request(app).get('/things/42');
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ vendor: 'arktype', id: 42 });
   });
 
   it('failure on multiple slots → single BadRequestError with aggregate details + source', async () => {
-    const app = createExpressServer({ controllers: [MultiCtl] });
+    const app = await createExpressServer({ controllers: [MultiCtl] });
     // Bad params (id=-1 fails positive int) AND bad body (bad email + empty name).
     const res = await request(app)
       .post('/multi/-1')
@@ -264,7 +267,7 @@ describe('SC #3 — async throw → libraryErrorMiddleware exactly once; native 
   it('async handler that throws → 500 with InternalServerError envelope; err.source attached', async () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      const app = createExpressServer({ controllers: [SC3Ctl] });
+      const app = await createExpressServer({ controllers: [SC3Ctl] });
       const res = await request(app).get('/sc3/boom');
       expect(res.status).toBe(500);
       expect(res.body.name).toBe('InternalServerError');
@@ -277,7 +280,7 @@ describe('SC #3 — async throw → libraryErrorMiddleware exactly once; native 
   });
 
   it('handler that throws HttpError → status from err.status, toJSON shape preserved', async () => {
-    const app = createExpressServer({ controllers: [SC3Ctl] });
+    const app = await createExpressServer({ controllers: [SC3Ctl] });
     const res = await request(app).get('/sc3/notfound');
     expect(res.status).toBe(404);
     expect(res.body.name).toBe('NotFoundError');
@@ -298,7 +301,7 @@ describe('SC #3 — async throw → libraryErrorMiddleware exactly once; native 
       // through a second useExpressControllers([]) call.
       const app = express();
       app.use(express.json());
-      useExpressControllers(app, {
+      await useExpressControllers(app, {
         controllers: [SC3Ctl],
         defaultErrorHandler: false,
       });
@@ -309,7 +312,7 @@ describe('SC #3 — async throw → libraryErrorMiddleware exactly once; native 
         },
       );
       // Mount the lib error middleware via a no-controller boot.
-      useExpressControllers(app, { controllers: [] });
+      await useExpressControllers(app, { controllers: [] });
       const res = await request(app).get('/sc3/boom');
       expect(res.status).toBe(500);
       expect(res.body.name).toBe('InternalServerError');
@@ -324,7 +327,7 @@ describe('SC #3 — async throw → libraryErrorMiddleware exactly once; native 
   it('post-headers stream error → headersSent guard destroys response without "headers already sent" throw', async () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      const app = createExpressServer({ controllers: [SC3Ctl] });
+      const app = await createExpressServer({ controllers: [SC3Ctl] });
       // The stream emits one chunk, response headers flush, then errors.
       // Per D-14, libraryErrorMiddleware sees res.headersSent === true and
       // destroys the response WITHOUT calling res.json. The test asserts
@@ -364,7 +367,7 @@ describe('SC #3 — async throw → libraryErrorMiddleware exactly once; native 
 // suggestion; valid v8 patterns work end-to-end.
 // ---------------------------------------------------------------------------
 describe('SC #4 — path-to-regexp v8 footguns rejected at boot; valid v8 works end-to-end', () => {
-  it('rejects bare * with named-wildcard suggestion', () => {
+  it('rejects bare * with named-wildcard suggestion', async () => {
     @JsonController('/files')
     class FixtureA {
       @Get('/*')
@@ -372,12 +375,12 @@ describe('SC #4 — path-to-regexp v8 footguns rejected at boot; valid v8 works 
         return {};
       }
     }
-    expect(() =>
+    await expect(
       createExpressServer({ controllers: [FixtureA] }),
-    ).toThrow(/\[FixtureA\.a\] Path ".+" uses v4 pattern "\*"; .* "\*splat or \{\*splat\}" instead\./);
+    ).rejects.toThrow(/\[FixtureA\.a\] Path ".+" uses v4 pattern "\*"; .* "\*splat or \{\*splat\}" instead\./);
   });
 
-  it('rejects :id? with optional-segment suggestion', () => {
+  it('rejects :id? with optional-segment suggestion', async () => {
     @JsonController('/users')
     class FixtureB {
       @Get('/:id?')
@@ -385,12 +388,12 @@ describe('SC #4 — path-to-regexp v8 footguns rejected at boot; valid v8 works 
         return {};
       }
     }
-    expect(() =>
+    await expect(
       createExpressServer({ controllers: [FixtureB] }),
-    ).toThrow(/\[FixtureB\.b\] Path ".+" uses v4 pattern ":id\?"; .* "\{\/:id\} optional segment form" instead\./);
+    ).rejects.toThrow(/\[FixtureB\.b\] Path ".+" uses v4 pattern ":id\?"; .* "\{\/:id\} optional segment form" instead\./);
   });
 
-  it('rejects :id(regex) with schema-validation suggestion', () => {
+  it('rejects :id(regex) with schema-validation suggestion', async () => {
     @JsonController('/posts')
     class FixtureC {
       @Get('/:id(\\d+)')
@@ -398,12 +401,12 @@ describe('SC #4 — path-to-regexp v8 footguns rejected at boot; valid v8 works 
         return {};
       }
     }
-    expect(() =>
+    await expect(
       createExpressServer({ controllers: [FixtureC] }),
-    ).toThrow(/\[FixtureC\.c\] Path ".+" uses v4 pattern ":id\(\\d\+\)"; .* "move regex to schema validation in the input declaration" instead\./);
+    ).rejects.toThrow(/\[FixtureC\.c\] Path ".+" uses v4 pattern ":id\(\\d\+\)"; .* "move regex to schema validation in the input declaration" instead\./);
   });
 
-  it('rejects (regex) unnamed group with named-param suggestion', () => {
+  it('rejects (regex) unnamed group with named-param suggestion', async () => {
     @JsonController('/x')
     class FixtureD {
       @Get('/(.*)')
@@ -411,9 +414,9 @@ describe('SC #4 — path-to-regexp v8 footguns rejected at boot; valid v8 works 
         return {};
       }
     }
-    expect(() =>
+    await expect(
       createExpressServer({ controllers: [FixtureD] }),
-    ).toThrow(/\[FixtureD\.d\] Path ".+" uses v4 pattern "\(\.\*\)"; .* "name the parameter \(e\.g\. :path\)" instead\./);
+    ).rejects.toThrow(/\[FixtureD\.d\] Path ".+" uses v4 pattern "\(\.\*\)"; .* "name the parameter \(e\.g\. :path\)" instead\./);
   });
 
   it('valid v8 patterns work end-to-end', async () => {
@@ -429,7 +432,7 @@ describe('SC #4 — path-to-regexp v8 footguns rejected at boot; valid v8 works 
         return { kind: 'optional', params };
       }
     }
-    const app = createExpressServer({ controllers: [V8Ctl] });
+    const app = await createExpressServer({ controllers: [V8Ctl] });
     const r1 = await request(app).get('/v8/files/a/b/c');
     expect(r1.status).toBe(200);
     expect(r1.body.kind).toBe('splat');
@@ -505,7 +508,7 @@ describe('SC #5 — response writing: JSON, primitive, stream, async iterable, @
   }
 
   it('@JsonController returning plain object → application/json', async () => {
-    const app = createExpressServer({ controllers: [SC5Json] });
+    const app = await createExpressServer({ controllers: [SC5Json] });
     const res = await request(app).get('/sc5j/object');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch(/application\/json/);
@@ -513,7 +516,7 @@ describe('SC #5 — response writing: JSON, primitive, stream, async iterable, @
   });
 
   it('@JsonController returning primitive → JSON-encoded primitive', async () => {
-    const app = createExpressServer({ controllers: [SC5Json] });
+    const app = await createExpressServer({ controllers: [SC5Json] });
     const res = await request(app).get('/sc5j/primitive');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch(/application\/json/);
@@ -521,14 +524,14 @@ describe('SC #5 — response writing: JSON, primitive, stream, async iterable, @
   });
 
   it('@JsonController returning null → 204 No Content (default, no @OnNull)', async () => {
-    const app = createExpressServer({ controllers: [SC5Json] });
+    const app = await createExpressServer({ controllers: [SC5Json] });
     const res = await request(app).get('/sc5j/null-default');
     expect(res.status).toBe(204);
     expect(res.text === '' || res.text === undefined).toBe(true);
   });
 
   it('@Controller returning string → text/html', async () => {
-    const app = createExpressServer({ controllers: [SC5Text] });
+    const app = await createExpressServer({ controllers: [SC5Text] });
     const res = await request(app).get('/sc5t/string');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch(/text\/html/);
@@ -536,21 +539,21 @@ describe('SC #5 — response writing: JSON, primitive, stream, async iterable, @
   });
 
   it('@JsonController returning a Node Readable stream → piped to response with backpressure', async () => {
-    const app = createExpressServer({ controllers: [SC5Json] });
+    const app = await createExpressServer({ controllers: [SC5Json] });
     const res = await request(app).get('/sc5j/stream');
     expect(res.status).toBe(200);
     expect(res.text).toBe('chunk-achunk-b');
   });
 
   it('@JsonController returning an async iterable → piped via Readable.from', async () => {
-    const app = createExpressServer({ controllers: [SC5Json] });
+    const app = await createExpressServer({ controllers: [SC5Json] });
     const res = await request(app).get('/sc5j/iter');
     expect(res.status).toBe(200);
     expect(res.text).toBe('xy');
   });
 
   it('@Header() decorator end-to-end — header from Phase 1 decorator arrives on the wire', async () => {
-    const app = createExpressServer({ controllers: [SC5Header] });
+    const app = await createExpressServer({ controllers: [SC5Header] });
     const res = await request(app).get('/sc5h/h');
     expect(res.status).toBe(200);
     expect(res.headers['x-custom-header']).toBe('phase2');

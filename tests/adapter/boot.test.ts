@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import {
@@ -50,7 +50,7 @@ beforeEach(() => resetContainer());
 describe('boot — public Phase 2 API', () => {
   // Test 1: createExpressServer auto-mounts body-parsers (D-02, API-02)
   it('createExpressServer auto-mounts body-parsers and accepts JSON POST', async () => {
-    const app = createExpressServer({ controllers: [UsersController] });
+    const app = await createExpressServer({ controllers: [UsersController] });
     const res = await request(app)
       .post('/users')
       .send({ email: 'a@b.co', name: 'Niraj' })
@@ -67,7 +67,7 @@ describe('boot — public Phase 2 API', () => {
   it('useExpressControllers works when caller mounts express.json()', async () => {
     const app = express();
     app.use(express.json());
-    useExpressControllers(app, { controllers: [UsersController] });
+    await useExpressControllers(app, { controllers: [UsersController] });
     const res = await request(app)
       .post('/users')
       .send({ email: 'a@b.co', name: 'Niraj' })
@@ -80,7 +80,7 @@ describe('boot — public Phase 2 API', () => {
   it('useExpressControllers does NOT auto-mount body-parser (D-02 asymmetry)', async () => {
     const app = express();
     // Intentionally no app.use(express.json())
-    useExpressControllers(app, { controllers: [UsersController] });
+    await useExpressControllers(app, { controllers: [UsersController] });
     const res = await request(app)
       .post('/users')
       .send({ email: 'a@b.co', name: 'Niraj' })
@@ -91,10 +91,11 @@ describe('boot — public Phase 2 API', () => {
     expect(res.body.name).toBe('BadRequestError');
   });
 
-  // Test 3: API-01 returns the same app
-  it('useExpressControllers returns the same app instance', () => {
+  // Test 3: API-01 returns a Promise resolving to the same app
+  // Phase 3 breaking change: useExpressControllers is now async (returns Promise<Express>)
+  it('useExpressControllers (awaited) returns the same app instance', async () => {
     const app = express();
-    const ret = useExpressControllers(app, { controllers: [] });
+    const ret = await useExpressControllers(app, { controllers: [] });
     expect(ret).toBe(app);
   });
 
@@ -103,7 +104,7 @@ describe('boot — public Phase 2 API', () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     try {
-      const app = createExpressServer({
+      const app = await createExpressServer({
         controllers: [UsersController],
         routePrefix: '/api',
         defaultErrorHandler: true,
@@ -128,7 +129,7 @@ describe('boot — public Phase 2 API', () => {
 
   // Test 5: routePrefix composition (D-04)
   it('applies routePrefix to all controllers (D-04)', async () => {
-    const app = createExpressServer({
+    const app = await createExpressServer({
       controllers: [UsersController],
       routePrefix: '/api/v1',
     });
@@ -139,7 +140,7 @@ describe('boot — public Phase 2 API', () => {
 
   // Test 6: Multiple controllers (ROUTE-05)
   it('mounts multiple controllers (ROUTE-05)', async () => {
-    const app = createExpressServer({
+    const app = await createExpressServer({
       controllers: [UsersController, TextController],
     });
     const r1 = await request(app).get('/users/9');
@@ -155,7 +156,7 @@ describe('boot — public Phase 2 API', () => {
   // its own /derived/own and the inherited /derived/ping (parent's @Get('/ping')
   // composed with the SUBCLASS basePath '/derived' per Phase 1 D-06).
   it('honors controller inheritance — both parent and own routes available', async () => {
-    const app = createExpressServer({ controllers: [DerivedController] });
+    const app = await createExpressServer({ controllers: [DerivedController] });
 
     const own = await request(app).get('/derived/own');
     expect(own.status).toBe(200);
@@ -171,7 +172,7 @@ describe('boot — public Phase 2 API', () => {
     // Silence Express's default error logger while we deliberately throw.
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      const app = createExpressServer({
+      const app = await createExpressServer({
         controllers: [ErrorThrowingControllerNoHandler],
         defaultErrorHandler: false,
       });
@@ -191,7 +192,7 @@ describe('boot — public Phase 2 API', () => {
     const prevEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
     try {
-      const app = createExpressServer({
+      const app = await createExpressServer({
         controllers: [ErrorThrowingController],
       });
       const res = await request(app).get('/err/boom');
@@ -209,7 +210,7 @@ describe('boot — public Phase 2 API', () => {
 
   // Test 10: vertical slice — Zod validation failure → 400 with details
   it('Zod validation failure → 400 with aggregated details (INPUT-03)', async () => {
-    const app = createExpressServer({ controllers: [UsersController] });
+    const app = await createExpressServer({ controllers: [UsersController] });
     const res = await request(app)
       .post('/users')
       .send({ email: 'not-email', name: '' })
@@ -228,7 +229,7 @@ describe('boot — public Phase 2 API', () => {
 
   // Test 11: null return + @OnNull(404) → 404 empty body (D-13)
   it('null return + @OnNull(404) → 404 with empty body', async () => {
-    const app = createExpressServer({ controllers: [ItemsController] });
+    const app = await createExpressServer({ controllers: [ItemsController] });
     const res = await request(app).get('/items/missing');
     expect(res.status).toBe(404);
     expect(res.text).toBe('');

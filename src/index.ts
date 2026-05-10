@@ -46,3 +46,10 @@ export type {
   AuthorizationChecker,
   CurrentUserChecker,
 } from './adapter/boot-options.js';
+
+// Phase 3 — middleware/interceptor/auth interfaces (type-only)
+export type {
+  ExpressMiddlewareInterface,
+  ExpressErrorMiddlewareInterface,
+  InterceptorInterface,
+} from './interfaces/index.js';
