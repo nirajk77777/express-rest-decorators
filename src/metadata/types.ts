@@ -1,3 +1,7 @@
+import type { StandardSchemaV1 } from '../types/standard-schema.js';
+
+export type HookEntry = Function;
+
 export type ResponseHandlerType =
   | 'success-code'
   | 'null-result-code'
@@ -16,12 +20,17 @@ export interface InputDeclaration {
   query?: unknown;
   body?: unknown;
   headers?: unknown;
+  currentUser?: true | StandardSchemaV1;
 }
 
 export interface ControllerArgs {
   basePath: string;
   type: 'json' | 'default';
   responseHandlers: ResponseHandlerArgs[];
+  useBefore?: HookEntry[];
+  useAfter?: HookEntry[];
+  interceptors?: Function[];
+  authorized?: string[] | null;
 }
 
 export interface MethodArgs {
@@ -31,4 +40,8 @@ export interface MethodArgs {
   returnType?: Function;
   paramTypes?: Function[];
   responseHandlers: ResponseHandlerArgs[];
+  useBefore?: HookEntry[];
+  useAfter?: HookEntry[];
+  interceptors?: Function[];
+  authorized?: string[] | null;
 }

@@ -3,6 +3,23 @@ import type { ControllerArgs, MethodArgs } from './types.js';
 const controllerMap = new WeakMap<Function, ControllerArgs>();
 const methodMap = new WeakMap<object, Map<string | symbol, MethodArgs>>();
 
+// Module-private middleware registry
+const middlewareTypeMap = new WeakMap<Function, 'before' | 'after'>();
+const middlewareClassSet = new Set<Function>();
+
+export function markAsMiddleware(cls: Function, type: 'before' | 'after'): void {
+  middlewareTypeMap.set(cls, type);
+  middlewareClassSet.add(cls);
+}
+
+export function getMiddlewareType(cls: Function): 'before' | 'after' | undefined {
+  return middlewareTypeMap.get(cls);
+}
+
+export function getRegisteredMiddlewareClasses(): ReadonlySet<Function> {
+  return middlewareClassSet;
+}
+
 export function getOrInitControllerArgs(ctor: Function): ControllerArgs {
   let entry = controllerMap.get(ctor);
   if (!entry) {
