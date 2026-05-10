@@ -50,4 +50,13 @@ export interface BootOptions {
 
   /** Phase 4 — log a route table at boot. Phase 2 accepts and ignores. */
   printRoutes?: boolean;
+
+  /**
+   * WR-03: optional logger for the rare "error arrived after res.headersSent"
+   * path inside libraryErrorMiddleware. The library normally calls
+   * `console.error` for this case; setting `onLogError` redirects it (e.g.
+   * to a structured-log daemon, or `() => {}` to silence). The supplied
+   * function MUST NOT throw.
+   */
+  onLogError?: (err: unknown) => void;
 }

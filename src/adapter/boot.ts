@@ -19,7 +19,7 @@ import {
 import { resolveInputs } from './validation.js';
 import { writeResponse } from './response.js';
 import { wrapAction } from './handler-wrapper.js';
-import { libraryErrorMiddleware, isErrorMiddlewareInstance } from './error-middleware.js';
+import { libraryErrorMiddleware, makeLibraryErrorMiddleware, isErrorMiddlewareInstance } from './error-middleware.js';
 import { isClassForm, toRequestHandlers, resolveMiddlewareClass } from './middleware.js';
 import { resolveInterceptorClasses, runInterceptors } from './interceptor.js';
 import { resolveCurrentUser } from './auth.js';
@@ -197,8 +197,15 @@ export async function useExpressControllers(
         (instance.use as (e: unknown, q: Request, s: Response, n: NextFunction) => unknown)(err, req, res, next)
       ) as ErrorRequestHandler);
     }
-    // Library fallback error middleware (always last)
-    app.use(libraryErrorMiddleware);
+    // Library fallback error middleware (always last). WR-03: when the
+    // user provides `onLogError`, we mount a factory-built variant so
+    // the headers-sent path uses their logger; otherwise the named
+    // export (which uses console.error) is mounted.
+    if (options.onLogError) {
+      app.use(makeLibraryErrorMiddleware({ onLogError: options.onLogError }));
+    } else {
+      app.use(libraryErrorMiddleware);
+    }
   }
 
   return app;

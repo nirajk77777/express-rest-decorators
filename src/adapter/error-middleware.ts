@@ -1,5 +1,13 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import { HttpError } from '../errors/http-error.js';
+
+/**
+ * Optional logger used when an error arrives after `res.headersSent`.
+ * If omitted, the library falls back to `console.error`. WR-03 — gives
+ * consumers in quiet logging environments (lambda, structured-log
+ * daemons) an opt-out / redirect.
+ */
+export type ErrorAfterHeadersLogger = (err: unknown) => void;
 
 /**
  * D-15: detect whether a class-form @Middleware instance should be mounted as
@@ -26,6 +34,38 @@ export function isErrorMiddlewareInstance(instance: unknown): boolean {
  * D-18 — HttpError → toJSON; non-HttpError → generic 500 envelope; dev disclosure
  * adds stack + _devMessage when NODE_ENV !== 'production'.
  */
+/**
+ * WR-03: factory variant. Produces a libraryErrorMiddleware bound to a
+ * caller-supplied logger for the headers-sent path. `useExpressControllers`
+ * uses this when `BootOptions.onLogError` is set; otherwise the
+ * `libraryErrorMiddleware` named export below (which uses `console.error`)
+ * is mounted directly.
+ */
+export function makeLibraryErrorMiddleware(
+  opts: { onLogError?: ErrorAfterHeadersLogger } = {},
+): ErrorRequestHandler {
+  const log: ErrorAfterHeadersLogger =
+    opts.onLogError ??
+    ((err: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error('[express-controllers] error after headers sent:', err);
+    });
+  return function libraryErrorMiddlewareInstance(
+    err: unknown,
+    _req: Request,
+    res: Response,
+    _next: NextFunction,
+  ): void {
+    // D-14 / Pitfall B
+    if (res.headersSent) {
+      log(err);
+      res.destroy(err instanceof Error ? err : new Error(String(err)));
+      return;
+    }
+    writeErrorBody(err, res);
+  };
+}
+
 export function libraryErrorMiddleware(
   err: unknown,
   _req: Request,
@@ -39,6 +79,11 @@ export function libraryErrorMiddleware(
     res.destroy(err instanceof Error ? err : new Error(String(err)));
     return;
   }
+  writeErrorBody(err, res);
+}
+
+/** Shared response-writing path between the named export and the factory. */
+function writeErrorBody(err: unknown, res: Response): void {
 
   const isProd = process.env.NODE_ENV === 'production';
 
