@@ -1,4 +1,4 @@
-import type { Action } from '../types/action.js';
+import type { Action, ClassConstructor } from '../types/action.js';
 import type { InterceptorInterface } from '../interfaces/interceptor.js';
 import { getContainer } from '../container/use-container.js';
 import { isMarkedAsInterceptor } from '../metadata/storage.js';
@@ -20,7 +20,10 @@ export async function resolveInterceptorClasses(
           `but was passed to BootOptions.interceptors or @UseInterceptor.`,
       );
     }
-    const instance = await Promise.resolve(getContainer().get(cls as never));
+    // WR-05: cast through ClassConstructor<unknown> rather than `as never`.
+    const instance = await Promise.resolve(
+      getContainer().get(cls as unknown as ClassConstructor<unknown>),
+    );
     const interceptFn = (instance as { intercept?: unknown }).intercept;
     if (typeof interceptFn !== 'function') {
       throw new Error(

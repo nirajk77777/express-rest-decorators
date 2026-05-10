@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction, RequestHandler } from 'express';
 import { getContainer } from '../container/use-container.js';
+import type { ClassConstructor } from '../types/action.js';
 
 /**
  * D-06: distinguishes function-form from class-form middleware.
@@ -26,7 +27,13 @@ export interface ResolvedMiddleware {
 }
 
 export async function resolveMiddlewareClass(cls: Function): Promise<ResolvedMiddleware> {
-  const instance = await Promise.resolve(getContainer().get(cls as never));
+  // WR-05: cast through ClassConstructor<unknown> rather than `as never`.
+  // The runtime accepts both class constructors and (incorrectly) bare
+  // functions; isClassForm ensures the function actually has a use()
+  // method on its prototype, so newing it inside DefaultContainer is safe.
+  const instance = await Promise.resolve(
+    getContainer().get(cls as unknown as ClassConstructor<unknown>),
+  );
   const useFn = (instance as { use?: unknown }).use;
   if (typeof useFn !== 'function') {
     throw new Error(

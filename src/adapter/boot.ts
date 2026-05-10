@@ -56,8 +56,11 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
         : undefined;
 
       const args = await resolveInputs(req, action.input, currentUserResolver);
+      // WR-05: ControllerMetadata.target is typed `Function` (the legacy
+      // decorator surface). Cast through ClassConstructor<unknown> rather
+      // than `as never`.
       const instance = await getContainer().get(
-        controllerMeta.target as never,
+        controllerMeta.target as unknown as import('../types/action.js').ClassConstructor<unknown>,
       );
       const handlerArgs = { ...args, req, res, next };
       const target = instance as Record<
