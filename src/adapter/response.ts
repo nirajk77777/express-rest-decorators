@@ -136,6 +136,7 @@ export function writeResponse(
       204;
     res.status(code);
     res.end();
+    next();
     return;
   }
 
@@ -147,6 +148,7 @@ export function writeResponse(
       204;
     res.status(code);
     res.end();
+    next();
     return;
   }
 
@@ -161,6 +163,9 @@ export function writeResponse(
 
   // 4. Stream first (D-12 — order matters; streams are also iterable)
   if (isStreamLike(value)) {
+    // Register finish handler BEFORE pipe() so next() fires after streaming completes.
+    // On error, forwardStreamError calls next(err) — skipping @UseAfter per D-10.
+    res.on('finish', () => next());
     value.on('error', (err: unknown) =>
       forwardStreamError(res, next, source, err),
     );
@@ -171,6 +176,8 @@ export function writeResponse(
   // 5. Async iterable second (D-12)
   if (isAsyncIterable(value)) {
     const stream = Readable.from(value);
+    // Register finish handler on res (consistent with stream branch).
+    res.on('finish', () => next());
     stream.on('error', (err: unknown) =>
       forwardStreamError(res, next, source, err),
     );
@@ -181,16 +188,20 @@ export function writeResponse(
   // 6. Plain value (D-11)
   if (controllerMeta.type === 'json') {
     res.json(value);
+    next();
     return;
   }
   // @Controller content-negotiate
   if (typeof value === 'string') {
     res.send(value);
+    next();
     return;
   }
   if (Buffer.isBuffer(value)) {
     res.send(value);
+    next();
     return;
   }
   res.json(value);
+  next();
 }
