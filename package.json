@@ -34,7 +34,10 @@
       ".": "./src/index.ts",
       "./package.json": "./package.json"
     },
-    "dialects": ["esm", "commonjs"],
+    "dialects": [
+      "esm",
+      "commonjs"
+    ],
     "main": false,
     "selfLink": false
   },
@@ -63,12 +66,24 @@
     "tinyglobby": "^0.2.0"
   },
   "peerDependenciesMeta": {
-    "express": { "optional": false },
-    "multer": { "optional": true },
-    "cors": { "optional": true },
-    "cookie": { "optional": true },
-    "express-session": { "optional": true },
-    "tinyglobby": { "optional": true }
+    "express": {
+      "optional": false
+    },
+    "multer": {
+      "optional": true
+    },
+    "cors": {
+      "optional": true
+    },
+    "cookie": {
+      "optional": true
+    },
+    "express-session": {
+      "optional": true
+    },
+    "tinyglobby": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.2",
@@ -97,5 +112,19 @@
     "valibot": "^1.0.0",
     "vitest": "^3.1.0",
     "zod": "^4.0.0"
-  }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "module": "./dist/esm/index.js"
 }

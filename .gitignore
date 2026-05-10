@@ -3,6 +3,7 @@ dist
 coverage
 *.log
 .DS_Store
+.tshy/
 .tshy-build/
 docs/
 pnpm-debug.log*
