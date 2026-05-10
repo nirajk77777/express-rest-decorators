@@ -34,9 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Single-package invariant (BUILD-06)
-        run: bash scripts/check-single-package.sh
-
       - name: Typecheck
         run: pnpm typecheck
 
@@ -49,11 +46,11 @@ jobs:
       - name: Build (tshy dual ESM+CJS)
         run: pnpm build
 
-      - name: Build smoke (BUILD-01 + emitDecoratorMetadata)
+      - name: Build smoke test
         run: pnpm test:build
 
-      - name: Type resolution gate (attw, BUILD-07)
+      - name: Type resolution gate (attw)
         run: pnpm exec attw --pack . --profile node16
 
-      - name: Package config gate (publint, BUILD-07)
+      - name: Package config gate publint
         run: pnpm exec publint

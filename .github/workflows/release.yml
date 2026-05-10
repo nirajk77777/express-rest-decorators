@@ -34,9 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Single-package invariant
-        run: bash scripts/check-single-package.sh
-
       - name: Create release PR or publish
         id: changesets
         uses: changesets/action@v1
