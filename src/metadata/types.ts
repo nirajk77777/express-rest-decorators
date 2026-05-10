@@ -39,6 +39,8 @@ export interface InputDeclaration {
   cookies?: Record<string, true | StandardSchemaV1>;
   /** Phase 4 D-02: session pass-through (true) or validated. req.session is wired by the consumer. */
   session?: true | StandardSchemaV1;
+  /** Phase 4 D-03: slot-based file upload declarations. Factory functions UploadedFile/UploadedFiles return markers. */
+  files?: Record<string, import('../types/uploads.js').AnyUploadMarker>;
 }
 
 export interface ControllerArgs {
