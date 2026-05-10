@@ -1,30 +1,94 @@
 {
-  "name": "express-controllers",
+  "name": "@nirajk/express-controllers",
   "version": "0.0.0",
   "description": "Decorator-based REST controllers for Express v5 (modernized routing-controllers successor)",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "license": "MIT",
   "engines": {
     "node": ">=20.0.0"
   },
+  "packageManager": "pnpm@10.33.4",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "MIGRATION.md"
+  ],
+  "keywords": [
+    "express",
+    "express5",
+    "controllers",
+    "decorators",
+    "rest",
+    "routing",
+    "typescript",
+    "validation",
+    "standard-schema",
+    "zod",
+    "valibot",
+    "arktype"
+  ],
+  "tshy": {
+    "exports": {
+      ".": "./src/index.ts",
+      "./package.json": "./package.json"
+    },
+    "dialects": [
+      "esm",
+      "commonjs"
+    ],
+    "main": false,
+    "selfLink": false
+  },
   "scripts": {
+    "build": "tshy",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:forks": "vitest run --pool=forks",
+    "test:threads": "vitest run --pool=threads",
+    "test:watch": "vitest",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "docs:build": "typedoc",
+    "release": "pnpm build && attw --pack . --profile node16 && publint && changeset publish --provenance",
+    "prepublishOnly": "pnpm build && attw --pack . --profile node16 && publint"
   },
   "dependencies": {
     "reflect-metadata": "^0.2.2"
   },
   "peerDependencies": {
-    "express": "^5.0.0"
+    "express": "^5.1.0",
+    "multer": "^2.0.0",
+    "cors": "^2.8.5",
+    "cookie": "^1.0.0",
+    "express-session": "^1.18.0",
+    "tinyglobby": "^0.2.0"
   },
   "peerDependenciesMeta": {
     "express": {
       "optional": false
+    },
+    "multer": {
+      "optional": true
+    },
+    "cors": {
+      "optional": true
+    },
+    "cookie": {
+      "optional": true
+    },
+    "express-session": {
+      "optional": true
+    },
+    "tinyglobby": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.2",
+    "@biomejs/biome": "2.4.15",
+    "@changesets/cli": "2.31.0",
     "@standard-schema/spec": "^1.1.0",
     "@swc/core": "^1.15.33",
     "@types/cookie": "^0.6.0",
@@ -38,12 +102,29 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "multer": "^2.1.1",
+    "publint": "0.3.20",
     "supertest": "^7.0.0",
     "tinyglobby": "^0.2.16",
+    "tshy": "3.3.2",
+    "typedoc": "0.28.19",
     "typescript": "^5.9.2",
     "unplugin-swc": "^1.5.9",
     "valibot": "^1.0.0",
     "vitest": "^3.1.0",
     "zod": "^4.0.0"
-  }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "module": "./dist/esm/index.js"
 }
