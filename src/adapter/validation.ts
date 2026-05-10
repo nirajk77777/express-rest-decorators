@@ -3,6 +3,8 @@ import type { StandardSchemaV1 } from '../types/standard-schema.js';
 import type { InputDeclaration } from '../metadata/types.js';
 import { BadRequestError } from '../errors/subclasses.js';
 import type { ValidationIssue, ValidationSlot } from '../errors/http-error.js';
+import { resolveCookiesArm } from './cookies.js';
+import { resolveSessionArm } from './session.js';
 
 export function isStandardSchema(x: unknown): x is StandardSchemaV1 {
   // ArkType's schema is a callable (typeof === 'function') — Standard Schema spec
@@ -50,6 +52,10 @@ export interface ResolvedArgs {
   body: unknown;
   headers: unknown;
   currentUser?: unknown;
+  /** Phase 4 D-01: resolved per-key cookie values (or undefined if slot not declared). */
+  cookies?: Record<string, unknown>;
+  /** Phase 4 D-02: resolved session value (or undefined if slot not declared). */
+  session?: unknown;
 }
 
 type ReqSlot = 'params' | 'query' | 'body' | 'headers';
@@ -126,23 +132,29 @@ async function validateCurrentUser(
  * with checker + action already bound so this function stays Express/auth-agnostic).
  */
 export async function resolveInputs(
-  req: Pick<Request, 'params' | 'query' | 'body' | 'headers'>,
+  req: Pick<Request, 'params' | 'query' | 'body' | 'headers'> & { session?: unknown },
   input?: InputDeclaration,
   currentUserResolver?: () => Promise<unknown>,
 ): Promise<ResolvedArgs> {
   const decl = input ?? {};
-  const [results, currentUserResult] = await Promise.all([
+  const [results, currentUserResult, cookiesResult, sessionResult] = await Promise.all([
     Promise.all(
       SLOTS.map((s) =>
         validateSlot(s, (decl as Record<ReqSlot, unknown>)[s], req[s])
       )
     ),
     validateCurrentUser(decl.currentUser, currentUserResolver),
+    // Phase 4 D-04: cookies arm (arm 6)
+    resolveCookiesArm(req as Request, decl.cookies),
+    // Phase 4 D-04: session arm (arm 7)
+    resolveSessionArm(req as Request, decl.session),
   ]);
 
   const allIssues: ValidationIssue[] = [];
   for (const r of results) if (r.issues) allIssues.push(...r.issues);
   if (currentUserResult.issues) allIssues.push(...currentUserResult.issues);
+  if (cookiesResult.issues) allIssues.push(...cookiesResult.issues);
+  if (sessionResult.issues) allIssues.push(...sessionResult.issues);
 
   if (allIssues.length > 0) {
     throw new BadRequestError('Validation failed', { details: allIssues });
@@ -158,5 +170,7 @@ export async function resolveInputs(
     args[r.slot] = r.value;
   }
   args.currentUser = currentUserResult.value;
+  args.cookies = cookiesResult.value;
+  args.session = sessionResult.value;
   return args;
 }
