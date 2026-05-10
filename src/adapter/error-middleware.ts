@@ -2,6 +2,19 @@ import type { Request, Response, NextFunction } from 'express';
 import { HttpError } from '../errors/http-error.js';
 
 /**
+ * D-15: detect whether a class-form @Middleware instance should be mounted as
+ * Express ERROR middleware. Express's own algorithm — fn.length === 4. The
+ * Pitfall 2 footgun (use = (...args) => {}) is the user's responsibility;
+ * we may surface a runtime warning in a future iteration.
+ */
+export function isErrorMiddlewareInstance(instance: unknown): boolean {
+  if (instance === null || typeof instance !== 'object') return false;
+  const useFn = (instance as { use?: unknown }).use;
+  if (typeof useFn !== 'function') return false;
+  return useFn.length === 4;
+}
+
+/**
  * The single library-installed Express error middleware (D-15). Mounted automatically
  * by useExpressControllers AFTER all controller routers when defaultErrorHandler !== false.
  *
