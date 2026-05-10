@@ -1,0 +1,49 @@
+import type { Request, Response, NextFunction, RequestHandler } from 'express';
+import { getContainer } from '../container/use-container.js';
+
+/** D-06: distinguishes function-form from class-form middleware. */
+export function isClassForm(arg: unknown): boolean {
+  if (typeof arg !== 'function') return false;
+  const proto = (arg as { prototype?: unknown }).prototype;
+  return proto !== undefined && proto !== null;
+}
+
+export interface ResolvedMiddleware {
+  instance: { use: Function };
+  useFn: Function;
+}
+
+export async function resolveMiddlewareClass(cls: Function): Promise<ResolvedMiddleware> {
+  const instance = await Promise.resolve(getContainer().get(cls as never));
+  const useFn = (instance as { use?: unknown }).use;
+  if (typeof useFn !== 'function') {
+    throw new Error(
+      `[${cls.name || 'AnonymousMiddleware'}] Class-form middleware must implement a use() method. ` +
+        `Check that ${cls.name || 'this class'} implements ExpressMiddlewareInterface.`,
+    );
+  }
+  return { instance: instance as { use: Function }, useFn: useFn as Function };
+}
+
+/**
+ * Convert a hook-entry array (mix of function-form and class-form) into a flat array
+ * of RequestHandlers ready to spread into router.METHOD(path, ...handlers).
+ * Class instances are resolved once at compose time and closed over per D-05.
+ */
+export async function toRequestHandlers(hooks: ReadonlyArray<Function>): Promise<RequestHandler[]> {
+  const out: RequestHandler[] = [];
+  for (const hook of hooks) {
+    if (isClassForm(hook)) {
+      const { instance } = await resolveMiddlewareClass(hook);
+      const handler: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+        // Native v5 forwarding — return the (possibly Promise) result so any
+        // returned Promise auto-forwards rejections via Express v5.
+        return (instance.use as (r: Request, s: Response, n: NextFunction) => unknown)(req, res, next);
+      };
+      out.push(handler);
+    } else {
+      out.push(hook as RequestHandler);
+    }
+  }
+  return out;
+}
