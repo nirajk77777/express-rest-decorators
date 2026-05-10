@@ -1,6 +1,5 @@
 /**
  * Response shaper helpers for @Render, @Redirect, and @Location decorators.
- * Phase 4 D-05 / D-06 / D-07.
  *
  * Security note (T-04-16): interpolateTemplate uses a strict regex to match
  * only valid JS identifiers as placeholder names. Templates are developer-authored
@@ -37,7 +36,7 @@ export function interpolateTemplate(
 }
 
 /**
- * Apply @Redirect shaper (Phase 4 D-05):
+ * Apply @Redirect shaper:
  * - handler returned string → use verbatim (override template entirely)
  * - handler returned undefined or null → use bare template
  * - handler returned object → interpolate :name placeholders from object
@@ -66,7 +65,7 @@ export function applyRedirect(
 }
 
 /**
- * Apply @Render shaper (Phase 4 D-06):
+ * Apply @Render shaper:
  * - undefined or null → res.render(template) with no locals
  * - object → res.render(template, locals)
  * - anything else → throws actionable error
@@ -92,7 +91,7 @@ export function applyRender(
 }
 
 /**
- * Apply @Location shaper (Phase 4 D-07):
+ * Apply @Location shaper:
  * - Sets the Location response header only (does NOT redirect).
  * - Same URL resolution as @Redirect: string overrides, object interpolates, undefined uses template.
  * - Does NOT send a response body or status — caller falls through to writeResponse.

@@ -3,7 +3,7 @@ import { getContainer } from '../container/use-container.js';
 import type { ClassConstructor } from '../types/action.js';
 
 /**
- * D-06: distinguishes function-form from class-form middleware.
+ * Distinguishes function-form from class-form middleware.
  *
  * Heuristic: a class-form middleware MUST have a `use` method on its
  * prototype. Plain `function`-declared Express middleware
@@ -47,7 +47,7 @@ export async function resolveMiddlewareClass(cls: Function): Promise<ResolvedMid
 /**
  * Convert a hook-entry array (mix of function-form and class-form) into a flat array
  * of RequestHandlers ready to spread into router.METHOD(path, ...handlers).
- * Class instances are resolved once at compose time and closed over per D-05.
+ * Class instances are resolved once at compose time and closed over.
  */
 export async function toRequestHandlers(hooks: ReadonlyArray<Function>): Promise<RequestHandler[]> {
   const out: RequestHandler[] = [];

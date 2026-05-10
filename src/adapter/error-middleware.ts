@@ -10,7 +10,7 @@ import { HttpError } from '../errors/http-error.js';
 export type ErrorAfterHeadersLogger = (err: unknown) => void;
 
 /**
- * D-15: detect whether a class-form @Middleware instance should be mounted as
+ * Detect whether a class-form @Middleware instance should be mounted as
  * Express ERROR middleware. Express's own algorithm — fn.length === 4. The
  * Pitfall 2 footgun (use = (...args) => {}) is the user's responsibility;
  * we may surface a runtime warning in a future iteration.
@@ -23,15 +23,15 @@ export function isErrorMiddlewareInstance(instance: unknown): boolean {
 }
 
 /**
- * The single library-installed Express error middleware (D-15). Mounted automatically
+ * The single library-installed Express error middleware. Mounted automatically
  * by useExpressControllers AFTER all controller routers when defaultErrorHandler !== false.
  *
- * Phase 3 will mount user @Middleware({ type: 'after' }) error handlers AHEAD of this one
- * (ERR-04). This middleware is therefore the *fallback* / *last-line* handler.
+ * User @Middleware({ type: 'after' }) error handlers are mounted AHEAD of this one.
+ * This middleware is therefore the *fallback* / *last-line* handler.
  *
- * D-14 — checks res.headersSent first; if true, destroys the socket and does NOT
+ * Checks res.headersSent first; if true, destroys the socket and does NOT
  * attempt a second body write (avoids ERR_HTTP_HEADERS_SENT, RESEARCH Pitfall B).
- * D-18 — HttpError → toJSON; non-HttpError → generic 500 envelope; dev disclosure
+ * HttpError → toJSON; non-HttpError → generic 500 envelope; dev disclosure
  * adds stack + _devMessage when NODE_ENV !== 'production'.
  */
 /**
@@ -56,7 +56,7 @@ export function makeLibraryErrorMiddleware(
     res: Response,
     _next: NextFunction,
   ): void {
-    // D-14 / Pitfall B
+    // Pitfall B: headers-sent guard
     if (res.headersSent) {
       log(err);
       res.destroy(err instanceof Error ? err : new Error(String(err)));
@@ -72,7 +72,7 @@ export function libraryErrorMiddleware(
   res: Response,
   _next: NextFunction
 ): void {
-  // D-14 / Pitfall B
+  // Pitfall B: headers-sent guard
   if (res.headersSent) {
     // eslint-disable-next-line no-console
     console.error('[express-controllers] error after headers sent:', err);
@@ -87,7 +87,7 @@ function writeErrorBody(err: unknown, res: Response): void {
 
   const isProd = process.env.NODE_ENV === 'production';
 
-  // D-18 — HttpError branch
+  // HttpError branch
   if (err instanceof HttpError) {
     const body = err.toJSON();
     if (!isProd && err.stack) {
@@ -97,7 +97,7 @@ function writeErrorBody(err: unknown, res: Response): void {
     return;
   }
 
-  // D-18 — non-HttpError branch (no message leak in production)
+  // Non-HttpError branch (no message leak in production)
   const source =
     err && typeof err === 'object' && 'source' in err
       ? (err as { source?: unknown }).source

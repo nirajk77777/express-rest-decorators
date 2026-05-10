@@ -1,12 +1,12 @@
 /**
- * Route-table formatter — Phase 4 API-04.
+ * Route-table formatter.
  *
  * Builds and prints a fixed-format column table (METHOD | PATH | CONTROLLER.METHOD)
  * at boot time after all routers are mounted.
  *
- * D-17: printRoutes: true logs the table to console.log after all routers mounted.
- * D-17: Route table walks library metadata ONLY — does NOT introspect Express internals.
- *        No Express internals introspection — the library owns all registered routes.
+ * printRoutes: true logs the table to console.log after all routers mounted.
+ * Route table walks library metadata ONLY — does NOT introspect Express internals.
+ * The library owns all registered routes.
  */
 import type { ControllerMetadata } from '../types/resolved.js';
 import { composePath } from './router-build.js';

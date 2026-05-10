@@ -37,28 +37,28 @@ export type {
   ResponseHandlerType,
 } from './metadata/types.js';
 
-// Phase 2 — Express adapter (boot APIs)
+// Express adapter (boot APIs)
 export { useExpressControllers, createExpressServer } from './adapter/boot.js';
 
-// Phase 2 — public boot options type
+// Public boot options type
 export type {
   BootOptions,
   AuthorizationChecker,
   CurrentUserChecker,
 } from './adapter/boot-options.js';
 
-// Phase 3 — middleware/interceptor/auth interfaces (type-only)
+// Middleware/interceptor/auth interfaces (type-only)
 export type {
   ExpressMiddlewareInterface,
   ExpressErrorMiddlewareInterface,
   InterceptorInterface,
 } from './interfaces/index.js';
 
-// Phase 4 — request context (AsyncLocalStorage)
+// Request context (AsyncLocalStorage)
 export { getRequestContext } from './adapter/request-context.js';
 export type { RequestContext } from './adapter/request-context.js';
 
-// Phase 4 — uploads
+// Uploads
 export { UploadedFile, UploadedFiles } from './adapter/uploads.js';
 export type {
   UploadedFileMarker,

@@ -1,15 +1,15 @@
 /**
- * Lazy tinyglobby peer loader — Phase 4 UTIL-04.
+ * Lazy tinyglobby peer loader.
  *
  * The tinyglobby package is an optional peer dependency. This module loads it
  * on first glob-string encounter via dynamic import() to avoid a top-level
  * require that would throw at process startup if tinyglobby is not installed.
  *
- * D-15: Missing peer throws an actionable error with the exact install instruction.
- * D-16: Mixed array controllers: (ClassConstructor | string)[]. Strings are
- *        expanded relative to process.cwd() with default extensions.
- *        All exported classes from matched modules are treated as controllers;
- *        non-class exports are silently skipped.
+ * Missing peer throws an actionable error with the exact install instruction.
+ * Mixed array controllers: (ClassConstructor | string)[]. Strings are
+ * expanded relative to process.cwd() with default extensions.
+ * All exported classes from matched modules are treated as controllers;
+ * non-class exports are silently skipped.
  */
 import { pathToFileURL } from 'node:url';
 import type { ClassConstructor } from '../types/action.js';

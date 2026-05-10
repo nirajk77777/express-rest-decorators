@@ -1,6 +1,6 @@
 import type { Action } from '../types/action.js';
 
-/** D-07 — class-form interceptor contract; chained per D-09. */
+/** Class-form interceptor contract; chained globally → controller → method. */
 export interface InterceptorInterface {
   intercept(action: Action, content: unknown): unknown | Promise<unknown>;
 }

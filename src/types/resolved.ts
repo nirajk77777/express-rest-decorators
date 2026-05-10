@@ -8,7 +8,6 @@ export interface ControllerMetadata {
   type: 'json' | 'default';
   responseHandlers: ResponseHandlerArgs[];
   actions: ActionMetadata[];
-  // Phase 3
   useBefore: HookEntry[];
   useAfter: HookEntry[];
   interceptors: Function[];
@@ -24,12 +23,11 @@ export interface ActionMetadata {
   returnType?: Function;
   paramTypes?: Function[];
   responseHandlers: ResponseHandlerArgs[];
-  // Phase 3
   useBefore: HookEntry[];
   useAfter: HookEntry[];
   interceptors: Function[];
   authorized?: string[] | null;
-  // Phase 4 D-05/D-06/D-07: response shaper fields
+  // Response shaper fields
   render?: { template: string };
   redirect?: { template: string; status?: number };
   location?: { template: string };

@@ -11,7 +11,7 @@ export interface SessionArmResult {
 }
 
 /**
- * Resolve the session slot (D-02).
+ * Resolve the session slot.
  *
  * IMPORTANT: This module NEVER imports express-session. It reads req.session only —
  * the consumer is responsible for wiring express-session (or compatible session middleware).

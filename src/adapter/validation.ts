@@ -20,7 +20,7 @@ export function isStandardSchema(x: unknown): x is StandardSchemaV1 {
 }
 
 /**
- * Render a Standard Schema Issue.path into D-09 dotted+bracketed string form.
+ * Render a Standard Schema Issue.path into dotted+bracketed string form.
  * Handles both PropertyKey and PathSegment ({ key }) entries (Pitfall E).
  *   ['user', 'email']           -> 'user.email'
  *   ['items', 0, 'name']        -> 'items[0].name'
@@ -54,11 +54,11 @@ export interface ResolvedArgs {
   body: unknown;
   headers: unknown;
   currentUser?: unknown;
-  /** Phase 4 D-01: resolved per-key cookie values (or undefined if slot not declared). */
+  /** Resolved per-key cookie values (or undefined if slot not declared). */
   cookies?: Record<string, unknown>;
-  /** Phase 4 D-02: resolved session value (or undefined if slot not declared). */
+  /** Resolved session value (or undefined if slot not declared). */
   session?: unknown;
-  /** Phase 4 D-03: resolved file entries per field key (or undefined if slot not declared). */
+  /** Resolved file entries per field key (or undefined if slot not declared). */
   files?: Record<string, unknown>;
 }
 
@@ -99,7 +99,7 @@ interface CurrentUserSlotResult {
 }
 
 /**
- * Resolve and optionally validate the currentUser slot (D-14).
+ * Resolve and optionally validate the currentUser slot.
  * Runs as a 5th arm of Promise.all alongside the four SLOTS.
  * If declaration is undefined or resolver is undefined, returns { value: undefined }.
  */
@@ -126,13 +126,11 @@ async function validateCurrentUser(
 }
 
 /**
- * Run all four input slots through Standard Schema validators concurrently (D-06).
- * Aggregates every issue from every failing slot into a single BadRequestError (D-07).
- * Validated values replace raw req values in the returned object; req is NOT mutated (D-10, Pitfall F).
+ * Run all four input slots through Standard Schema validators concurrently.
+ * Aggregates every issue from every failing slot into a single BadRequestError.
+ * Validated values replace raw req values in the returned object; req is NOT mutated (Pitfall F).
  *
- * The wrapper in Plan 02-05 attaches err.source after this throws.
- *
- * D-14: Optional 5th currentUser arm resolved via provided closure (caller supplies closure
+ * Optional 5th currentUser arm resolved via provided closure (caller supplies closure
  * with checker + action already bound so this function stays Express/auth-agnostic).
  */
 export async function resolveInputs(
@@ -148,11 +146,9 @@ export async function resolveInputs(
       )
     ),
     validateCurrentUser(decl.currentUser, currentUserResolver),
-    // Phase 4 D-04: cookies arm (arm 6)
     resolveCookiesArm(req as Request, decl.cookies),
-    // Phase 4 D-04: session arm (arm 7)
     resolveSessionArm(req as Request, decl.session),
-    // Phase 4 D-04: files arm (arm 8) — no issues; multer rejects at mw layer
+    // files arm — no issues; multer rejects at mw layer
     Promise.resolve(resolveFilesArm(req as Request, decl.files as Record<string, AnyUploadMarker> | undefined)),
   ]);
 

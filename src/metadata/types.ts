@@ -35,11 +35,11 @@ export interface InputDeclaration {
   body?: unknown;
   headers?: unknown;
   currentUser?: true | StandardSchemaV1;
-  /** Phase 4 D-01: per-key cookie declaration. true = pass-through; schema = validate. */
+  /** Per-key cookie declaration. true = pass-through; schema = validate. */
   cookies?: Record<string, true | StandardSchemaV1>;
-  /** Phase 4 D-02: session pass-through (true) or validated. req.session is wired by the consumer. */
+  /** Session pass-through (true) or validated. req.session is wired by the consumer. */
   session?: true | StandardSchemaV1;
-  /** Phase 4 D-03: slot-based file upload declarations. Factory functions UploadedFile/UploadedFiles return markers. */
+  /** Slot-based file upload declarations. Factory functions UploadedFile/UploadedFiles return markers. */
   files?: Record<string, import('../types/uploads.js').AnyUploadMarker>;
 }
 
@@ -64,10 +64,10 @@ export interface MethodArgs {
   useAfter?: HookEntry[];
   interceptors?: Function[];
   authorized?: string[] | null;
-  /** Phase 4 D-06: @Render shaper metadata */
+  /** @Render shaper metadata */
   render?: { template: string };
-  /** Phase 4 D-05: @Redirect shaper metadata */
+  /** @Redirect shaper metadata */
   redirect?: { template: string; status?: number };
-  /** Phase 4 D-07: @Location shaper metadata */
+  /** @Location shaper metadata */
   location?: { template: string };
 }

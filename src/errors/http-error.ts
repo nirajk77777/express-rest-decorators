@@ -7,12 +7,12 @@ export type ValidationSlot = 'params' | 'query' | 'body' | 'headers' | 'currentU
 export interface ValidationIssue {
   /**
    * Which input slot the issue originated from.
-   * Optional for backward compatibility; Phase 2 always populates it.
+   * Optional for backward compatibility; the library always populates it.
    */
   slot?: ValidationSlot;
   /**
-   * Path to the offending field. Phase 2 emits a rendered string (e.g. "items[0].name");
-   * pre-Phase-2 callers may pass a ReadonlyArray<PropertyKey>. Both shapes are accepted.
+   * Path to the offending field. The library emits a rendered string (e.g. "items[0].name");
+   * external callers may pass a ReadonlyArray<PropertyKey>. Both shapes are accepted.
    */
   path: string | ReadonlyArray<PropertyKey>;
   message: string;

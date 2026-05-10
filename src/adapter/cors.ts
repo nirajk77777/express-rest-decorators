@@ -1,12 +1,12 @@
 /**
- * Lazy cors peer loader — Phase 4 UTIL-03.
+ * Lazy cors peer loader.
  *
  * The cors package is an optional peer dependency. This module loads it on
  * first call via dynamic import() to avoid a top-level require that would
  * throw at process startup if cors is not installed.
  *
- * D-15: Missing peer throws an actionable error with the exact install instruction.
- * D-18: CORS middleware must be mounted AFTER ALS wrapper and BEFORE lib globals.
+ * Missing peer throws an actionable error with the exact install instruction.
+ * CORS middleware must be mounted AFTER ALS wrapper and BEFORE lib globals.
  */
 import type { RequestHandler } from 'express';
 import type { CorsOptionsLike } from './boot-options.js';

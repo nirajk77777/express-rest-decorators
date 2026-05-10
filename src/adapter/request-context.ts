@@ -14,9 +14,9 @@ const als = new AsyncLocalStorage<RequestContext>();
 
 /**
  * Express middleware that initializes the ALS context for each request.
- * Must be the outermost app.use() call (D-11).
+ * Must be the outermost app.use() call.
  * - requestId from X-Request-Id header (verbatim, trimmed) if present and non-empty
- * - Falls back to crypto.randomUUID() (D-12)
+ * - Falls back to crypto.randomUUID()
  */
 export function createAlsMiddleware(): RequestHandler {
   return function alsMiddleware(req: Request, res: Response, next: NextFunction): void {
@@ -29,7 +29,7 @@ export function createAlsMiddleware(): RequestHandler {
 
 /**
  * Returns the current request context (req, res, requestId).
- * Throws an actionable error when called outside an active request scope (D-14).
+ * Throws an actionable error when called outside an active request scope.
  */
 export function getRequestContext(): RequestContext {
   const store = als.getStore();

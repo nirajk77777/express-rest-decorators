@@ -1,9 +1,8 @@
 /**
- * Upload marker types for the slot-based file upload API (D-03).
+ * Upload marker types for the slot-based file upload API.
  *
  * This module contains ONLY types and the UPLOAD_KIND symbol.
- * No adapter imports — avoids circular dependency with src/adapter/uploads.ts
- * (RESEARCH Pattern 11).
+ * No adapter imports — avoids circular dependency with src/adapter/uploads.ts.
  *
  * Consumers use the factory functions from src/adapter/uploads.ts:
  *   UploadedFile(field, options) → UploadedFileMarker

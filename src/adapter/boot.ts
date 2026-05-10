@@ -34,13 +34,13 @@ import type { Action } from '../types/action.js';
 
 /**
  * Build the per-action Express RequestHandler. Composes:
- *   1. resolveInputs(req, action.input, currentUserResolver)  — D-06/D-07/D-10/D-14
- *   2. getContainer().get(controllerMeta.target)              — Phase 1 IocAdapter hook
- *   3. instance[action.method]({...args, req, res, next})     — INPUT-01 destructured shape
- *   4. D-08 short-circuit: skip interceptors on null/undefined
- *   5. runInterceptors(resolvedInterceptors, action, result)  — Phase 3
- *   6. writeResponse(res, next, final, ...)                   — D-11/D-12/D-13
- * Wrapped by wrapAction() for source-attribution + native v5 forwarding (D-16).
+ *   1. resolveInputs(req, action.input, currentUserResolver)
+ *   2. getContainer().get(controllerMeta.target)              — IocAdapter hook
+ *   3. instance[action.method]({...args, req, res, next})     — destructured input shape
+ *   4. Short-circuit: skip interceptors on null/undefined
+ *   5. runInterceptors(resolvedInterceptors, action, result)
+ *   6. writeResponse(res, next, final, ...)
+ * Wrapped by wrapAction() for source-attribution + native v5 forwarding.
  */
 function makeHandlerFactory(options: BootOptions): HandlerFactory {
   return (
@@ -55,7 +55,7 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
     ) => {
       const actionObj: Action = { request: req, response: res, next };
 
-      // D-14: optional currentUser resolver — lazy + cached per request (auth.ts)
+      // Optional currentUser resolver — lazy + cached per request (auth.ts)
       const currentUserResolver = options.currentUserChecker
         ? () => resolveCurrentUser(req, options.currentUserChecker!, actionObj)
         : undefined;
@@ -80,7 +80,7 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
       }
       const result = await fn.call(instance, handlerArgs);
 
-      // D-08 short-circuit: skip interceptors on null/undefined
+      // Short-circuit: skip interceptors on null/undefined
       let final: unknown = result;
       if (result !== null && result !== undefined && resolvedInterceptors.length > 0) {
         final = await runInterceptors(resolvedInterceptors, actionObj, result);
@@ -93,18 +93,18 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
           : String(action.method);
       const source = `${controllerClass.name}.${methodName}`;
 
-      // Phase 4 D-05/D-06/D-07: response shaper dispatch.
-      // Null/undefined short-circuit (D-13/D-08 step 2) and shapers interact per D-09 + Pitfall 8:
-      // - null → ALWAYS short-circuit before shapers (D-13): pass to writeResponse which applies
+      // Response shaper dispatch.
+      // Null/undefined short-circuit and shapers interact (Pitfall 8):
+      // - null → ALWAYS short-circuit before shapers: pass to writeResponse which applies
       //   @OnNull and returns 204. Shapers do NOT run on null.
       // - undefined → shapers handle it per their own semantics:
-      //     @Redirect: uses bare template (D-05)
-      //     @Render: renders with no locals (D-06)
+      //     @Redirect: uses bare template
+      //     @Render: renders with no locals
       //     @Location: uses bare template
-      //   If no shaper: writeResponse returns 204 via @OnUndefined / default (D-13).
+      //   If no shaper: writeResponse returns 204 via @OnUndefined / default.
       if (final !== null) {
         if (action.redirect) {
-          // D-10: @HttpCode wins, then explicit redirect status, then default 302
+          // @HttpCode wins, then explicit redirect status, then default 302
           const status = action.responseHandlers.find(h => h.type === 'success-code')
             ? Number(action.responseHandlers.find(h => h.type === 'success-code')!.value)
             : action.redirect.status ?? 302;
@@ -124,7 +124,7 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
               ? interpolateTemplate(action.location.template, final as Record<string, unknown>, source)
               : action.location.template;
           res.location(url);
-          // D-07: fall through to writeResponse — body still flows through standard writer
+          // Fall through to writeResponse — body still flows through standard writer
           writeResponse(res, next, final, controllerMeta, action);
           return;
         }
@@ -138,16 +138,16 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
 
 /**
  * Mount controllers on an existing Express v5 app. Body parsing is the caller's
- * responsibility — this function does NOT install express.json() (D-02 asymmetry).
+ * responsibility — this function does NOT install express.json().
  *
- * Mounting order (D-01):
+ * Mounting order:
  *   1. Global @Middleware({type:'before'}) and function-form entries → app.use(...)
  *   2. One express.Router() per controller → app.use(mountPath, router)
  *   3. Global @Middleware({type:'after'}) non-error instances → app.use(...)
  *   4. User error middleware (4-arg use) → app.use(errorHandler) [if defaultErrorHandler !== false]
  *   5. libraryErrorMiddleware → app.use(libraryErrorMiddleware) [if defaultErrorHandler !== false]
  *
- * This function is now async (Phase 3 breaking change):
+ * Async because:
  * - Container.get() may return a Promise
  * - Arity detection for user error middleware requires resolving the class at boot
  * - Global interceptor resolution happens once before the controller loop
@@ -158,7 +158,7 @@ export async function useExpressControllers(
   app: Express,
   options: BootOptions,
 ): Promise<Express> {
-  // D-18 step 1: Glob expansion FIRST — resolve mixed (ClassConstructor | string)[] array
+  // Glob expansion FIRST — resolve mixed (ClassConstructor | string)[] array
   // before any middleware is mounted. resolveControllers is a no-op for pure class arrays.
   const resolvedControllerClasses = await resolveControllers(options.controllers);
 
@@ -166,12 +166,12 @@ export async function useExpressControllers(
   const meta = buildMetadata(resolvedControllerClasses as unknown as Function[]);
   const routePrefix = options.routePrefix ?? '';
 
-  // D-18 step 2 / D-11: ALS wrapper MUST be the outermost app.use() owned by the library.
+  // ALS wrapper MUST be the outermost app.use() owned by the library.
   // Mounted AFTER glob expansion (which runs at boot before any HTTP is served),
   // BEFORE CORS, BEFORE lib globals, BEFORE routers.
   app.use(createAlsMiddleware());
 
-  // D-18 step 3 / UTIL-03: CORS middleware AFTER ALS, BEFORE lib globals.
+  // CORS middleware AFTER ALS, BEFORE lib globals.
   if (options.cors) {
     const corsMw = await loadCorsMiddleware(options.cors === true ? undefined : options.cors);
     app.use(corsMw);
@@ -286,7 +286,7 @@ export async function useExpressControllers(
     }
   }
 
-  // D-18 step 10 / API-04: printRoutes — LAST, after all routers and middleware mounted.
+  // printRoutes — LAST, after all routers and middleware mounted.
   // Walks library metadata only — does NOT introspect Express internals.
   if (options.printRoutes) {
     printRouteTable(buildRouteTable(meta, routePrefix));
@@ -297,23 +297,23 @@ export async function useExpressControllers(
 
 /**
  * Create a fresh Express v5 app, install body-parsers (express.json() and
- * express.urlencoded({extended:true}) per D-02), then mount controllers.
+ * express.urlencoded({extended:true})), then mount controllers.
  * Convenience entry point.
  *
- * Phase 3 breaking change: now returns Promise<Express>.
+ * Returns Promise<Express>.
  *
- * Boot order (D-18):
+ * Boot order:
  *   1. app.use(alsMiddleware)              ← installed by useExpressControllers as first call
  *   2. app.use(express.json())             ← body parsers after ALS (not before)
  *   3. app.use(express.urlencoded(...))
  *   4. ... controller routers and error middleware via useExpressControllers
  *
  * Note: body parsers are passed via BootOptions.middlewares as function-form globals
- * so they mount INSIDE useExpressControllers AFTER the ALS wrapper, honoring D-11/D-18.
+ * so they mount INSIDE useExpressControllers AFTER the ALS wrapper.
  */
 export async function createExpressServer(options: BootOptions): Promise<Express> {
   const app = express();
-  // D-11/D-18: ALS wrapper is the OUTERMOST — body parsers must come AFTER it.
+  // ALS wrapper is the OUTERMOST — body parsers must come AFTER it.
   // We achieve this by passing body parsers as the first global before-middlewares so they
   // are mounted by useExpressControllers AFTER the ALS wrapper.
   const bodyParsers = [

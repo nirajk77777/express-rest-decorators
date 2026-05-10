@@ -8,7 +8,7 @@ export type InvokeAction = (
 ) => Promise<unknown>;
 
 /**
- * Per D-16, this wrapper exists ONLY to attach err.source before forwarding.
+ * This wrapper exists ONLY to attach err.source before forwarding.
  * Express v5 already auto-forwards async rejections; this wrapper is the single
  * source-attribution point. NO additional try/catch elsewhere in the pipeline
  * (RESEARCH Pitfall A).

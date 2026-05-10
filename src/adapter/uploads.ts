@@ -1,5 +1,5 @@
 /**
- * File upload slot adapter (D-03, D-04).
+ * File upload slot adapter.
  *
  * Provides:
  *   - UploadedFile / UploadedFiles factory functions
@@ -181,7 +181,7 @@ export async function buildMulterMiddleware(
 
   if (fields.length === 0) return null;
 
-  // Lazy-load multer peer — throws actionable error if not installed (D-15)
+  // Lazy-load multer peer — throws actionable error if not installed
   const multer = await loadMulter();
   const firstKey = Object.keys(files)[0] as string | undefined;
   const storage = firstKey !== undefined ? files[firstKey]?.options?.storage : undefined;

@@ -48,7 +48,7 @@ export function ContentType(value: string): MethodDecorator {
 
 /**
  * @Render(template) — calls res.render(template, locals) with handler's return value as locals.
- * Phase 4 D-06. Pure registrar — no Reflect.defineMetadata (Phase 1 D-07).
+ * Pure registrar — no Reflect.defineMetadata.
  */
 export function Render(template: string): MethodDecorator {
   return function (target: object, propertyKey: string | symbol): void {
@@ -59,7 +59,7 @@ export function Render(template: string): MethodDecorator {
 /**
  * @Redirect(template, status?) — issues a 3xx redirect. Default 302.
  * String return overrides; object return interpolates :name placeholders; undefined uses bare template.
- * Phase 4 D-05. Pure registrar — no Reflect.defineMetadata (Phase 1 D-07).
+ * Pure registrar — no Reflect.defineMetadata.
  */
 export function Redirect(template: string, status?: number): MethodDecorator {
   return function (target: object, propertyKey: string | symbol): void {
@@ -68,9 +68,9 @@ export function Redirect(template: string, status?: number): MethodDecorator {
 }
 
 /**
- * @Location(template) — sets the Location response header (D-07). Status defaults to 200.
+ * @Location(template) — sets the Location response header. Status defaults to 200.
  * Body still flows through writeResponse.
- * Phase 4 D-07. Pure registrar — no Reflect.defineMetadata (Phase 1 D-07).
+ * Pure registrar — no Reflect.defineMetadata.
  */
 export function Location(template: string): MethodDecorator {
   return function (target: object, propertyKey: string | symbol): void {

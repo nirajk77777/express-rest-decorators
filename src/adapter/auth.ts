@@ -32,7 +32,7 @@ export function makeAuthGate(
       }
       if (currentUserChecker) {
         const user = await resolveCurrentUser(req, currentUserChecker, action);
-        // D-12: 401 for null/undefined/other falsy values, EXCEPT exactly `false`
+        // 401 for null/undefined/other falsy values, EXCEPT exactly `false`
         // `false` is reserved for the authChecker's vocabulary — treat as "explicit false,
         // not no-user-found", so flow continues to authChecker.
         if (!user && user !== false) {
@@ -47,7 +47,7 @@ export function makeAuthGate(
       }
       next();
     } catch (err) {
-      // D-12 escape hatch: user-thrown HttpError or any error flows unchanged
+      // Escape hatch: user-thrown HttpError or any error flows unchanged
       next(err as Error);
     }
   };

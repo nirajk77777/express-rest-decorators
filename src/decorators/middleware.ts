@@ -115,7 +115,7 @@ export function Authorized(roles: string[]): ClassDecorator & MethodDecorator;
 export function Authorized(
   roleOrRoles?: string | string[],
 ): ClassDecorator & MethodDecorator {
-  // WR-01: empty array @Authorized([]) is undefined per CONTEXT D-11
+  // Empty array @Authorized([]) is undefined
   // (the documented shapes are (), ('role'), and (['a','b'])). Normalize
   // [] → null so it behaves the same as @Authorized() (any authenticated
   // user) rather than reaching authChecker as [] and silently denying

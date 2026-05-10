@@ -3,7 +3,7 @@ import type { ControllerArgs, MethodArgs } from './types.js';
 const controllerMap = new WeakMap<Function, ControllerArgs>();
 const methodMap = new WeakMap<object, Map<string | symbol, MethodArgs>>();
 
-// ── Response shaper WeakMaps (Phase 4 D-05/D-06/D-07) ──────────────────────
+// ── Response shaper WeakMaps ───────────────────────────────────────────────
 // Module-private; getter/setter helpers are the only public surface.
 
 interface RenderMeta { template: string }

@@ -61,7 +61,7 @@ function mergeControllerChain(ctor: Function): ControllerArgs {
     current = typeof proto === 'function' ? proto : null;
   }
   // Merge: subclass wins on basePath/type; responseHandlers concatenate base-first.
-  // Phase 3: useBefore/useAfter/interceptors concat base-first; authorized last-write-wins.
+  // useBefore/useAfter/interceptors concat base-first; authorized last-write-wins.
   const init: ControllerArgs = {
     basePath: '',
     type: 'default',
@@ -140,13 +140,13 @@ function mergeMethodChain(proto: object): Map<string | symbol, MethodArgs> {
         // @Header on top of inherited route). These layer onto base.
         existing.responseHandlers = [...existing.responseHandlers, ...args.responseHandlers];
       }
-      // Phase 3 hook arrays: ALWAYS concat base-first (no replacement on re-decoration).
+      // Hook arrays: ALWAYS concat base-first (no replacement on re-decoration).
       if (args.useBefore?.length) existing.useBefore = [...(existing.useBefore ?? []), ...args.useBefore];
       if (args.useAfter?.length) existing.useAfter = [...(existing.useAfter ?? []), ...args.useAfter];
       if (args.interceptors?.length) existing.interceptors = [...(existing.interceptors ?? []), ...args.interceptors];
       if (args.authorized !== undefined) existing.authorized = args.authorized;
     }
-    // Phase 4 D-05/D-06/D-07: fold response shaper WeakMaps (subclass-wins — last write in chain wins).
+    // Fold response shaper WeakMaps (subclass-wins — last write in chain wins).
     // The shaper WeakMaps are keyed by prototype object (not MethodArgs), so we must
     // read them separately for each level in the chain.
     for (const key of result.keys()) {

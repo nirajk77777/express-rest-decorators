@@ -1,12 +1,12 @@
 import type { ClassConstructor, Action } from '../types/action.js';
 
 /**
- * Authorization checker signature — Phase 3 (AUTH-02). Phase 2 accepts but no-ops.
+ * Authorization checker signature.
  */
 export type AuthorizationChecker = (action: Action, roles?: string[]) => boolean | Promise<boolean>;
 
 /**
- * Current-user checker signature — Phase 3 (AUTH-03). Phase 2 accepts but no-ops.
+ * Current-user checker signature.
  */
 export type CurrentUserChecker = (action: Action) => unknown | Promise<unknown>;
 
@@ -37,14 +37,7 @@ export interface CorsOptionsLike {
 }
 
 /**
- * Library boot options. Every API-03 key is typed today so call sites are
- * forward-compatible across Phases 2-4. Phase 2 implements:
- *   - controllers, routePrefix, defaultErrorHandler
- * Phase 2 silently no-ops (typed, ignored at runtime):
- *   - middlewares, interceptors, cors, validation,
- *     authorizationChecker, currentUserChecker, printRoutes
- *
- * @see D-03 in 02-CONTEXT.md
+ * Library boot options.
  */
 export interface BootOptions {
   /**
@@ -52,41 +45,41 @@ export interface BootOptions {
    * glob patterns (e.g., 'src/controllers/**\/*.ts'). String patterns are expanded
    * at boot via tinyglobby (optional peer dependency) relative to process.cwd().
    * All exported classes from matched modules are treated as controllers;
-   * non-class exports are silently skipped. Phase 4 UTIL-04.
+   * non-class exports are silently skipped.
    */
   controllers: ReadonlyArray<ClassConstructor<unknown> | string>;
 
-  /** Optional path prefix prepended to every controller. D-04 path composition rules apply. */
+  /** Optional path prefix prepended to every controller. Path composition rules apply. */
   routePrefix?: string;
 
-  /** When false, library does not mount its error middleware (D-17). Default true. */
+  /** When false, library does not mount its error middleware. Default true. */
   defaultErrorHandler?: boolean;
 
-  /** Phase 3 — middleware classes/functions. Phase 2 accepts and ignores. */
+  /** Middleware classes/functions. */
   middlewares?: ReadonlyArray<ClassConstructor<unknown> | Function>;
 
-  /** Phase 3 — interceptor classes. Phase 2 accepts and ignores. */
+  /** Interceptor classes. */
   interceptors?: ReadonlyArray<ClassConstructor<unknown>>;
 
   /**
-   * Phase 4 — CORS option (UTIL-03). When true, mounts cors() with default options
+   * CORS option. When true, mounts cors() with default options
    * (Access-Control-Allow-Origin: *). When a CorsOptionsLike object is provided,
    * mounts cors(options). Requires the cors package as an optional peer dependency.
-   * Mounts AFTER ALS middleware, BEFORE lib globals per D-18.
+   * Mounts AFTER ALS middleware, BEFORE lib globals.
    */
   cors?: boolean | CorsOptionsLike;
 
-  /** Reserved for future validation overrides (e.g., a non-Standard-Schema escape hatch). Phase 2 accepts and ignores. */
+  /** Reserved for future validation overrides (e.g., a non-Standard-Schema escape hatch). */
   validation?: unknown;
 
-  /** Phase 3 — global authorization checker. Phase 2 accepts and ignores. */
+  /** Global authorization checker. */
   authorizationChecker?: AuthorizationChecker;
 
-  /** Phase 3 — global current-user checker. Phase 2 accepts and ignores. */
+  /** Global current-user checker. */
   currentUserChecker?: CurrentUserChecker;
 
   /**
-   * Phase 4 — log a route table at boot (API-04). When true, prints a fixed-format
+   * Log a route table at boot. When true, prints a fixed-format
    * METHOD / PATH / CONTROLLER.METHOD column table to console.log after all routers
    * are mounted. Walks library metadata only — does NOT introspect Express internals.
    * Recommended for development only; keep disabled in production.
