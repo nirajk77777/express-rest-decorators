@@ -64,7 +64,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "docs:build": "typedoc",
-    "release": "pnpm build && attw --pack . --profile node16 && publint && changeset publish --tag next",
+    "release": "pnpm build && attw --pack . --profile node16 && publint && changeset publish",
     "prepublishOnly": "pnpm build && attw --pack . --profile node16 && publint"
   },
   "dependencies": {
