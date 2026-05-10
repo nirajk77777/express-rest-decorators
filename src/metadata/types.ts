@@ -1,6 +1,20 @@
 import type { StandardSchemaV1 } from '../types/standard-schema.js';
 
-export type HookEntry = Function;
+/**
+ * A middleware-hook entry — either a function-form RequestHandler or a
+ * class constructor whose instances implement ExpressMiddlewareInterface
+ * (a `use` method). The runtime distinguishes the two via
+ * `isClassForm()` (see src/adapter/middleware.ts).
+ *
+ * WR-04: this alias is intentionally a structural union rather than the
+ * bare `Function` foot-gun. Storage-layer maps still receive raw
+ * `Function` references because legacy decorators pass class constructors
+ * as `Function` in their metadata APIs — those sites are documented at
+ * each occurrence.
+ */
+export type HookEntry =
+  | ((...args: unknown[]) => unknown)
+  | (new (...args: never[]) => { use: (...a: unknown[]) => unknown });
 
 export type ResponseHandlerType =
   | 'success-code'

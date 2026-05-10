@@ -4,6 +4,7 @@ import {
   markAsMiddleware,
   markAsInterceptor,
 } from '../metadata/storage.js';
+import type { HookEntry } from '../metadata/types.js';
 
 // ─── UseBefore ─────────────────────────────────────────────────────────────
 
@@ -22,7 +23,10 @@ export function UseBefore(...handlers: Function[]): ClassDecorator & MethodDecor
       key === undefined
         ? getOrInitControllerArgs(target as Function)
         : getOrInitMethodArgs(target, key);
-    meta.useBefore = [...(meta.useBefore ?? []), ...handlers];
+    // WR-04: `handlers` is widened to `Function[]` at the decorator
+    // surface (the public API accepts both function-form middleware and
+    // class constructors). Storage uses the narrower HookEntry union.
+    meta.useBefore = [...(meta.useBefore ?? []), ...(handlers as HookEntry[])];
   } as ClassDecorator & MethodDecorator;
 }
 
@@ -42,7 +46,7 @@ export function UseAfter(...handlers: Function[]): ClassDecorator & MethodDecora
       key === undefined
         ? getOrInitControllerArgs(target as Function)
         : getOrInitMethodArgs(target, key);
-    meta.useAfter = [...(meta.useAfter ?? []), ...handlers];
+    meta.useAfter = [...(meta.useAfter ?? []), ...(handlers as HookEntry[])];
   } as ClassDecorator & MethodDecorator;
 }
 
