@@ -64,4 +64,10 @@ export interface MethodArgs {
   useAfter?: HookEntry[];
   interceptors?: Function[];
   authorized?: string[] | null;
+  /** Phase 4 D-06: @Render shaper metadata */
+  render?: { template: string };
+  /** Phase 4 D-05: @Redirect shaper metadata */
+  redirect?: { template: string; status?: number };
+  /** Phase 4 D-07: @Location shaper metadata */
+  location?: { template: string };
 }

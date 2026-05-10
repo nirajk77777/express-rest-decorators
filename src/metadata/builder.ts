@@ -1,4 +1,4 @@
-import { getControllerArgs, getAllMethodArgs } from './storage.js';
+import { getControllerArgs, getAllMethodArgs, getRenderMeta, getRedirectMeta, getLocationMeta } from './storage.js';
 import type { ControllerArgs, MethodArgs } from './types.js';
 import type { ControllerMetadata, ActionMetadata } from '../types/resolved.js';
 import { checkLegacyDecoratorMode } from '../guard/runtime-guard.js';
@@ -30,6 +30,9 @@ function buildController(ctor: Function): ControllerMetadata {
     if (args.returnType !== undefined) action.returnType = args.returnType;
     if (args.paramTypes !== undefined) action.paramTypes = args.paramTypes;
     if (args.authorized !== undefined) action.authorized = args.authorized;
+    if (args.render !== undefined) action.render = args.render;
+    if (args.redirect !== undefined) action.redirect = args.redirect;
+    if (args.location !== undefined) action.location = args.location;
     actions.push(action);
   }
 
@@ -142,6 +145,17 @@ function mergeMethodChain(proto: object): Map<string | symbol, MethodArgs> {
       if (args.useAfter?.length) existing.useAfter = [...(existing.useAfter ?? []), ...args.useAfter];
       if (args.interceptors?.length) existing.interceptors = [...(existing.interceptors ?? []), ...args.interceptors];
       if (args.authorized !== undefined) existing.authorized = args.authorized;
+    }
+    // Phase 4 D-05/D-06/D-07: fold response shaper WeakMaps (subclass-wins — last write in chain wins).
+    // The shaper WeakMaps are keyed by prototype object (not MethodArgs), so we must
+    // read them separately for each level in the chain.
+    for (const key of result.keys()) {
+      const renderMeta = getRenderMeta(p, key);
+      if (renderMeta !== undefined) result.get(key)!.render = renderMeta;
+      const redirectMeta = getRedirectMeta(p, key);
+      if (redirectMeta !== undefined) result.get(key)!.redirect = redirectMeta;
+      const locationMeta = getLocationMeta(p, key);
+      if (locationMeta !== undefined) result.get(key)!.location = locationMeta;
     }
   }
   return result;
