@@ -1,4 +1,6 @@
-import type { ResponseHandlerArgs, InputDeclaration } from '../metadata/types.js';
+import type { ResponseHandlerArgs, InputDeclaration, HookEntry } from '../metadata/types.js';
+
+export type { HookEntry } from '../metadata/types.js';
 
 export interface ControllerMetadata {
   target: Function;
@@ -6,6 +8,11 @@ export interface ControllerMetadata {
   type: 'json' | 'default';
   responseHandlers: ResponseHandlerArgs[];
   actions: ActionMetadata[];
+  // Phase 3
+  useBefore: HookEntry[];
+  useAfter: HookEntry[];
+  interceptors: Function[];
+  authorized?: string[] | null;
 }
 
 export interface ActionMetadata {
@@ -17,6 +24,11 @@ export interface ActionMetadata {
   returnType?: Function;
   paramTypes?: Function[];
   responseHandlers: ResponseHandlerArgs[];
+  // Phase 3
+  useBefore: HookEntry[];
+  useAfter: HookEntry[];
+  interceptors: Function[];
+  authorized?: string[] | null;
 }
 
 export type ResponseHandlerMetadata = ResponseHandlerArgs;
