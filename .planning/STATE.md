@@ -40,11 +40,11 @@ progress:
 ## Current Position
 
 Phase: 04 (uploads-cookies-sessions-render-request-context) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 **Phase:** 4
-**Plan:** 4 complete, 5 up next
+**Plan:** 5 complete, 6 up next
 **Status:** Executing Phase 04
-**Progress:** [█████████░] 92% (Phase 4 plan 4/6 complete)
+**Progress:** [█████████░] 95% (Phase 4 plan 5/6 complete)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** Phase 4 Plan 5 (04-05).
+**Up next:** Phase 4 Plan 6 (04-06).
 
 ---
 
@@ -77,6 +77,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Phase 04 P02 | 349 | 3 tasks | 8 files |
 | Phase 04 P03 | 1500 | 3 tasks | 9 files |
 | Phase 04 P04 | 480 | 3 tasks | 11 files |
+| Phase 04 P05 | 600 | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -207,6 +208,14 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - applyLocation falls through to writeResponse so body still flows (D-07); only applyRedirect/applyRender skip writeResponse.
 - src/adapter/render.ts added to grep-gate allow-list for Express imports (structural invariant maintained).
 
+### Key Decisions Made (from 04-05)
+
+- CorsOptionsLike defined locally in boot-options.ts to mirror cors v2.8 shape — avoids @types/cors as a public dep for consumers.
+- vi.doMock cannot reliably mock ESM imports in Vitest for optional peers already installed; missing-peer tests use structural source verification (readFileSync + string assertion) — same approach as 04-03 multer test.
+- GlobFn type alias used for cachedGlobFn to resolve TypeScript overload resolution issues with tinyglobby's overloaded glob signature.
+- Grep gates (02-grep-gates.test.ts) extended additively: cors.ts added to Express import allow-list; cors.ts and glob-loader.ts added to try/catch exemption list (D-15 pattern — same rationale as cookies.ts and uploads.ts).
+- D-18 step 1 is glob expansion (resolveControllers) which runs BEFORE any app.use() call — it's a boot-time computation, not an HTTP concern.
+
 ### Key Decisions Made (from 04-02)
 
 - COOKIE_PEER_MISSING_MESSAGE exported as constant — test assertions use constant, not hardcoded string duplicate.
@@ -242,8 +251,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 4 Plan 04 complete — @Render/@Redirect/@Location response shaper decorators with WeakMap storage, template interpolation, and shaper dispatch in handler pipeline; 516 total tests pass; tsc --noEmit clean.
+**Last action:** Phase 4 Plan 05 complete — CORS lazy-load (loadCorsMiddleware), glob controller loading (resolveControllers via tinyglobby), and printRoutes route table (buildRouteTable + printRouteTable walking library metadata); all three wired into boot.ts per D-18; 533 total tests pass; tsc --noEmit clean.
 
-**Resume command:** `/gsd-execute-phase 4` (continue with plan 05)
+**Resume command:** `/gsd-execute-phase 4` (continue with plan 06)
 
-**Last updated:** 2026-05-10T16:10:00Z
+**Last updated:** 2026-05-10T16:05:00Z

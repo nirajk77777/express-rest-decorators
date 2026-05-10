@@ -72,8 +72,8 @@
 
 - [x] **UTIL-01**: Library supports file upload declarations in input declaration object via `multer` (optional peer dep); explicit limits and fileFilter required (no implicit defaults)
 - [x] **UTIL-02**: Library exposes `@UploadedFile(field, options?)` / `@UploadedFiles(field, options?)` on the input declaration object
-- [ ] **UTIL-03**: Library supports CORS via a single `cors` boot option (lazy import of `cors` package)
-- [ ] **UTIL-04**: Library supports controller glob loading via `tinyglobby`: `useExpressControllers(app, { controllers: ['src/controllers/**/*.ts'] })`
+- [x] **UTIL-03**: Library supports CORS via a single `cors` boot option (lazy import of `cors` package)
+- [x] **UTIL-04**: Library supports controller glob loading via `tinyglobby`: `useExpressControllers(app, { controllers: ['src/controllers/**/*.ts'] })`
 
 ### DI Hook (DI)
 
@@ -86,7 +86,7 @@
 - [x] **API-01**: Library exports `useExpressControllers(app, options)` that mounts routers on an existing Express app
 - [x] **API-02**: Library exports `createExpressServer(options)` returning a configured Express app for users who don't have one
 - [x] **API-03**: Boot options include: `controllers`, `middlewares`, `interceptors`, `routePrefix`, `cors`, `defaultErrorHandler`, `validation`, `authorizationChecker`, `currentUserChecker`, `printRoutes`
-- [ ] **API-04**: When `printRoutes: true`, library logs a route table at boot for dev-time visibility
+- [x] **API-04**: When `printRoutes: true`, library logs a route table at boot for dev-time visibility
 
 ### New Features on Top (NEW)
 
