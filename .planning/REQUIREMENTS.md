@@ -79,7 +79,7 @@
 
 - [x] **DI-01**: Library exposes `useContainer(IocAdapter)` to register an external DI container; the `IocAdapter` interface has a single `get<T>(cls: Class<T>, action?: Action): T | Promise<T>` method
 - [x] **DI-02**: Default container is a lazy `new Class()` cached in a `WeakMap<Class, instance>`; no DI lib required
-- [ ] **DI-03**: A separate `@scope/express-controllers-typedi` adapter package is published alongside core (TypeDI 0.x reference adapter)
+- [ ] **DI-03**: README documents a `useContainer` recipe wiring TypeDI (and any `.get(token)`-shaped container) into the core `useContainer(IocAdapter)` hook from Phase 1; no separate `@scope/express-controllers-typedi` adapter package is published — the single-package rule (BUILD-06) precludes a sibling package.
 
 ### Bootstrap & Public API (API)
 
