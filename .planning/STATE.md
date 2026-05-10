@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T15:31:00Z"
+last_updated: "2026-05-10T15:59:00Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 24
-  completed_plans: 20
-  percent: 83
+  completed_plans: 21
+  percent: 88
 ---
 
 # State
@@ -40,11 +40,11 @@ progress:
 ## Current Position
 
 Phase: 04 (uploads-cookies-sessions-render-request-context) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 **Phase:** 4
-**Plan:** 2 complete, 3 up next
+**Plan:** 3 complete, 4 up next
 **Status:** Executing Phase 04
-**Progress:** [████████░░] 83% (Phase 4 plan 2/6 complete)
+**Progress:** [█████████░] 88% (Phase 4 plan 3/6 complete)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** Phase 4 Plan 3 (04-03).
+**Up next:** Phase 4 Plan 4 (04-04).
 
 ---
 
@@ -75,6 +75,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 | Phase 03 P05 | 1080 | 4 tasks | 6 files |
 | Phase 04 P01 | 900 | 3 tasks | 5 files |
 | Phase 04 P02 | 349 | 3 tasks | 8 files |
+| Phase 04 P03 | 1500 | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -188,6 +189,15 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - Grep-gate for barrel exports uses transitive barrel check (decorators/middleware.ts for decorator names, interfaces/index.ts for interface type names) since `index.ts` uses `export *`.
 - Phase 3 complete: 416 tests passing, tsc --noEmit clean, all 5 ROADMAP SC verified by integration tests.
 
+### Key Decisions Made (from 04-03)
+
+- UPLOAD_KIND is a unique symbol in types/uploads.ts (not adapter/uploads.ts) — prevents circular imports between adapter modules.
+- buildMulterMiddleware always uses .fields([{name, maxCount}]) even for single UploadedFile markers — consistent req.files as Record<string, File[]> (Pitfall 2 compliance).
+- Conflict detection: JSON.stringify(limits) for deep equality + reference equality for fileFilter — callers must share the same function reference for non-conflict.
+- resolveFilesArm is synchronous — req.files already populated by multer mw before arm runs; wrapped in Promise.resolve() at call site.
+- files arm (arm 8) never produces validation issues — multer handles size/type rejection at mw layer.
+- vi.spyOn on ESM module default export not possible in Vitest; Test 5 uses structural source verification instead.
+
 ### Key Decisions Made (from 04-02)
 
 - COOKIE_PEER_MISSING_MESSAGE exported as constant — test assertions use constant, not hardcoded string duplicate.
@@ -223,8 +233,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 4 Plan 02 complete — cookies slot (resolveCookiesArm, lazy cookie.parse) and session slot (resolveSessionArm, req.session only) added to InputDeclaration and wired as Promise.all arms in validation.ts; 447 total tests pass; tsc --noEmit clean.
+**Last action:** Phase 4 Plan 03 complete — slot-based file uploads via UploadedFile/UploadedFiles factory markers with lazy multer loading, mandatory limits+fileFilter enforcement, and single .fields() instance per route; 473 total tests pass; tsc --noEmit clean.
 
-**Resume command:** `/gsd-execute-phase 4` (continue with plan 03)
+**Resume command:** `/gsd-execute-phase 4` (continue with plan 04)
 
-**Last updated:** 2026-05-10T15:31:00Z
+**Last updated:** 2026-05-10T15:59:00Z

@@ -70,8 +70,8 @@
 
 ### File Upload, Cookies, Static (UTIL)
 
-- [ ] **UTIL-01**: Library supports file upload declarations in input declaration object via `multer` (optional peer dep); explicit limits and fileFilter required (no implicit defaults)
-- [ ] **UTIL-02**: Library exposes `@UploadedFile(field, options?)` / `@UploadedFiles(field, options?)` on the input declaration object
+- [x] **UTIL-01**: Library supports file upload declarations in input declaration object via `multer` (optional peer dep); explicit limits and fileFilter required (no implicit defaults)
+- [x] **UTIL-02**: Library exposes `@UploadedFile(field, options?)` / `@UploadedFiles(field, options?)` on the input declaration object
 - [ ] **UTIL-03**: Library supports CORS via a single `cors` boot option (lazy import of `cors` package)
 - [ ] **UTIL-04**: Library supports controller glob loading via `tinyglobby`: `useExpressControllers(app, { controllers: ['src/controllers/**/*.ts'] })`
 
