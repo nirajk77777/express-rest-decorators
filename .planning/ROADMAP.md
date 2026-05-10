@@ -105,12 +105,12 @@
   4. A separate `@scope/express-controllers-typedi` adapter package is published alongside core and demonstrably wires TypeDI into `useContainer(IocAdapter)` in an example app.
   5. v1.0.0 is published to npm with provenance, a Keep-a-Changelog `CHANGELOG.md` driven by Changesets, generated TypeDoc API reference, and Biome 2 (with documented ESLint 9 + `@typescript-eslint` 8 fallback) enforced in CI.
 **Plans**: 6 plans
-  - [ ] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1)
-  - [ ] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2)
-  - [ ] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2)
-  - [ ] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)
-  - [ ] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2)
-  - [ ] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3)
+  - [x] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1)
+  - [x] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2)
+  - [x] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2)
+  - [x] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)
+  - [x] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2)
+  - [x] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3)
 
 ---
 
