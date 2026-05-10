@@ -19,6 +19,7 @@ import {
 } from './router-build.js';
 import { resolveInputs } from './validation.js';
 import { writeResponse } from './response.js';
+import { applyRedirect, applyRender, applyLocation, interpolateTemplate } from './render.js';
 import { wrapAction } from './handler-wrapper.js';
 import { libraryErrorMiddleware, makeLibraryErrorMiddleware, isErrorMiddlewareInstance } from './error-middleware.js';
 import { isClassForm, toRequestHandlers, resolveMiddlewareClass } from './middleware.js';
@@ -80,6 +81,47 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
       let final: unknown = result;
       if (result !== null && result !== undefined && resolvedInterceptors.length > 0) {
         final = await runInterceptors(resolvedInterceptors, actionObj, result);
+      }
+
+      const controllerClass = (controllerMeta.target ?? { name: 'AnonymousController' }) as { name: string };
+      const methodName =
+        typeof action.method === 'symbol'
+          ? action.method.toString()
+          : String(action.method);
+      const source = `${controllerClass.name}.${methodName}`;
+
+      // Phase 4 D-05/D-06/D-07: response shaper dispatch.
+      // Null/undefined short-circuit (D-13/D-08 step 2) runs INSIDE writeResponse — shapers
+      // must be checked AFTER final is resolved (post-interceptor) but BEFORE writeResponse
+      // so that shapers override @JsonController serialization (D-08).
+      // Per D-09 + Pitfall 8: if final is null/undefined, skip shapers — pass to writeResponse
+      // which applies @OnNull/@OnUndefined and returns 204.
+      if (final !== null && final !== undefined) {
+        if (action.redirect) {
+          // D-10: @HttpCode wins, then explicit redirect status, then default 302
+          const status = action.responseHandlers.find(h => h.type === 'success-code')
+            ? Number(action.responseHandlers.find(h => h.type === 'success-code')!.value)
+            : action.redirect.status ?? 302;
+          applyRedirect(res, action.redirect.template, status, final, source);
+          next();
+          return;
+        }
+        if (action.render) {
+          applyRender(res, action.render.template, final, source);
+          next();
+          return;
+        }
+        if (action.location) {
+          const url = typeof final === 'string'
+            ? final
+            : typeof final === 'object' && final !== null
+              ? interpolateTemplate(action.location.template, final as Record<string, unknown>, source)
+              : action.location.template;
+          res.location(url);
+          // D-07: fall through to writeResponse — body still flows through standard writer
+          writeResponse(res, next, final, controllerMeta, action);
+          return;
+        }
       }
 
       writeResponse(res, next, final, controllerMeta, action);

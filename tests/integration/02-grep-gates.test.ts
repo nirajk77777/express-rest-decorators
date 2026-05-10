@@ -89,6 +89,7 @@ describe('Phase 2 grep gates — structural invariants', () => {
       'src/adapter/cookies.ts',
       'src/adapter/session.ts',
       'src/adapter/uploads.ts',
+      'src/adapter/render.ts',
     ]);
 
     const importers: string[] = [];
