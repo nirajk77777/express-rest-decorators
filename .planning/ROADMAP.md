@@ -107,9 +107,9 @@
 **Plans**: 7 plans
   - [x] 05-01-PLAN.md — Doc rewrites: REQUIREMENTS.md DI-03 + ROADMAP.md SC #1/#4 + Plans block (Wave 1)
   - [x] 05-02-PLAN.md — pnpm 10 migration + package.json mutations + tshy 3.3.2 bootstrap + biome.json (Wave 1)
-  - [ ] 05-03-PLAN.md — Build smoke test (CJS+ESM + emitDecoratorMetadata) + attw/publint gates + single-package grep gate (Wave 2)
-  - [ ] 05-04-PLAN.md — GitHub Actions CI workflow: Node 20/22/24 × {forks, threads} matrix + lint + build + attw + publint (Wave 2)
-  - [ ] 05-05-PLAN.md — README (30-line Zod example + Validators section + DI recipe) + MIGRATION.md + LICENSE + CONTRIBUTING.md (Wave 2)
+  - [x] 05-03-PLAN.md — Build smoke test (CJS+ESM + emitDecoratorMetadata) + attw/publint gates + single-package grep gate (Wave 2)
+  - [x] 05-04-PLAN.md — GitHub Actions CI workflow: Node 20/22/24 × {forks, threads} matrix + lint + build + attw + publint (Wave 2)
+  - [x] 05-05-PLAN.md — README (30-line Zod example + Validators section + DI recipe) + MIGRATION.md + LICENSE + CONTRIBUTING.md (Wave 2)
   - [ ] 05-06-PLAN.md — Changesets bootstrap (pre enter rc) + TypeDoc + GitHub Actions release workflow with provenance (Wave 3)
   - [ ] 05-07-PLAN.md — RC publish (1.0.0-rc.1) + fresh-project smoke install rehearsal (Wave 4, autonomous: false)
 
