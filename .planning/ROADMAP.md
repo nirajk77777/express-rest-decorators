@@ -105,8 +105,8 @@
   4. README documents a `useContainer` recipe wiring TypeDI (and any `.get(token)`-shaped container — tsyringe, Awilix, etc.) into the core `useContainer(IocAdapter)` hook with a runnable example; no separate adapter package is published (single-package rule).
   5. v1.0.0 is published to npm with provenance, a Keep-a-Changelog `CHANGELOG.md` driven by Changesets, generated TypeDoc API reference, and Biome 2 (with documented ESLint 9 + `@typescript-eslint` 8 fallback) enforced in CI.
 **Plans**: 7 plans
-  - [ ] 05-01-PLAN.md — Doc rewrites: REQUIREMENTS.md DI-03 + ROADMAP.md SC #1/#4 + Plans block (Wave 1)
-  - [ ] 05-02-PLAN.md — pnpm 10 migration + package.json mutations + tshy 3.3.2 bootstrap + biome.json (Wave 1)
+  - [x] 05-01-PLAN.md — Doc rewrites: REQUIREMENTS.md DI-03 + ROADMAP.md SC #1/#4 + Plans block (Wave 1)
+  - [x] 05-02-PLAN.md — pnpm 10 migration + package.json mutations + tshy 3.3.2 bootstrap + biome.json (Wave 1)
   - [ ] 05-03-PLAN.md — Build smoke test (CJS+ESM + emitDecoratorMetadata) + attw/publint gates + single-package grep gate (Wave 2)
   - [ ] 05-04-PLAN.md — GitHub Actions CI workflow: Node 20/22/24 × {forks, threads} matrix + lint + build + attw + publint (Wave 2)
   - [ ] 05-05-PLAN.md — README (30-line Zod example + Validators section + DI recipe) + MIGRATION.md + LICENSE + CONTRIBUTING.md (Wave 2)
