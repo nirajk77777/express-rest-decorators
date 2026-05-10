@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-05-10T09:22:47.488Z"
+last_updated: "2026-05-10T13:35:00Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 18
-  completed_plans: 17
-  percent: 94
+  completed_plans: 18
+  percent: 100
 ---
 
 # State
@@ -39,12 +39,12 @@ progress:
 
 ## Current Position
 
-Phase: 03 (middleware-interceptors-auth-error-handling) — EXECUTING
-Plan: 5 of 5
-**Phase:** 3 — Middleware, Interceptors, Auth, Error Handling — IN PROGRESS
-**Plan:** 03-04 complete (4/5 plans complete in Phase 3)
-**Status:** Executing Phase 03
-**Progress:** [█████████░] 94%
+Phase: 03 (middleware-interceptors-auth-error-handling) — COMPLETE
+Plan: 5 of 5 (ALL COMPLETE)
+**Phase:** 3 — Middleware, Interceptors, Auth, Error Handling — COMPLETE
+**Plan:** 03-05 complete (5/5 plans complete in Phase 3)
+**Status:** Phase 3 complete; Phases 4 and 5 pending
+**Progress:** [██████████] 100% (Phase 3)
 
 ```
 Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
@@ -52,7 +52,7 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
                        └──► Phase 4 ──┘
 ```
 
-**Up next:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 05 (SC acceptance tests).
+**Up next:** `/gsd-execute-phase 4` — Phase 4 (cookies, sessions, uploads, CORS, AsyncLocalStorage) or `/gsd-execute-phase 5` — Phase 5 (publish pipeline).
 
 ---
 
@@ -71,6 +71,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 ---
 | Phase 03 P02 | 480 | 2 tasks | 7 files |
 | Phase 03 P03 | 480 | 3 tasks | 10 files |
+| Phase 03 P04 | 480 | 4 tasks | 8 files |
+| Phase 03 P05 | 1080 | 4 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -177,6 +179,13 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 - D-08 short-circuit: interceptors skipped entirely when handler returns null or undefined.
 - function-form middleware entries in BootOptions.middlewares default to 'before' (class-form entries use getMiddlewareType).
 
+### Key Decisions Made (from 03-05)
+
+- D-09 chain order is sequential first-to-last (global → ctrl → method); plan's expected output had the direction inverted — corrected against CONTEXT.md D-09 and implementation in router-build.ts.
+- currentUser slot requires explicit `{ currentUser: true }` in InputDeclaration; not automatic even when currentUserChecker is registered (D-14 confirmed).
+- Grep-gate for barrel exports uses transitive barrel check (decorators/middleware.ts for decorator names, interfaces/index.ts for interface type names) since `index.ts` uses `export *`.
+- Phase 3 complete: 416 tests passing, tsc --noEmit clean, all 5 ROADMAP SC verified by integration tests.
+
 ### Key Decisions Made (from 03-02)
 
 - mergeMethodChain now does per-field merge instead of whole-record overwrite — required for correct hook accumulation when subclass adds @UseBefore to an inherited method without re-decorating the route.
@@ -196,8 +205,8 @@ Phase 1 ──► Phase 2 ──┬──► Phase 3 ──┐
 
 ## Session Continuity
 
-**Last action:** Phase 3 Plan 04 complete — writeResponse next() calls, isErrorMiddlewareInstance, async buildControllerRouter with D-01 handler arrays, async boot.ts orchestration, public barrel Phase 3 exports; 383 tests pass.
+**Last action:** Phase 3 Plan 05 complete — 6 integration test files, 33 tests, all 5 ROADMAP SC verified, 8 structural grep gates locked; total suite 416 tests pass; tsc --noEmit clean.
 
-**Resume command:** `/gsd-execute-phase 3` — continue Phase 3 with Plan 05 (SC acceptance tests).
+**Resume command:** `/gsd-execute-phase 4` or `/gsd-execute-phase 5`
 
-**Last updated:** 2026-05-10T09:26:00Z
+**Last updated:** 2026-05-10T13:35:00Z

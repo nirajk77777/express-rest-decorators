@@ -13,7 +13,7 @@
 
 - [x] **Phase 1: Metadata & Decorator Skeleton** — Stage 3 decorators, per-class metadata, IoC contract, runtime mode guard; pure logic, no HTTP yet.
 - [x] **Phase 2: Runtime + Express Adapter (Happy Path)** — End-to-end vertical slice: input resolution via Standard Schema, ExpressAdapter, native async error middleware.
-- [ ] **Phase 3: Middleware, Interceptors, Auth, Error Handling** — Orthogonal additions on top of Phase 2 pipeline (parallel with Phase 4).
+- [x] **Phase 3: Middleware, Interceptors, Auth, Error Handling** — Orthogonal additions on top of Phase 2 pipeline (parallel with Phase 4). COMPLETE — 416 tests, all 5 SC verified.
 - [ ] **Phase 4: Uploads, Cookies, Sessions, Render, Request Context** — Feature-parity edge cases plus AsyncLocalStorage and `printRoutes` (parallel with Phase 3).
 - [ ] **Phase 5: Adapter Packages, Build, Docs, Migration, Publish** — Monorepo packaging, dual ESM+CJS verification, migration guide, v1.0.0 to npm.
 
@@ -74,7 +74,7 @@
   - [x] 03-02-PLAN.md — MetadataBuilder extension: fold useBefore/useAfter/interceptors/authorized into resolved metadata with inheritance semantics (Wave 2)
   - [x] 03-03-PLAN.md — Adapter helpers: middleware.ts (form detection + DI), interceptor.ts (for/await chain), auth.ts (gate + currentUser cache), validation.ts currentUser slot (Wave 2)
   - [x] 03-04-PLAN.md — Wiring: response.ts next() per branch, error-middleware arity helper, router-build handler array per D-01, boot.ts global mounting + public barrel (Wave 3)
-  - [ ] 03-05-PLAN.md — Integration tests: SC#1-#5 + ordering fixture + structural grep gates (Wave 4)
+  - [x] 03-05-PLAN.md — Integration tests: SC#1-#5 + ordering fixture + structural grep gates (Wave 4)
 
 ### Phase 4: Uploads, Cookies, Sessions, Render, Request Context
 **Goal**: Complete v1 feature parity by adding file upload, cookies, sessions, render/redirect/location, CORS, glob loading, route-table dump, and the AsyncLocalStorage-backed request context — each feature small and independently verifiable.
