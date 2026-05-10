@@ -1,6 +1,7 @@
 import type { Action } from '../types/action.js';
 import type { InterceptorInterface } from '../interfaces/interceptor.js';
 import { getContainer } from '../container/use-container.js';
+import { isMarkedAsInterceptor } from '../metadata/storage.js';
 
 export type InterceptorInstance = InterceptorInterface;
 
@@ -9,6 +10,16 @@ export async function resolveInterceptorClasses(
 ): Promise<InterceptorInstance[]> {
   const out: InterceptorInstance[] = [];
   for (const cls of classes) {
+    // BL-02 (REVIEW.md, phase 03): @Interceptor() is the documented
+    // opt-in contract. Without this check, any class with an `intercept`
+    // method (including controllers that happen to expose one) would
+    // silently be wired as an interceptor.
+    if (!isMarkedAsInterceptor(cls)) {
+      throw new Error(
+        `[${cls.name || 'AnonymousClass'}] is not decorated with @Interceptor() ` +
+          `but was passed to BootOptions.interceptors or @UseInterceptor.`,
+      );
+    }
     const instance = await Promise.resolve(getContainer().get(cls as never));
     const interceptFn = (instance as { intercept?: unknown }).intercept;
     if (typeof interceptFn !== 'function') {

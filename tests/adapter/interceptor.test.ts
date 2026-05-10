@@ -3,6 +3,7 @@ import { runInterceptors, resolveInterceptorClasses } from '../../src/adapter/in
 import type { InterceptorInterface } from '../../src/interfaces/interceptor.js';
 import type { Action } from '../../src/types/action.js';
 import { resetContainer, useContainer } from '../../src/container/use-container.js';
+import { markAsInterceptor } from '../../src/metadata/storage.js';
 
 const stubAction: Action = { request: {}, response: {} };
 
@@ -90,6 +91,7 @@ describe('resolveInterceptorClasses', () => {
     class I {
       intercept(_action: Action, content: unknown): unknown { return content; }
     }
+    markAsInterceptor(I);
     const instances = await resolveInterceptorClasses([I]);
     expect(instances).toHaveLength(1);
     expect(instances[0]).toBeInstanceOf(I);
@@ -99,6 +101,8 @@ describe('resolveInterceptorClasses', () => {
     const order: number[] = [];
     class I1 { intercept(_a: Action, c: unknown): unknown { order.push(1); return c; } }
     class I2 { intercept(_a: Action, c: unknown): unknown { order.push(2); return c; } }
+    markAsInterceptor(I1);
+    markAsInterceptor(I2);
     const instances = await resolveInterceptorClasses([I1, I2]);
     // Run them to verify order
     for (const i of instances) {
@@ -109,6 +113,7 @@ describe('resolveInterceptorClasses', () => {
 
   it('throws when resolved instance lacks intercept method', async () => {
     class B {}
+    markAsInterceptor(B);
     await expect(resolveInterceptorClasses([B])).rejects.toThrow(/B/);
     await expect(resolveInterceptorClasses([B])).rejects.toThrow(/intercept/);
   });
@@ -117,10 +122,19 @@ describe('resolveInterceptorClasses', () => {
     class I {
       intercept(_a: Action, c: unknown): unknown { return c; }
     }
+    markAsInterceptor(I);
     const customInstance = new I();
     useContainer({ get: <T>(_cls: new (...args: any[]) => T) => customInstance as unknown as T });
     const instances = await resolveInterceptorClasses([I]);
     expect(instances[0]).toBe(customInstance);
+  });
+
+  it('throws when class is not decorated with @Interceptor() (BL-02)', async () => {
+    class NotMarked {
+      intercept(_a: Action, c: unknown): unknown { return c; }
+    }
+    await expect(resolveInterceptorClasses([NotMarked])).rejects.toThrow(/NotMarked/);
+    await expect(resolveInterceptorClasses([NotMarked])).rejects.toThrow(/@Interceptor/);
   });
 
   it('returns empty array for empty input', async () => {
