@@ -14,6 +14,7 @@ import type { AuthorizationChecker, CurrentUserChecker } from './boot-options.js
 import { toRequestHandlers } from './middleware.js';
 import { makeAuthGate } from './auth.js';
 import { resolveInterceptorClasses } from './interceptor.js';
+import { buildMulterMiddleware } from './uploads.js';
 
 /**
  * Compose the final route string from routePrefix + controller basePath + action path.
@@ -197,6 +198,10 @@ export async function buildControllerRouter(
 
     const authGate = makeAuthGate(effectiveAuthorized, authChecker, currentUserChecker);
 
+    // D-04: multer middleware mounts BEFORE invokeHandler so req.files is populated
+    // before the validation arms run inside resolveInputs.
+    const multerMw = await buildMulterMiddleware(action, controllerName, String(action.method));
+
     // All interceptors for this route: global → ctrl → method
     const allInterceptors: InterceptorInterface[] = [
       ...globalInterceptors,
@@ -207,11 +212,12 @@ export async function buildControllerRouter(
     const invokeHandler = handlerFactory(controllerMeta, action, allInterceptors);
 
     // D-01 steps 3-12 handler array:
-    // [...ctrlBefore, ...methodBefore, authGate?, invokeHandler, ...methodAfter, ...ctrlAfter]
+    // [...ctrlBefore, ...methodBefore, authGate?, multerMw?, invokeHandler, ...methodAfter, ...ctrlAfter]
     const handlers: RequestHandler[] = [
       ...ctrlBeforeHandlers,
       ...methodBeforeHandlers,
       ...(authGate ? [authGate] : []),
+      ...(multerMw ? [multerMw] : []),
       invokeHandler,
       ...methodAfterHandlers,
       ...ctrlAfterHandlers,

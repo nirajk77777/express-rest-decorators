@@ -57,3 +57,14 @@ export type {
 // Phase 4 — request context (AsyncLocalStorage)
 export { getRequestContext } from './adapter/request-context.js';
 export type { RequestContext } from './adapter/request-context.js';
+
+// Phase 4 — uploads
+export { UploadedFile, UploadedFiles } from './adapter/uploads.js';
+export type {
+  UploadedFileMarker,
+  UploadedFilesMarker,
+  AnyUploadMarker,
+  UploadOptions,
+  UploadLimits,
+  FileFilter,
+} from './types/uploads.js';

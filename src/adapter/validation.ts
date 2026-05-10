@@ -5,6 +5,8 @@ import { BadRequestError } from '../errors/subclasses.js';
 import type { ValidationIssue, ValidationSlot } from '../errors/http-error.js';
 import { resolveCookiesArm } from './cookies.js';
 import { resolveSessionArm } from './session.js';
+import { resolveFilesArm } from './uploads.js';
+import type { AnyUploadMarker } from '../types/uploads.js';
 
 export function isStandardSchema(x: unknown): x is StandardSchemaV1 {
   // ArkType's schema is a callable (typeof === 'function') — Standard Schema spec
@@ -56,6 +58,8 @@ export interface ResolvedArgs {
   cookies?: Record<string, unknown>;
   /** Phase 4 D-02: resolved session value (or undefined if slot not declared). */
   session?: unknown;
+  /** Phase 4 D-03: resolved file entries per field key (or undefined if slot not declared). */
+  files?: Record<string, unknown>;
 }
 
 type ReqSlot = 'params' | 'query' | 'body' | 'headers';
@@ -137,7 +141,7 @@ export async function resolveInputs(
   currentUserResolver?: () => Promise<unknown>,
 ): Promise<ResolvedArgs> {
   const decl = input ?? {};
-  const [results, currentUserResult, cookiesResult, sessionResult] = await Promise.all([
+  const [results, currentUserResult, cookiesResult, sessionResult, filesResult] = await Promise.all([
     Promise.all(
       SLOTS.map((s) =>
         validateSlot(s, (decl as Record<ReqSlot, unknown>)[s], req[s])
@@ -148,6 +152,8 @@ export async function resolveInputs(
     resolveCookiesArm(req as Request, decl.cookies),
     // Phase 4 D-04: session arm (arm 7)
     resolveSessionArm(req as Request, decl.session),
+    // Phase 4 D-04: files arm (arm 8) — no issues; multer rejects at mw layer
+    Promise.resolve(resolveFilesArm(req as Request, decl.files as Record<string, AnyUploadMarker> | undefined)),
   ]);
 
   const allIssues: ValidationIssue[] = [];
@@ -172,5 +178,6 @@ export async function resolveInputs(
   args.currentUser = currentUserResult.value;
   args.cookies = cookiesResult.value;
   args.session = sessionResult.value;
+  args.files = filesResult.value;
   return args;
 }
