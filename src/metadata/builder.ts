@@ -110,14 +110,23 @@ function mergeMethodChain(proto: object): Map<string | symbol, MethodArgs> {
       }
       // Subclass declared additional metadata for this same method.
       if (args.verb) {
-        // Subclass re-applied a route decorator — verb/path/input/responseHandlers replaced.
+        // BL-03: Subclass re-applied a route decorator — verb/path/input/
+        // returnType/paramTypes/responseHandlers REPLACED (not concatenated).
+        // Concatenating responseHandlers would emit base-class
+        // @HttpCode/@Header/@ContentType in addition to the subclass values,
+        // producing duplicate header writes whose visible value depends on
+        // header type and last-write-wins ordering. Subclass re-decoration
+        // is "I want a fresh route on this method" — the base's
+        // route-shape decorators don't apply.
         existing.verb = args.verb;
         existing.path = args.path;
-        if (args.input !== undefined) existing.input = args.input;
-        if (args.returnType !== undefined) existing.returnType = args.returnType;
-        if (args.paramTypes !== undefined) existing.paramTypes = args.paramTypes;
-        existing.responseHandlers = [...existing.responseHandlers, ...args.responseHandlers];
+        existing.input = args.input;
+        existing.returnType = args.returnType;
+        existing.paramTypes = args.paramTypes;
+        existing.responseHandlers = [...args.responseHandlers];
       } else if (args.responseHandlers.length) {
+        // No new verb — subclass added more response shapers (e.g.,
+        // @Header on top of inherited route). These layer onto base.
         existing.responseHandlers = [...existing.responseHandlers, ...args.responseHandlers];
       }
       // Phase 3 hook arrays: ALWAYS concat base-first (no replacement on re-decoration).
