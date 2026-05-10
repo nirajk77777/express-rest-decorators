@@ -95,22 +95,23 @@
   - [x] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3) — COMPLETE: 2 tasks, 2 files, 36 new tests (20 integration + 16 grep gates), 569 suite pass
 
 ### Phase 5: Adapter Packages, Build, Docs, Migration, Publish
-**Goal**: Ship a publishable v1.0.0: monorepo build pipeline, dual ESM+CJS distribution verified by `attw`/`publint`, CI matrix, TypeDI adapter, migration guide, and a runnable README — all on npm under provenance.
+**Goal**: Ship a publishable v1.0.0: single-package build pipeline (one `package.json`, one `src/`, one `dist/`), dual ESM+CJS distribution verified by `attw`/`publint`, CI matrix, docs-only TypeDI `useContainer` recipe, migration guide, and a runnable README — all on npm under provenance.
 **Depends on**: Phases 1-4 complete (full surface stable).
 **Requirements**: BUILD-01, BUILD-02, BUILD-06, BUILD-07, BUILD-08, BUILD-09, DI-03, VAL-02, DOCS-01, DOCS-02, DOCS-03, DOCS-04
 **Success Criteria** (what must be TRUE):
-  1. The monorepo (pnpm workspaces, `packages/core` + `packages/typedi`) builds dual ESM+CJS via `tshy` against TypeScript 5.8+; `prepublishOnly` runs `attw` and `publint` green; CI matrix passes across Node 20/22/24, and Vitest 3 suites pass under both `pool: 'forks'` and `pool: 'threads'`.
+  1. The single-package repo (one `package.json`, one `src/`, one `dist/`; no workspaces, no `packages/*`) builds dual ESM+CJS via `tshy` against TypeScript 5.8+; `prepublishOnly` runs `attw` and `publint` green; CI matrix passes across Node 20/22/24 (Linux), and Vitest 3 suites pass under both `pool: 'forks'` and `pool: 'threads'`.
   2. A new user can copy the README's opening 30-line Zod + Express 5 example (with the required tsconfig snippet) into a fresh project and run it successfully against the published package.
   3. A migration guide documents every breaking change vs `routing-controllers` v0.11 with before/after code, leading with the parameter-decorator → method-level input declaration change; README documents Zod, Valibot, and ArkType usage with no adapter code.
-  4. A separate `@scope/express-controllers-typedi` adapter package is published alongside core and demonstrably wires TypeDI into `useContainer(IocAdapter)` in an example app.
+  4. README documents a `useContainer` recipe wiring TypeDI (and any `.get(token)`-shaped container — tsyringe, Awilix, etc.) into the core `useContainer(IocAdapter)` hook with a runnable example; no separate adapter package is published (single-package rule).
   5. v1.0.0 is published to npm with provenance, a Keep-a-Changelog `CHANGELOG.md` driven by Changesets, generated TypeDoc API reference, and Biome 2 (with documented ESLint 9 + `@typescript-eslint` 8 fallback) enforced in CI.
-**Plans**: 6 plans
-  - [x] 04-01-PLAN.md — Request context (AsyncLocalStorage) + getRequestContext + outermost ALS wrapper (Wave 1)
-  - [x] 04-02-PLAN.md — Cookies + session input slots; lazy cookie loader (Wave 2)
-  - [x] 04-03-PLAN.md — UploadedFile/UploadedFiles factory markers; lazy multer; mandatory limits + fileFilter (Wave 2)
-  - [x] 04-04-PLAN.md — @Render / @Redirect / @Location decorators + shaper dispatch (Wave 2)
-  - [x] 04-05-PLAN.md — CORS lazy-load + glob controller loading (tinyglobby) + printRoutes route table (Wave 2)
-  - [x] 04-06-PLAN.md — End-to-end integration tests (SC#1..#5) + structural grep gates (Wave 3)
+**Plans**: 7 plans
+  - [ ] 05-01-PLAN.md — Doc rewrites: REQUIREMENTS.md DI-03 + ROADMAP.md SC #1/#4 + Plans block (Wave 1)
+  - [ ] 05-02-PLAN.md — pnpm 10 migration + package.json mutations + tshy 3.3.2 bootstrap + biome.json (Wave 1)
+  - [ ] 05-03-PLAN.md — Build smoke test (CJS+ESM + emitDecoratorMetadata) + attw/publint gates + single-package grep gate (Wave 2)
+  - [ ] 05-04-PLAN.md — GitHub Actions CI workflow: Node 20/22/24 × {forks, threads} matrix + lint + build + attw + publint (Wave 2)
+  - [ ] 05-05-PLAN.md — README (30-line Zod example + Validators section + DI recipe) + MIGRATION.md + LICENSE + CONTRIBUTING.md (Wave 2)
+  - [ ] 05-06-PLAN.md — Changesets bootstrap (pre enter rc) + TypeDoc + GitHub Actions release workflow with provenance (Wave 3)
+  - [ ] 05-07-PLAN.md — RC publish (1.0.0-rc.1) + fresh-project smoke install rehearsal (Wave 4, autonomous: false)
 
 ---
 
