@@ -91,12 +91,15 @@ function makeHandlerFactory(options: BootOptions): HandlerFactory {
       const source = `${controllerClass.name}.${methodName}`;
 
       // Phase 4 D-05/D-06/D-07: response shaper dispatch.
-      // Null/undefined short-circuit (D-13/D-08 step 2) runs INSIDE writeResponse — shapers
-      // must be checked AFTER final is resolved (post-interceptor) but BEFORE writeResponse
-      // so that shapers override @JsonController serialization (D-08).
-      // Per D-09 + Pitfall 8: if final is null/undefined, skip shapers — pass to writeResponse
-      // which applies @OnNull/@OnUndefined and returns 204.
-      if (final !== null && final !== undefined) {
+      // Null/undefined short-circuit (D-13/D-08 step 2) and shapers interact per D-09 + Pitfall 8:
+      // - null → ALWAYS short-circuit before shapers (D-13): pass to writeResponse which applies
+      //   @OnNull and returns 204. Shapers do NOT run on null.
+      // - undefined → shapers handle it per their own semantics:
+      //     @Redirect: uses bare template (D-05)
+      //     @Render: renders with no locals (D-06)
+      //     @Location: uses bare template
+      //   If no shaper: writeResponse returns 204 via @OnUndefined / default (D-13).
+      if (final !== null) {
         if (action.redirect) {
           // D-10: @HttpCode wins, then explicit redirect status, then default 302
           const status = action.responseHandlers.find(h => h.type === 'success-code')
