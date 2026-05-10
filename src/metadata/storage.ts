@@ -20,6 +20,17 @@ export function getRegisteredMiddlewareClasses(): ReadonlySet<Function> {
   return middlewareClassSet;
 }
 
+// Module-private interceptor registry
+const interceptorClassSet = new Set<Function>();
+
+export function markAsInterceptor(cls: Function): void {
+  interceptorClassSet.add(cls);
+}
+
+export function isMarkedAsInterceptor(cls: Function): boolean {
+  return interceptorClassSet.has(cls);
+}
+
 export function getOrInitControllerArgs(ctor: Function): ControllerArgs {
   let entry = controllerMap.get(ctor);
   if (!entry) {
