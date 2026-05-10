@@ -2,6 +2,14 @@
   "name": "@nirajk/express-controllers",
   "version": "0.0.0",
   "description": "Decorator-based REST controllers for Express v5 (modernized routing-controllers successor)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nirajk/express-controllers.git"
+  },
+  "homepage": "https://github.com/nirajk/express-controllers#readme",
+  "bugs": {
+    "url": "https://github.com/nirajk/express-controllers/issues"
+  },
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -47,6 +55,7 @@
     "test": "vitest run",
     "test:forks": "vitest run --pool=forks",
     "test:threads": "vitest run --pool=threads",
+    "test:build": "vitest run --config vitest.build.config.ts",
     "test:watch": "vitest",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
